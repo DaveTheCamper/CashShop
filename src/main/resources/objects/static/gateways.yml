@@ -1,0 +1,86 @@
+inventory:
+  name: §7Default category name
+  size: 27
+  items:
+    slot:
+      '0':
+        name: product0
+        type: DO_NOTHING
+      '1':
+        name: product0
+        type: DO_NOTHING
+      '2':
+        name: product0
+        type: DO_NOTHING
+      '3':
+        name: product0
+        type: DO_NOTHING
+      '4':
+        name: product0
+        type: DO_NOTHING
+      '5':
+        name: product0
+        type: DO_NOTHING
+      '6':
+        name: product0
+        type: DO_NOTHING
+      '7':
+        name: product0
+        type: DO_NOTHING
+      '8':
+        name: product0
+        type: DO_NOTHING
+      '9':
+        name: product0
+        type: DO_NOTHING
+      '17':
+        name: product0
+        type: DO_NOTHING
+      '18':
+        name: gift_name
+        type: DO_NOTHING
+      '19':
+        name: product0
+        type: DO_NOTHING
+      '20':
+        name: product0
+        type: DO_NOTHING
+      '21':
+        name: product0
+        type: DO_NOTHING
+      '22':
+        name: product0
+        type: DO_NOTHING
+      '23':
+        name: product0
+        type: DO_NOTHING
+      '24':
+        name: product0
+        type: DO_NOTHING
+      '26':
+        name: back_button
+        type: DO_NOTHING
+      '25':
+        name: product0
+        type: DO_NOTHING
+type: category
+item:
+  name: §9Gateways
+  glow: true
+  lore:
+  - §aSelect your payment method
+  item:
+    ==: org.bukkit.inventory.ItemStack
+    v: 2584
+    type: ENCHANTED_BOOK
+    meta:
+      ==: ItemMeta
+      meta-type: ENCHANTED
+      display-name: '{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"blue","text":"Gateways"}],"text":""}'
+      lore:
+      - '{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"green","text":"Select
+        your payment method"}],"text":""}'
+      enchants:
+        ARROW_DAMAGE: 1
+      ItemFlags:
+      - HIDE_ENCHANTS

@@ -1,0 +1,28 @@
+type: do-nothing
+item:
+  name: §eShow selling item
+  glow: true
+  lore:
+  - §7§oThis item will be replaced
+  item:
+    ==: org.bukkit.inventory.ItemStack
+    v: 2584
+    type: ARROW
+    meta:
+      ==: ItemMeta
+      meta-type: UNSPECIFIC
+      display-name: '{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"yellow","text":"Show
+        selling item"}],"text":""}'
+      lore:
+      - '{"extra":[{"bold":false,"italic":true,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"gray","text":"This
+        item will be replaced"}],"text":""}'
+      enchants:
+        ARROW_DAMAGE: 1
+      ItemFlags:
+      - HIDE_ENCHANTS
+      - HIDE_ATTRIBUTES
+      - HIDE_DESTROYS
+      - HIDE_POTION_EFFECTS
+      PublicBukkitValues:
+        bloodmoon:usable: 1i
+        bloodmoon:valentine_flecha_cupido: SpartanAC

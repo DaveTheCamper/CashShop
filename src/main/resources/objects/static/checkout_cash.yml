@@ -1,0 +1,30 @@
+type: product
+selling:
+  items: []
+  commands: []
+item:
+  name: §6Cash
+  glow: true
+  value: 1
+  lore:
+  - §r
+  - §e@value @currency §f= §e@cash_value cash
+  - §r
+  item:
+    ==: org.bukkit.inventory.ItemStack
+    v: 2584
+    type: GOLD_NUGGET
+    meta:
+      ==: ItemMeta
+      meta-type: UNSPECIFIC
+      display-name: '{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"gold","text":"Cash"}],"text":""}'
+      lore:
+      - '{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"text":""}],"text":""}'
+      - '{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"yellow","text":"@value
+        @currency "},{"italic":false,"color":"white","text":"= "},{"italic":false,"color":"yellow","text":"@cash_value
+        cash"}],"text":""}'
+      - '{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"text":""}],"text":""}'
+      enchants:
+        ARROW_DAMAGE: 1
+      ItemFlags:
+      - HIDE_ENCHANTS

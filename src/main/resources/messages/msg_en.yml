@@ -1,0 +1,228 @@
+tag: '&f[&6Cash&f]'
+reload: Reload successfully
+api:
+  loaded: API loaded sucessfuly
+  error:
+    credentials: Something is wrong with your credentials
+    currency: This API does not support your current currency
+    offline: This API is currently offline. Maybe in maintence?
+items:
+  choosable:
+    main:
+      create:
+        material: NETHER_STAR
+        name: '&f&lCreate new'
+        lore:
+        - '&bYou can create new:'
+        - ' &f- &aCategory inventory'
+        - ' &f- &aProduct'
+        - ' &f- &aCombo item'
+        - ' &f- &aDecorative item'
+      edit:
+        material: ANVIL
+        name: '&f&lEdit'
+        lore:
+        - '&bEdit existent item'
+    create:
+      creation:
+        material: NETHER_STAR
+        name: '&f&lCreate'
+        lore:
+        - '&bCreate with default config'
+      clone:
+        material: OAK_SAPLING
+        name: '&f&lClone'
+        lore:
+        - '&bCreate a new one based on'
+        - '&ban existing Object'
+      product:
+        material: DIAMOND
+        name: '&6Products'
+        lore:
+        - '&bCreate new product'
+      combo:
+        material: CHEST
+        name: '&6Combos'
+        lore:
+        - '&bCreate a selling combo promotion'
+      categorie:
+        material: PAINTING
+        name: '&6Categories'
+        lore:
+        - '&bCreate new category'
+      decorative:
+        material: NAUTILUS_SHELL
+        name: '&6Decorative items'
+        lore:
+        - '&bCreate new decorative item'
+    edit_something:
+      products:
+        material: DIAMOND
+        name: '&6Products'
+        lore:
+        - '&bEdit some product'
+      combos:
+        material: CHEST
+        name: '&6Combos'
+        lore:
+        - '&bEdit a selling combo promotion'
+      static:
+        material: END_PORTAL_FRAME
+        name: '&6Static menus'
+        lore:
+        - '&bThings like:'
+        - ' &f- &aTransaction menu'
+        - ' &f- &aCheckout menu'
+        - ' &f- &aCombo sales menu'
+      categories:
+        material: PAINTING
+        name: '&6Categories'
+        lore:
+        - '&bEdit categories'
+      decorative:
+        material: NAUTILUS_SHELL
+        name: '&6Decorative items'
+        lore:
+        - '&bEdit decorative items'
+  back:
+    material: BARRIER
+    name: '&cBack'
+    lore:
+    - '&7&oBack to the last inventory'
+  identifier:
+    material: NAME_TAG
+    name: Identifier
+    lore:
+    - 'Current: @id'
+  save:
+    material: LIME_DYE
+    name: '&aSave'
+    lore:
+    - ''
+  cancel:
+    material: RED_DYE
+    name: '&cCancel'
+    lore:
+    - ''
+  delete:
+    material: BARRIER
+    name: '&4Delete'
+    lore:
+    - '&cType button 9 from your keyboard'
+    - ''
+    - '&7&oThis action cant be undone'
+  item_properties:
+    name:
+      material: NAME_TAG
+      name: '&bDisplay name'
+      lore:
+      - '&bCurrent name: &r@name'
+    glow:
+      material: GLOWSTONE_DUST
+      name: '&bGlow'
+      lore:
+      - '&bStatus: &e@glow_status'
+    lore:
+      material: PAPER
+      name: '&bLore'
+      lore:
+      - '&7&oClick to edit'
+      hint: MISSING_CONFIGURATION_SETTING_DEFAULT
+  valuable:
+    material: GOLD_INGOT
+    name: '&bValue'
+    lore:
+    - '&eCurrent value: &6@value_cash'
+  items_give:
+    material: CHEST
+    name: '&bItems to give'
+    lore:
+    - '&aClick to edit'
+  commands:
+    material: BOOK
+    name: '&bCommands'
+    hint:
+    - '&7&oClick to edit'
+  lore:
+    new:
+      material: PAPER
+      name: '&aAdd new line'
+      lore:
+      - ''
+    hint:
+    - '&7&oButton 1 = Move up'
+    - '&7&oButton 2 = Move down'
+    - '&7&oButton 9 = Remove'
+  category:
+    edit:
+      material: ORANGE_DYE
+      name: '&bEdit'
+      lore:
+      - '&aOpen in-game editor'
+    size:
+      material: FIREWORK_STAR
+      name: '&bSize'
+      lore:
+      - '&aCurrent size: &2@size'
+      - '&7&oSize of inventory'
+    title:
+      material: NAME_TAG
+      name: '&aChange title'
+      lore:
+      - '&aCurrent title: &r@title'
+  currency:
+    material: EMERALD
+    name: '&bCurrency value'
+    lore: '&eCurrent value: &6@currency_value$'
+  edition:
+    choose:
+      nothing:
+        material: NAUTILUS_SHELL
+        name: '&6Add decorative item'
+        lore:
+        - ''
+      products:
+        material: DIAMOND
+        name: '&6Add a product button'
+        lore:
+        - ''
+      categories:
+        material: PAINTING
+        name: '&6Add category button'
+        lore:
+        - ''
+      exclusive:
+        material: END_PORTAL_FRAME
+        name: '&6Exclusive menu buttons'
+        lore:
+        - ''
+      combo:
+        material: CHEST
+        name: '&6Add combo button'
+        lore:
+        - ''
+      done:
+        material: LIME_STAINED_GLASS_PANE
+        name: '&aDone'
+        lore:
+        - ''
+    search:
+      material: NAME_TAG
+      name: "&&dSearch"
+      lore:
+      - ""
+  navigable:
+    backward:
+      material: PAPER
+      name: '&f&lPage back'
+      lore:
+      - ''
+    forward:
+      material: PAPER
+      name: '&f&lNext page'
+      lore:
+      - ''
+chat:
+  to_do:
+    STRING: '&aWrite a text in chat'
+    INTEGER: '&aWrite a number in chat'

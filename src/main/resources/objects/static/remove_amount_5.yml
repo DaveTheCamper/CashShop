@@ -1,0 +1,18 @@
+combo:
+  value: 1.0
+value: 5
+type: combo-item
+item:
+  name: §cRemove 5
+  glow: false
+  lore: []
+  item:
+    ==: org.bukkit.inventory.ItemStack
+    v: 2584
+    type: RED_DYE
+    amount: 5
+    meta:
+      ==: ItemMeta
+      meta-type: UNSPECIFIC
+      display-name: '{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"red","text":"Remove
+        5"}],"text":""}'

@@ -1,0 +1,101 @@
+inventory:
+  name: §7Default category name
+  size: 45
+  items:
+    slot:
+      '36':
+        name: product0
+        type: DO_NOTHING
+      '37':
+        name: product0
+        type: DO_NOTHING
+      '38':
+        name: product0
+        type: DO_NOTHING
+      '39':
+        name: product0
+        type: DO_NOTHING
+      '40':
+        name: back_button
+        type: DO_NOTHING
+      '41':
+        name: product0
+        type: DO_NOTHING
+      '42':
+        name: product0
+        type: DO_NOTHING
+      '10':
+        name: transaction_info
+        type: DO_NOTHING
+      '43':
+        name: product0
+        type: DO_NOTHING
+      '11':
+        name: transaction_info
+        type: DO_NOTHING
+      '44':
+        name: product0
+        type: DO_NOTHING
+      '12':
+        name: transaction_info
+        type: DO_NOTHING
+      '13':
+        name: transaction_info
+        type: DO_NOTHING
+      '14':
+        name: transaction_info
+        type: DO_NOTHING
+      '15':
+        name: transaction_info
+        type: DO_NOTHING
+      '16':
+        name: transaction_info
+        type: DO_NOTHING
+      '19':
+        name: transaction_info
+        type: DO_NOTHING
+      '20':
+        name: transaction_info
+        type: DO_NOTHING
+      '21':
+        name: transaction_info
+        type: DO_NOTHING
+      '22':
+        name: transaction_info
+        type: DO_NOTHING
+      '23':
+        name: transaction_info
+        type: DO_NOTHING
+      '24':
+        name: transaction_info
+        type: DO_NOTHING
+      '25':
+        name: transaction_info
+        type: DO_NOTHING
+type: category
+item:
+  name: §9Transactions
+  glow: true
+  lore:
+  - §r
+  - §7Your done and pending
+  - §7transactions
+  - §r
+  item:
+    ==: org.bukkit.inventory.ItemStack
+    v: 2584
+    type: WRITABLE_BOOK
+    meta:
+      ==: ItemMeta
+      meta-type: BOOK
+      display-name: '{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"blue","text":"Transactions"}],"text":""}'
+      lore:
+      - '{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"text":""}],"text":""}'
+      - '{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"gray","text":"Your
+        done and pending"}],"text":""}'
+      - '{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"gray","text":"transactions"}],"text":""}'
+      - '{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"text":""}],"text":""}'
+      enchants:
+        ARROW_DAMAGE: 1
+      ItemFlags:
+      - HIDE_ENCHANTS

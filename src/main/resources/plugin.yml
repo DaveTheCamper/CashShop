@@ -1,0 +1,10 @@
+name: CashShop
+author: DaveTheCamper
+version: 1.0
+api-version: 1.16
+main: me.davethecamper.cashshop.CashShop
+commands:
+  cash:
+    description: Cash commands and in game editor.
+  shop:
+    description: Player shop acess command.

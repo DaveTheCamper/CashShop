@@ -1,0 +1,36 @@
+# This will define which message file will be active
+# Example: en -> msg_en.yml
+message_file: "en"
+
+# Make API's disabled
+disable_all_api: false
+
+currency: 
+  # You can use this as reference
+  # https://docs.1010data.com/1010dataReferenceManual/DataTypesAndFormats/currencyUnitCodes.html
+  code: "USD"
+  
+  # Here you can set how much is the minimum money spent in one transaction
+  # Example: if this is set in 10, minimum buy will be 10 of your currency (10$, R$10, 10€)
+  minimum_spent: 10
+
+coin:
+  # Dont use colors, this will be used in transaction info
+  name: "Cash"
+  
+  # How much each coin worth in your currency, example, if this is set in 100
+  # each 1 of your currency will buy 100 coins
+  value: 100
+  
+selling:
+  # There is two modes:
+  # 1 -> Player can buy as much he wants
+  # 2 -> Server will ofter some combos to player, with this mode, coin.value can be ignored
+  mode: 1
+  
+  # Turning on or off cupom usage
+  allow_cupom: true
+  
+  
+
+  

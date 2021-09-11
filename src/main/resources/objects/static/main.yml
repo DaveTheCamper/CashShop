@@ -1,0 +1,54 @@
+inventory:
+  name: §8Server cash shop
+  size: 54
+  items:
+    slot:
+      '0':
+        name: product2
+        type: DO_NOTHING
+      '17':
+        name: product2
+        type: DO_NOTHING
+      '1':
+        name: product2
+        type: DO_NOTHING
+      '36':
+        name: product2
+        type: DO_NOTHING
+      '52':
+        name: product2
+        type: DO_NOTHING
+      '53':
+        name: product2
+        type: DO_NOTHING
+      '7':
+        name: product2
+        type: DO_NOTHING
+      '8':
+        name: product2
+        type: DO_NOTHING
+      '9':
+        name: product2
+        type: DO_NOTHING
+      '44':
+        name: product2
+        type: DO_NOTHING
+      '45':
+        name: product2
+        type: DO_NOTHING
+      '46':
+        name: product2
+        type: DO_NOTHING
+type: category
+item:
+  name: Main category
+  glow: false
+  lore: []
+  item:
+    ==: org.bukkit.inventory.ItemStack
+    v: 2584
+    type: YELLOW_STAINED_GLASS_PANE
+    meta:
+      ==: ItemMeta
+      meta-type: UNSPECIFIC
+      display-name: '{"extra":[{"text":"Main category"}],"text":""}'
