@@ -1,13 +1,20 @@
 package me.davethecamper.cashshop;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.UUID;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -15,6 +22,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import com.google.common.io.ByteStreams;
 
 import me.davethecamper.cashshop.api.CashShopApi;
 import me.davethecamper.cashshop.api.CashShopGateway;
@@ -292,6 +301,24 @@ public class CashShop extends JavaPlugin {
 		if (!f.exists()) {
 			f.mkdirs();
 		} else {
+			for (File gateway : f.listFiles()) {
+				if (gateway.getName().endsWith(".jar")) {
+					/*BufferedReader reader = null;
+					try {
+						JarFile jf = new JarFile(gateway);
+						jf.getEntry("gateway.yml"))
+						ZipEntry ze = ;
+						reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(ByteStreams.toByteArray(jf.getInputStream()), "UTF-8"));	
+						if (ze != null) {
+						}
+					} catch (IOException e) {
+						e.printStackTrace();
+					}*/
+					
+				}
+			}
+			
+			
 			CashShopGateway api = new CashShopPaypal();
 			
 			File api_config = new File(f.getAbsoluteFile() + "/" + api.getIdentifier() + "/config.yml");
@@ -302,19 +329,19 @@ public class CashShop extends JavaPlugin {
 				switch (ir) {
 					case INITIALIZATED:
 						apis.put(api.getIdentifier(), api);
-						Bukkit.getConsoleSender().sendMessage("§f<*> §b" + api.getIdentifier() + " §f-> §a" + messages.getString("api.loaded"));
+						Bukkit.getConsoleSender().sendMessage("Â§f<*> Â§b" + api.getIdentifier() + " Â§f-> Â§a" + messages.getString("api.loaded"));
 						break;
 						
 					case INVALID_CREDENTIALS:
-						Bukkit.getConsoleSender().sendMessage("§f<*> §b" + api.getIdentifier() + " §f-> §c" + messages.getString("api.error.credentials"));
+						Bukkit.getConsoleSender().sendMessage("Â§f<*> Â§b" + api.getIdentifier() + " Â§f-> Â§c" + messages.getString("api.error.credentials"));
 						break;
 
 					case INVALID_CURRENCY:
-						Bukkit.getConsoleSender().sendMessage("§f<*> §b" + api.getIdentifier() + " §f-> §c" + messages.getString("api.error.currency"));
+						Bukkit.getConsoleSender().sendMessage("Â§f<*> Â§b" + api.getIdentifier() + " Â§f-> Â§c" + messages.getString("api.error.currency"));
 						break;
 						
 					case OFFLINE_API:
-						Bukkit.getConsoleSender().sendMessage("§f<*> §b" + api.getIdentifier() + " §f-> §c" + messages.getString("api.error.offline"));
+						Bukkit.getConsoleSender().sendMessage("Â§f<*> Â§b" + api.getIdentifier() + " Â§f-> Â§c" + messages.getString("api.error.offline"));
 						break;
 						
 					default:
