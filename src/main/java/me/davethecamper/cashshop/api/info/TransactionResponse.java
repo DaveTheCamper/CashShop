@@ -4,6 +4,7 @@ public enum TransactionResponse {
 	
 	APPROVED,
 	WAITING_FOR_PAYMENT,
+	CANCELLED,
 	REFUNDED;
 
 }

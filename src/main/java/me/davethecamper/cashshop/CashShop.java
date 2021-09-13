@@ -1,18 +1,16 @@
 package me.davethecamper.cashshop;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.UUID;
-import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
@@ -23,15 +21,10 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.google.common.io.ByteStreams;
 
 import me.davethecamper.cashshop.api.CashShopApi;
 import me.davethecamper.cashshop.api.CashShopGateway;
 import me.davethecamper.cashshop.api.info.InitializationResult;
-import me.davethecamper.cashshop.api.info.PlayerInfo;
-import me.davethecamper.cashshop.api.info.ProductInfo;
-import me.davethecamper.cashshop.api.info.TransactionInfo;
-import me.davethecamper.cashshop.api.services.CashShopPaypal;
 import me.davethecamper.cashshop.inventory.ReciclableMenu;
 import me.davethecamper.cashshop.inventory.choosers.MainChooseMenu;
 import me.davethecamper.cashshop.inventory.configs.ComboItemMenu;
@@ -41,6 +34,7 @@ import me.davethecamper.cashshop.inventory.configs.SellProductMenu;
 import me.davethecamper.cashshop.inventory.configs.ValuebleItemMenu;
 import me.davethecamper.cashshop.inventory.edition.EditionComponent;
 import me.davethecamper.cashshop.inventory.edition.EditionComponentType;
+import me.davethecamper.cashshop.objects.CashShopClassLoader;
 import me.davethecamper.cashshop.objects.ItemMenuProperties;
 import me.davethecamper.cashshop.objects.ProductConfig;
 import me.davethecamper.cashshop.player.CashPlayer;
@@ -302,67 +296,89 @@ public class CashShop extends JavaPlugin {
 			f.mkdirs();
 		} else {
 			for (File gateway : f.listFiles()) {
+				CashShopGateway api = null;
 				if (gateway.getName().endsWith(".jar")) {
-					/*BufferedReader reader = null;
+					BufferedReader reader = null;
 					try {
 						JarFile jf = new JarFile(gateway);
-						jf.getEntry("gateway.yml"))
-						ZipEntry ze = ;
-						reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(ByteStreams.toByteArray(jf.getInputStream()), "UTF-8"));	
+						
+						ZipEntry ze = jf.getEntry("gateway.yml");
 						if (ze != null) {
+							reader = new BufferedReader(new InputStreamReader(jf.getInputStream(ze), "UTF-8"));
+							FileConfiguration fc = YamlConfiguration.loadConfiguration(reader);
+							String class_name = fc.getString("class");
+
+							Class<? extends CashShopGateway> c = CashShopGateway.class;
+							ClassLoader classloader = c.getClassLoader();
+							
+							CashShopClassLoader cscl = new CashShopClassLoader(new URL[] {gateway.toURI().toURL()}, classloader, class_name, jf);
+							
+							api = cscl.getGateway();
+							
+							cscl.close();
 						}
+						
+						reader.close();
+						jf.close();
 					} catch (IOException e) {
 						e.printStackTrace();
-					}*/
-					
+					}
 				}
-			}
-			
-			
-			CashShopGateway api = new CashShopPaypal();
-			
-			File api_config = new File(f.getAbsoluteFile() + "/" + api.getIdentifier() + "/config.yml");
-			FileConfiguration fc = YamlConfiguration.loadConfiguration(api_config);
-			if (api_config.exists()) {
-				InitializationResult ir = api.init(fc, coin_name);
 				
-				switch (ir) {
-					case INITIALIZATED:
-						apis.put(api.getIdentifier(), api);
-						Bukkit.getConsoleSender().sendMessage("Â§f<*> Â§b" + api.getIdentifier() + " Â§f-> Â§a" + messages.getString("api.loaded"));
-						break;
+				if (api != null) {
+					File api_config = new File(f.getAbsoluteFile() + "/" + api.getIdentifier() + "/config.yml");
+					FileConfiguration fc = YamlConfiguration.loadConfiguration(api_config);
+					if (api_config.exists()) {
+						InitializationResult ir = api.init(fc, coin_name);
 						
-					case INVALID_CREDENTIALS:
-						Bukkit.getConsoleSender().sendMessage("Â§f<*> Â§b" + api.getIdentifier() + " Â§f-> Â§c" + messages.getString("api.error.credentials"));
-						break;
+						if (!api.isValidCurrency(configuration.getString("currency.code"))) {
+							Bukkit.getConsoleSender().sendMessage("§f<*> §b" + api.getIdentifier() + " §f-> §c" + messages.getString("api.error.currency"));
+							continue;
+						}
+						
+						switch (ir) {
+							case INITIALIZATED:
+								apis.put(api.getIdentifier(), api);
+								Bukkit.getConsoleSender().sendMessage("§f<*> §b" + api.getIdentifier() + " §f-> §a" + messages.getString("api.loaded"));
+								break;
+								
+							case INVALID_CREDENTIALS:
+								Bukkit.getConsoleSender().sendMessage("§f<*> §b" + api.getIdentifier() + " §f-> §c" + messages.getString("api.error.credentials"));
+								break;
 
-					case INVALID_CURRENCY:
-						Bukkit.getConsoleSender().sendMessage("Â§f<*> Â§b" + api.getIdentifier() + " Â§f-> Â§c" + messages.getString("api.error.currency"));
-						break;
+							case INVALID_CURRENCY:
+								Bukkit.getConsoleSender().sendMessage("§f<*> §b" + api.getIdentifier() + " §f-> §c" + messages.getString("api.error.currency"));
+								break;
+								
+							case OFFLINE_API:
+								Bukkit.getConsoleSender().sendMessage("§f<*> §b" + api.getIdentifier() + " §f-> §c" + messages.getString("api.error.offline"));
+								break;
+								
+							default:
+								break;
+						}
 						
-					case OFFLINE_API:
-						Bukkit.getConsoleSender().sendMessage("Â§f<*> Â§b" + api.getIdentifier() + " Â§f-> Â§c" + messages.getString("api.error.offline"));
-						break;
-						
-					default:
-						break;
-				}
-				
-			} else {
-				api.generateConfigurationFile(fc);
-				try {
-					fc.save(api_config);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					} else {
+						api.generateConfigurationFile(fc);
+						try {
+							fc.save(api_config);
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				} else {
+					System.out.println("Api null " + gateway.getName());
 				}
 			}
+			
+			
 		}
 	}
 	
 	private void loadCommands() {
 		CashCommands cc = new CashCommands(this);
-		
+
 		getCommand("cash").setExecutor(cc);
 		getCommand("shop").setExecutor(cc);
 	}
