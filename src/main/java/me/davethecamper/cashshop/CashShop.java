@@ -83,6 +83,7 @@ public class CashShop extends JavaPlugin {
 
 	private static CashShopApi api;
 	private CashShop cs;
+	private CupomManager cm;
 	
 
 	private HashMap<String, CashShopGateway> apis = new HashMap<>();
@@ -128,6 +129,7 @@ public class CashShop extends JavaPlugin {
 	public void onEnable() {
 		cs = this;
 		api = new CashShopApi(cs);
+		cm = new CupomManager();
 		
 		load();
 		autoSave();
@@ -136,7 +138,7 @@ public class CashShop extends JavaPlugin {
 	
 	@Override
 	public void onDisable() {
-		this.savePlayers();
+		this.saveAll();
 	}
 	
 	public static CashShopApi getInstance() {
@@ -299,6 +301,10 @@ public class CashShop extends JavaPlugin {
 		return new ArrayList<String>(apis.keySet());
 	}
 	
+	public CupomManager getCupomManager() {
+		return this.cm;
+	}
+	
 	private void loadAllApis() {
 		File f = new File(cs.getDataFolder().getAbsolutePath() + "/Gateways/");
 		if (!f.exists()) {
@@ -386,12 +392,14 @@ public class CashShop extends JavaPlugin {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				savePlayers();
+				saveAll();
 			}
 		}.runTaskTimer(this, 0, 300*20);
 	}
 	
-	private void savePlayers() {
+	private void saveAll() {
+		cm.save();
+		
 		for (UUID uuid : players.keySet()) {
 			CashPlayer cp = players.get(uuid);
 			if (cp.hasChanges()) {

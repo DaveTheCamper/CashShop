@@ -107,11 +107,49 @@ public class CashCommands implements CommandExecutor {
 				
 			case "see":
 			case "ver":
+			case "show":
 				if (sender.hasPermission(ADMIN_PERMISSION)) {
+					OfflinePlayer of = Bukkit.getOfflinePlayer(args[1]);
+					CashPlayer cp = main.getNormalPlayerInventory(of.getUniqueId());
 					
+					sender.sendMessage(main.messages.getString("commands.cash.remove").replaceAll("@amount", cp.getCash() + "").replaceAll("@player", of.getName()));
 				}
 				break;
 				
+			case "cupom":
+				switch (args[1].toLowerCase()) {
+					case "add":
+						if (sender.hasPermission(ADMIN_PERMISSION)) {
+							try {
+								String name = args[2].toLowerCase();
+								double percentage = Double.parseDouble(args[3]);
+								int hours = Integer.parseInt(args[4]);
+								
+								main.getCupomManager().addCupom(name, percentage, hours);
+								sender.sendMessage(main.messages.getString("commands.cash.cupom.add"));
+							} catch (Exception e) {
+								sender.sendMessage("§cUsage /cupom add [name] [percentage] [duration_in_hours]");
+							}
+						}
+						break;
+						
+					case "remove":
+						if (sender.hasPermission(ADMIN_PERMISSION)) {
+							try {
+								String name = args[2].toLowerCase();
+								
+								if (main.getCupomManager().removeCupom(name)) {
+									sender.sendMessage(main.messages.getString("commands.cash.cupom.remove.sucess"));
+								} else {
+									sender.sendMessage(main.messages.getString("commands.cash.cupom.remove.fail"));
+								}
+							} catch (Exception e) {
+								sender.sendMessage("§cUsage /cupom remove [name]");
+							}
+						}
+						break;
+				}
+				break;
 		}
 	}
 	

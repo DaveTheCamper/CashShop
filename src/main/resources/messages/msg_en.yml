@@ -1,10 +1,15 @@
 tag: '&f[&6Cash&f]'
 commands:
-  reload: "&aReloaded sucessfuly!"
+  reload: '&aReloaded sucessfuly!'
   cash:
-    give: "&eCash given to &a@player&e, amount &a@amount"
-    set: "&eCash set to &a@player&e, amount &a@amount"
-    remove: "&eCash removed from &a@player&e, amount &a@amount"
+    give: '&eCash given to &a@player&e, amount &a@amount'
+    set: '&eCash set to &a@player&e, amount &a@amount'
+    remove: '&eCash removed from &a@player&e, amount &a@amount'
+    cupom:
+      add: "&aCupom added sucessfuly"
+      remove:
+        sucess: "&aCupom removed sucessfuly"
+        fail: "&cCupom not found"
 api:
   loaded: API loaded sucessfuly
   error:
@@ -13,15 +18,15 @@ api:
     offline: This API is currently offline. Maybe in maintence?
 items:
   transactions:
-    approved: "&aApproved transaction"
-    pending: "&cPending transaction"
+    approved: '&aApproved transaction'
+    pending: '&cPending transaction'
     info:
-    - ""
-    - " &7Creation date: &a@date"
-    - " &7Cash: &a@cash"
-    - " &7Receiver: &a@player"
-    - " &7Token: &b@token"
-    - ""
+    - ''
+    - ' &7Creation date: &a@date'
+    - ' &7Cash: &a@cash'
+    - ' &7Receiver: &a@player'
+    - ' &7Token: &b@token'
+    - ''
   choosable:
     main:
       create:
@@ -242,10 +247,13 @@ chat:
   to_do:
     STRING: '&aWrite a text in chat'
     INTEGER: '&aWrite a number in chat'
+  discount: "&aWrite the cupom name"
+  gift: "&aWrite the receiver name"
+  invalid_cupom: "&cYour cupom code is invalid, check and try again"
 product:
   sell: '&6Value: &e@value'
 payment:
-  info: "&aOrder processed!"
-  hover: "&bOpen link"
-  link: "&bNow is just open this @link &band pay in your browser to receive your cash!"
-  click: "&9[Click-me]"
+  info: '&aOrder processed!'
+  hover: '&bOpen link'
+  link: '&bNow is just open this @link &band pay in your browser to receive your cash!'
+  click: '&9[Click-me]'

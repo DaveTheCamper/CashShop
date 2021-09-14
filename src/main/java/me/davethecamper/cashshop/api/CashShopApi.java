@@ -5,6 +5,7 @@ import java.util.TreeMap;
 
 import me.davethecamper.cashshop.CashShop;
 import me.davethecamper.cashshop.ConfigManager;
+import me.davethecamper.cashshop.CupomManager;
 import me.davethecamper.cashshop.inventory.configs.ComboItemMenu;
 import me.davethecamper.cashshop.inventory.configs.ConfigInteractiveMenu;
 import me.davethecamper.cashshop.inventory.configs.ConfigItemMenu;
@@ -40,6 +41,8 @@ public class CashShopApi {
 	public CategoriesManager getCategoriesManager() {return this.categories;}
 	
 	public CashShopStaticMenus getStaticObjects() {return this.static_menus;}
+	
+	public CupomManager getCupomManager() {return main.getCupomManager();}
 	
 	
 	public CashShopGateway getGateway(String name) {return main.getGateway(name);}

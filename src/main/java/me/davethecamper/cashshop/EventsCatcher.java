@@ -3,6 +3,7 @@ package me.davethecamper.cashshop;
 import java.util.HashMap;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -116,7 +117,11 @@ public class EventsCatcher implements Listener {
 									break;
 									
 								case CashShop.GATEWAYS_MENU:
-									cp.openGatewayMenu();
+									if (cp.getProductAmount() >= main.configuration.getInt("currency.minimum_spent")) {
+										cp.openGatewayMenu();
+									} else {
+										e.getWhoClicked().sendMessage(main.messages.getString("payment.error.min_value").replaceAll("@value", main.configuration.getInt("currency.minimum_spent") + " " + main.configuration.getString("currency.code")));
+									}
 									break;
 									
 								case CashShop.TRANSACTION_MENU:
@@ -129,6 +134,16 @@ public class EventsCatcher implements Listener {
 									
 								case CashShop.GIFT_NAME_BUTTON:
 									cp.updateGift();
+									break;
+									
+									
+							}
+							break;
+							
+						case DISPLAY_ITEM:
+							switch (cc.getName()) {
+								case CashShop.REPLACE_ITEM_SELLING_BUTTON:
+									cp.updateProductAmount();
 									break;
 							}
 							break;
@@ -164,7 +179,24 @@ public class EventsCatcher implements Listener {
 				break;
 				
 			case "set_discount":
-				cp.setCupom((String) e.getWaitingForChat().getResult());
+				String cupom = ((String) e.getWaitingForChat().getResult()).toLowerCase();
+				if (main.getCupomManager().isValid(cupom)) {
+					cp.setCupom(cupom);
+					cp.updateCurrentProduct();
+					return;
+				} else {
+					Bukkit.getPlayer(e.getWaitingForChat().getPlayer()).sendMessage(main.messages.getString("chat.invalid_cupom"));
+				}
+				break;
+				
+			case "set_amount":
+				Integer amount = (Integer) e.getWaitingForChat().getResult();
+				if (amount > 0) {
+					cp.setProductAmount(amount);
+					cp.updateCurrentProduct();
+				} else {
+					Bukkit.getPlayer(e.getWaitingForChat().getPlayer()).sendMessage(main.messages.getString("chat.invalid_amount"));
+				}
 				break;
 				
 			default:

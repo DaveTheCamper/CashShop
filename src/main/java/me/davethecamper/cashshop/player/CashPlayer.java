@@ -66,6 +66,8 @@ public class CashPlayer {
 	
 	
 	public int getCash() {return cash;}
+	
+	public int getProductAmount() {return this.product_amount;}
 
 	public String getCupom() {return cupom;}
 
@@ -91,6 +93,8 @@ public class CashPlayer {
 	
 
 	public void setCash(int cash) {changes = true; this.cash = cash;}
+	
+	public void setProductAmount(int amount) {this.product_amount = amount;}
 
 	public void setCupom(String cupom) {this.cupom = cupom;}
 
@@ -113,6 +117,10 @@ public class CashPlayer {
 		addCash(-amount);
 	}
 			
+	
+	public void updateProductAmount() {
+		new WaitingForChat(uuid, WaitingForChat.Primitives.INTEGER, "set_amount", CashShop.getInstance().getMessagesConfig().getString("chat.amount"));
+	}
 	
 	public void updateDiscount() {
 		new WaitingForChat(uuid, WaitingForChat.Primitives.STRING, "set_discount", CashShop.getInstance().getMessagesConfig().getString("chat.discount"));
@@ -252,7 +260,11 @@ public class CashPlayer {
 		}
 		return true;
 	}
-	
+
+
+	public void updateCurrentProduct() {
+		updateCurrentProduct(this.current_product, this.product_amount, false);
+	}
 	
 	public void updateCurrentProduct(SellProductMenu new_item) {
 		is_cash_transaction = false;
