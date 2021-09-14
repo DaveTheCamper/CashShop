@@ -39,9 +39,23 @@ public class ConfigManager {
 	
 	public int getInt(String s) {return ((Integer) get(s));}
 	
-	public String getStringAsItemLore(String s) {
-        Object val = get(s);
+	public List<?> getList(String s) {
+		Object val = get(s);
 		List<?> list = val instanceof List ? (List<?>) val : new ArrayList<>();
+		
+		return list;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<String> getStringList(String s) {
+		List<String> list = (List<String>) getList(s);
+		List<String> new_list = new ArrayList<>();
+		for (String p : new ArrayList<>(list)) {new_list.add(p.replaceAll("&", "§"));}
+		return new_list;
+	}
+	
+	public String getStringAsItemLore(String s) {
+        List<?> list = getList(s);
 		
 		String lore = "";
 

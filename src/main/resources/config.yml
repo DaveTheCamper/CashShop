@@ -5,6 +5,12 @@ message_file: "en"
 # Make API's disabled
 disable_all_api: false
 
+# Time in seconds to verify transactions
+delay_verify: 60
+
+# Formatation of how date's will be displayed
+date_format: "dd/MM/yyyy"
+
 currency: 
   # You can use this as reference
   # https://docs.1010data.com/1010dataReferenceManual/DataTypesAndFormats/currencyUnitCodes.html

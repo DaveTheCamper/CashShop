@@ -10,6 +10,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 
 import me.davethecamper.cashshop.events.ChangeInventoryEvent;
+import me.davethecamper.cashshop.events.WaitingChatEvent;
 import me.davethecamper.cashshop.inventory.ReciclableMenu;
 import me.davethecamper.cashshop.inventory.choosers.ChoosableMenu;
 import me.davethecamper.cashshop.inventory.configs.ConfigInteractiveMenu;
@@ -117,12 +118,32 @@ public class EventsCatcher implements Listener {
 								case CashShop.GATEWAYS_MENU:
 									cp.openGatewayMenu();
 									break;
+									
+								case CashShop.TRANSACTION_MENU:
+									cp.openTransactions();
+									break;
+									
+								case CashShop.DISCOUNT_BUTTON:
+									cp.updateDiscount();
+									break;
+									
+								case CashShop.GIFT_NAME_BUTTON:
+									cp.updateGift();
+									break;
 							}
 							break;
 							
 						default:
 							break;
 					}
+				}
+				
+				switch (cp.getCurrentInteractiveMenu().getId()) {
+					case CashShop.GATEWAYS_MENU:
+						if (e.getCurrentItem() != null) {
+							cp.selectGateway(e.getSlot());
+						}
+						break;
 				}
 			}
 			
@@ -132,6 +153,24 @@ public class EventsCatcher implements Listener {
 	@EventHandler
 	public void onChangeInventoryEvent(ChangeInventoryEvent e) {
 		main.changePlayerInventory(e.getUuid(), e.getReciclableMenu());
+	}
+	
+	@EventHandler
+	public void onWaitingChat(WaitingChatEvent e) {
+		CashPlayer cp = main.getNormalPlayerInventory(e.getWaitingForChat().getPlayer());
+		switch (e.getWaitingForChat().getVarName()) {
+			case "set_gift":
+				cp.setGiftFor((String) e.getWaitingForChat().getResult());
+				break;
+				
+			case "set_discount":
+				cp.setCupom((String) e.getWaitingForChat().getResult());
+				break;
+				
+			default:
+				return;
+		}
+		cp.openCurrentInventory();
 	}
 	
 

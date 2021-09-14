@@ -10,11 +10,20 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import me.davethecamper.cashshop.CashShop;
+import me.davethecamper.cashshop.events.WaitingChatEvent;
 import me.davethecamper.cashshop.inventory.configs.IdentificableMenu;
 
 public class WaitingForChat implements Listener {
-	
+
+	public WaitingForChat(final UUID player, final WaitingForChat.Primitives type, final String var_name, final String message) {
+		this(player, type, var_name, null, message);
+	}
+
 	public WaitingForChat(final UUID player, final WaitingForChat.Primitives type, final String var_name, final IdentificableMenu caller) {
+		this(player, type, var_name, caller, caller.getMessages().getString("chat.to_do." + type.toString()));
+	}
+	
+	public WaitingForChat(final UUID player, final WaitingForChat.Primitives type, final String var_name, final IdentificableMenu caller, String message) {
 		this.player = player;
 		this.type = type;
 		this.caller = caller;
@@ -23,11 +32,13 @@ public class WaitingForChat implements Listener {
 		
 		Bukkit.getPluginManager().registerEvents(this, Bukkit.getPluginManager().getPlugin(CashShop.PLUGIN_NAME));
 		
-		Bukkit.getPlayer(player).sendMessage(caller.getMessages().getString("chat.to_do." + type.toString()));
+		Bukkit.getPlayer(player).sendMessage(message);
 		Bukkit.getPlayer(player).closeInventory();
 	}
 	
 	private String var_name;
+	
+	private Object result;
 	
 	private UUID player;
 	
@@ -36,7 +47,13 @@ public class WaitingForChat implements Listener {
 	private IdentificableMenu caller;
 	
 	
+	public String getVarName() {return var_name;}
 	
+	public Object getResult() {return result;}
+
+	public UUID getPlayer() {return player;}
+	
+
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onChat(AsyncPlayerChatEvent e) {
 		if (e.getPlayer().getUniqueId().equals(player)) {
@@ -112,8 +129,13 @@ public class WaitingForChat implements Listener {
 	
 	private void finish(Object obj) {
 		HandlerList.unregisterAll(this);
+		this.result = obj;
 		Bukkit.getScheduler().runTask(Bukkit.getPluginManager().getPlugin(CashShop.PLUGIN_NAME), () -> {
-			caller.changerVar(var_name, obj);
+			if (caller == null) {
+				Bukkit.getPluginManager().callEvent(new WaitingChatEvent(this));
+			} else {
+				caller.changerVar(var_name, obj);
+			}
 		});
 	}
 	

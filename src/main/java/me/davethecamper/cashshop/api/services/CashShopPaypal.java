@@ -160,4 +160,11 @@ public class CashShopPaypal implements CashShopGateway {
 		generateTransaction(new ProductInfo(1, "USD", "Testing Credentials"), null);
 	}
 
+
+	@Override
+	public String getColoredDisplayName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

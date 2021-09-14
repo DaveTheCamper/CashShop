@@ -33,6 +33,8 @@ public class CashShopApi {
 	
 	public ConfigManager getMainConfig() {return this.main.configuration;}
 	
+	public ConfigManager getMessagesConfig() {return this.main.messages;}
+	
 	public CashShopLists getLists() {return this.lists;}
 	
 	public CategoriesManager getCategoriesManager() {return this.categories;}

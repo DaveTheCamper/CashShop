@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.inventory.ItemStack;
@@ -30,7 +28,7 @@ public class ConfigInteractiveMenu extends ConfigItemMenu {
 	private static final long serialVersionUID = -8970182968484470269L;
 
 	public ConfigInteractiveMenu(String identificador, ConfigManager item_config, ReciclableMenu previous, ItemMenuProperties item_properties, int size, String name) {
-		this(identificador, item_config, previous, item_properties, size, name, null);
+		this(identificador, item_config, previous, item_properties, size, name, null, new HashMap<>());
 	}
 
 	public ConfigInteractiveMenu(String identificador, ConfigManager item_config, ReciclableMenu previous, ItemMenuProperties item_properties, HashMap<Integer, EditionComponent> slots, int size, String name) {
@@ -44,12 +42,13 @@ public class ConfigInteractiveMenu extends ConfigItemMenu {
 		load();
 	}
 
-	public ConfigInteractiveMenu(String identificador, ConfigManager item_config, ReciclableMenu previous, ItemMenuProperties item_properties, int size, String name, EditInteractiveMenu edition) {
+	public ConfigInteractiveMenu(String identificador, ConfigManager item_config, ReciclableMenu previous, ItemMenuProperties item_properties, int size, String name, EditInteractiveMenu edition, HashMap<Integer, String> replaces) {
 		super(identificador, item_config, previous, item_properties);
 		
 		this.size = size;
 		this.name = name;
 		this.edition = edition == null ? new EditInteractiveMenu(name, item_config, this) : edition;
+		this.replaces = replaces;
 		this.setDescriber("category");
 		
 		load();
@@ -81,7 +80,9 @@ public class ConfigInteractiveMenu extends ConfigItemMenu {
 	}
 	
 	
-	public void replaceIndicators(String name, ArrayList<ItemStack> list) {
+	private HashMap<Integer, String> replaces = new HashMap<>();
+	
+	public void replaceIndicators(String name, ArrayList<ItemStack> list, ArrayList<String> identifiers) {
 		ArrayList<Integer> slots = new ArrayList<>();
 		for (Integer slot : new ArrayList<>(this.getVisualizableItems().keySet())) {
 			if (this.getVisualizableItems().get(slot).getName().equals(name)) {
@@ -95,11 +96,20 @@ public class ConfigInteractiveMenu extends ConfigItemMenu {
 		for (Integer slot : slots) {
 			if (count < list.size()) {
 				this.getVisualizableItems().put(slot, new EditionComponent(EditionComponentType.DISPLAY_ITEM, name, list.get(count)));
+				replaces.put(slot, identifiers.get(count));
 				count++;
 			} else {
 				this.getVisualizableItems().put(slot, new EditionComponent(EditionComponentType.DISPLAY_ITEM, "null", ItemGenerator.getItemStack("AIR")));
 			}
 		}
+	}
+
+	public boolean isReplacedItem(int slot) {
+		return replaces.containsKey(slot);
+	}
+	
+	public String getReplacedItem(int slot) {
+		return replaces.get(slot);
 	}
 
 	public void updateProduct(ItemStack item) {
@@ -211,7 +221,7 @@ public class ConfigInteractiveMenu extends ConfigItemMenu {
 
 	@Override
 	public ConfigInteractiveMenu clone(String id) {
-		ConfigInteractiveMenu cim = new ConfigInteractiveMenu(id, item_config, this.previous, item_properties.clone(), size, name, null);
+		ConfigInteractiveMenu cim = new ConfigInteractiveMenu(id, item_config, this.previous, item_properties.clone(), size, name, null, new HashMap<>(replaces));
 		cim.updateEditor(edition.clone(cim));
 		return cim;
 	}

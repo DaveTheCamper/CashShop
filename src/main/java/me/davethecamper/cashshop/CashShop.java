@@ -20,11 +20,13 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
-
+import org.bukkit.scheduler.BukkitRunnable;
 
 import me.davethecamper.cashshop.api.CashShopApi;
 import me.davethecamper.cashshop.api.CashShopGateway;
 import me.davethecamper.cashshop.api.info.InitializationResult;
+import me.davethecamper.cashshop.api.info.TransactionInfo;
+import me.davethecamper.cashshop.api.info.TransactionResponse;
 import me.davethecamper.cashshop.inventory.ReciclableMenu;
 import me.davethecamper.cashshop.inventory.choosers.MainChooseMenu;
 import me.davethecamper.cashshop.inventory.configs.ComboItemMenu;
@@ -128,6 +130,13 @@ public class CashShop extends JavaPlugin {
 		api = new CashShopApi(cs);
 		
 		load();
+		autoSave();
+		verifyTransactions();
+	}
+	
+	@Override
+	public void onDisable() {
+		this.savePlayers();
 	}
 	
 	public static CashShopApi getInstance() {
@@ -367,13 +376,53 @@ public class CashShop extends JavaPlugin {
 							e.printStackTrace();
 						}
 					}
-				} else {
-					System.out.println("Api null " + gateway.getName());
 				}
 			}
-			
-			
 		}
+	}
+	
+
+	private void autoSave() {
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				savePlayers();
+			}
+		}.runTaskTimer(this, 0, 300*20);
+	}
+	
+	private void savePlayers() {
+		for (UUID uuid : players.keySet()) {
+			CashPlayer cp = players.get(uuid);
+			if (cp.hasChanges()) {
+				cp.save();
+			}
+		}
+	}
+	
+	private void verifyTransactions() {
+		new BukkitRunnable() {
+			
+			@Override
+			public void run() {
+				for (UUID uuid : players.keySet()) {
+					CashPlayer cp = players.get(uuid);
+					
+					if (cp.isOnline()) {
+						for (String token : new ArrayList<>(cp.getPendingTransactions().keySet())) {
+							TransactionInfo ti = cp.getPendingTransactions().get(token);
+							
+							CashShopGateway csg = getGateway(ti.getGatewayCaller());
+							
+							if (csg.verifyTransaction(ti.getTransactionToken()).equals(TransactionResponse.APPROVED)) {
+								cp.addCash(ti.getCash());
+								cp.setTransactionAsAproved(ti);
+							}
+						}
+					}
+				}
+			}
+		}.runTaskTimer(this, 0, configuration.getInt("delay_verify")*20);
 	}
 	
 	private void loadCommands() {

@@ -1,11 +1,14 @@
 package me.davethecamper.cashshop;
 
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import me.davethecamper.cashshop.inventory.configs.ConfigInteractiveMenu;
+import me.davethecamper.cashshop.player.CashPlayer;
 
 public class CashCommands implements CommandExecutor {
 	
@@ -58,14 +61,57 @@ public class CashCommands implements CommandExecutor {
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
 	private void anyCashCommands(CommandSender sender, Command cmd, String[] args) {
 		switch (args[0].toLowerCase()) {
 			case "reload":
 				if (sender.hasPermission(ADMIN_PERMISSION)) {
 					main.reload();
-					sender.sendMessage(main.messages.getString("reload"));
+					sender.sendMessage(main.messages.getString("messages.reload"));
 				}
 				break;
+				
+			case "add":
+			case "give":
+				if (sender.hasPermission(ADMIN_PERMISSION)) {
+					OfflinePlayer of = Bukkit.getOfflinePlayer(args[1]);
+					CashPlayer cp = main.getNormalPlayerInventory(of.getUniqueId());
+					int amount = Integer.parseInt(args[2]);
+
+					cp.addCash(amount);
+					sender.sendMessage(main.messages.getString("commands.cash.give").replaceAll("@amount", amount + "").replaceAll("@player", of.getName()));
+				}
+				break;
+				
+			case "set":
+				if (sender.hasPermission(ADMIN_PERMISSION)) {
+					OfflinePlayer of = Bukkit.getOfflinePlayer(args[1]);
+					CashPlayer cp = main.getNormalPlayerInventory(of.getUniqueId());
+					int amount = Integer.parseInt(args[2]);
+
+					cp.setCash(amount);
+					sender.sendMessage(main.messages.getString("commands.cash.set").replaceAll("@amount", amount + "").replaceAll("@player", of.getName()));
+				}
+				break;
+				
+			case "remove":
+				if (sender.hasPermission(ADMIN_PERMISSION)) {
+					OfflinePlayer of = Bukkit.getOfflinePlayer(args[1]);
+					CashPlayer cp = main.getNormalPlayerInventory(of.getUniqueId());
+					int amount = Integer.parseInt(args[2]);
+					
+					cp.removeCash(amount);
+					sender.sendMessage(main.messages.getString("commands.cash.remove").replaceAll("@amount", amount + "").replaceAll("@player", of.getName()));
+				}
+				break;
+				
+			case "see":
+			case "ver":
+				if (sender.hasPermission(ADMIN_PERMISSION)) {
+					
+				}
+				break;
+				
 		}
 	}
 	

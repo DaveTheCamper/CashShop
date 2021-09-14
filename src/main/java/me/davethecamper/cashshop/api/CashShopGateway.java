@@ -29,6 +29,11 @@ public interface CashShopGateway {
 	 */
 	public String getIdentifier();
 	
+	/** 
+	 * <p>The name of your API with colors</p>
+	 */
+	public String getColoredDisplayName();
+	
 	
 	/**
 	 *  <p>Here you will evaluate if your API support some currency</p>

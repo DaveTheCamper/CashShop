@@ -1,5 +1,10 @@
 tag: '&f[&6Cash&f]'
-reload: Reload successfully
+commands:
+  reload: "&aReloaded sucessfuly!"
+  cash:
+    give: "&eCash given to &a@player&e, amount &a@amount"
+    set: "&eCash set to &a@player&e, amount &a@amount"
+    remove: "&eCash removed from &a@player&e, amount &a@amount"
 api:
   loaded: API loaded sucessfuly
   error:
@@ -7,6 +12,16 @@ api:
     currency: This API does not support your current currency
     offline: This API is currently offline. Maybe in maintence?
 items:
+  transactions:
+    approved: "&aApproved transaction"
+    pending: "&cPending transaction"
+    info:
+    - ""
+    - " &7Creation date: &a@date"
+    - " &7Cash: &a@cash"
+    - " &7Receiver: &a@player"
+    - " &7Token: &b@token"
+    - ""
   choosable:
     main:
       create:
@@ -173,7 +188,8 @@ items:
   currency:
     material: EMERALD
     name: '&bCurrency value'
-    lore: '&eCurrent value: &6@currency_value$'
+    lore:
+    - '&eCurrent value: &6@currency_value$'
   edition:
     choose:
       nothing:
@@ -208,9 +224,9 @@ items:
         - ''
     search:
       material: NAME_TAG
-      name: "&&dSearch"
+      name: '&&dSearch'
       lore:
-      - ""
+      - ''
   navigable:
     backward:
       material: PAPER
@@ -226,3 +242,10 @@ chat:
   to_do:
     STRING: '&aWrite a text in chat'
     INTEGER: '&aWrite a number in chat'
+product:
+  sell: '&6Value: &e@value'
+payment:
+  info: "&aOrder processed!"
+  hover: "&bOpen link"
+  link: "&bNow is just open this @link &band pay in your browser to receive your cash!"
+  click: "&9[Click-me]"
