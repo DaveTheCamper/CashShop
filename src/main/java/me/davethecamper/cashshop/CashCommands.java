@@ -112,7 +112,7 @@ public class CashCommands implements CommandExecutor {
 					OfflinePlayer of = Bukkit.getOfflinePlayer(args[1]);
 					CashPlayer cp = main.getNormalPlayerInventory(of.getUniqueId());
 					
-					sender.sendMessage(main.messages.getString("commands.cash.remove").replaceAll("@amount", cp.getCash() + "").replaceAll("@player", of.getName()));
+					sender.sendMessage(main.messages.getString("commands.cash.show").replaceAll("@amount", cp.getCash() + "").replaceAll("@player", of.getName()));
 				}
 				break;
 				

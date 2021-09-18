@@ -22,6 +22,11 @@ public class CupomManager {
 	private HashMap<String, Cupom> cupons = new HashMap<>();
 	
 
+	public void addTransaction(String name, String token, double amount) {
+		if (this.isValid(name)) {
+			cupons.get(name).addUsage(token, amount);
+		}
+	}
 	
 	public void addCupom(String name, double percentage, int duration) {
 		cupons.put(name, new Cupom(name, percentage, System.currentTimeMillis() + (((long)duration)*60*60*1000)));

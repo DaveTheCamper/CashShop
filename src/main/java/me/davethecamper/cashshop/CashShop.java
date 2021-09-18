@@ -96,7 +96,7 @@ public class CashShop extends JavaPlugin {
 	
 	
 	private HashMap<UUID, ReciclableMenu> players_editors = new HashMap<>();
-	private HashMap<UUID, CashPlayer> players = new HashMap<>();
+	public HashMap<UUID, CashPlayer> players = new HashMap<>();
 	
 	
 	public CashPlayer getNormalPlayerInventory(UUID uuid) {
@@ -133,7 +133,7 @@ public class CashShop extends JavaPlugin {
 		
 		load();
 		autoSave();
-		verifyTransactions();
+		new TransactionsManager(this);
 	}
 	
 	@Override
@@ -408,30 +408,6 @@ public class CashShop extends JavaPlugin {
 		}
 	}
 	
-	private void verifyTransactions() {
-		new BukkitRunnable() {
-			
-			@Override
-			public void run() {
-				for (UUID uuid : players.keySet()) {
-					CashPlayer cp = players.get(uuid);
-					
-					if (cp.isOnline()) {
-						for (String token : new ArrayList<>(cp.getPendingTransactions().keySet())) {
-							TransactionInfo ti = cp.getPendingTransactions().get(token);
-							
-							CashShopGateway csg = getGateway(ti.getGatewayCaller());
-							
-							if (csg.verifyTransaction(ti.getTransactionToken()).equals(TransactionResponse.APPROVED)) {
-								cp.addCash(ti.getCash());
-								cp.setTransactionAsAproved(ti);
-							}
-						}
-					}
-				}
-			}
-		}.runTaskTimer(this, 0, configuration.getInt("delay_verify")*20);
-	}
 	
 	private void loadCommands() {
 		CashCommands cc = new CashCommands(this);

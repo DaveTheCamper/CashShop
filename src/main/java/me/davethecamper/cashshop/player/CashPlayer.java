@@ -12,6 +12,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -27,6 +28,7 @@ import me.davethecamper.cashshop.inventory.configs.ConfigInteractiveMenu;
 import me.davethecamper.cashshop.inventory.configs.SellProductMenu;
 import me.davethecamper.cashshop.inventory.edition.EditionComponent;
 import me.davethecamper.cashshop.inventory.edition.EditionComponentType;
+import me.davethecamper.cashshop.objects.ProductConfig;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -105,6 +107,7 @@ public class CashPlayer {
 		transactions_pending.remove(ti.getTransactionToken());
 		transactions_approved.put(ti.getTransactionToken(), ti);
 		this.changes = true;
+		CashShop.getInstance().getCupomManager().addTransaction(ti.getCupom(), ti.getTransactionToken(), ti.getCash());
 	}
 	
 
@@ -235,7 +238,7 @@ public class CashPlayer {
 			ProductInfo pi = new ProductInfo(product_amount, "Cash", CashShop.getInstance().getMainConfig().getString("currency.code"));
 			TransactionInfo ti = csg.generateTransaction(pi, null);
 			System.out.println(isValidNick(this.gift_for));
-			ti = new TransactionInfo(isValidNick(this.gift_for) ? gift_for : Bukkit.getOfflinePlayer(uuid).getName(), csg, (int) Math.round(pi.getAmount()*CashShop.getInstance().getMainConfig().getInt("coin.value")), System.currentTimeMillis(), ti.getLink(), ti.getTransactionToken());
+			ti = new TransactionInfo(isValidNick(this.gift_for) ? gift_for : Bukkit.getOfflinePlayer(uuid).getName(), csg, this.cupom, (int) Math.round(pi.getAmount()*CashShop.getInstance().getMainConfig().getInt("coin.value")), System.currentTimeMillis(), ti.getLink(), ti.getTransactionToken());
 			
 			transactions_pending.put(ti.getTransactionToken(), ti);
 			this.changes = true;
@@ -282,28 +285,57 @@ public class CashPlayer {
 		updateCurrentInventory(buy_menu, add_list);
 	}
 	
-	
-	public void backInventory() {
-		if (previus_menus.size() > 0) {
-			this.current_menu = previus_menus.get(previus_menus.size()-1);
-			previus_menus.remove(previus_menus.size()-1);
-			openCurrentInventory();
-		}
-	}
-	
-	private Inventory generateInventory() {
-		Inventory inv = Bukkit.createInventory(null, current_menu.getSize(), current_menu.getName());
+	public void buyCurrentProduct() {
+		int cash_needed = this.product_amount*this.current_product.getValueInCash();
 		
-		for (Integer slot : current_menu.getVisualizableItems().keySet()) {
-			EditionComponent component = current_menu.getVisualizableItems().get(slot);
-			ItemStack item = current_menu.generateItem(component, this);
+		if (this.getCash() >= cash_needed) {
+			this.current_menu = null;
 			
-			inv.setItem(slot, item);
+			this.removeCash(cash_needed);
+			
+			ProductConfig pc = this.current_product.getProduct();
+			
+			for (ItemStack item : pc.getItems()) {
+				this.giveItem(item.clone());
+			}
+			
+			for (String s : pc.getCommands()) {
+				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), s.replaceAll("@player", Bukkit.getOfflinePlayer(uuid).getName()));
+			}
+			
+			Bukkit.getPlayer(uuid).closeInventory();
+			Bukkit.getPlayer(uuid).sendMessage(CashShop.getInstance().getMessagesConfig().getString("product.buy.sucess"));
+		} else {
+			Bukkit.getPlayer(uuid).sendMessage(CashShop.getInstance().getMessagesConfig().getString("product.buy.fail"));
 		}
-		
-		return inv;
 	}
 	
+	private void giveItem(ItemStack item) {
+		Player p = Bukkit.getPlayer(uuid);
+        if (espacoInv((Inventory)p.getInventory(), item) >= item.getAmount()) {
+            p.getInventory().addItem(new ItemStack[]{item});
+        } else {
+            p.getWorld().dropItem(p.getLocation(), item);
+        }
+    }
+
+	private int espacoInv(Inventory inv, ItemStack item) {
+        int quantia = 0;
+        int slots = 0;
+        slots = inv.getType().equals(InventoryType.PLAYER) ? 35 : inv.getSize() - 1;
+        for (int i = 0; i <= slots; ++i) {
+            int stack;
+            int max;
+            if (inv.getItem(i) == null) {
+                quantia += item.getMaxStackSize();
+                continue;
+            }
+            if (item == null || inv.getItem(i).getType() != item.getType() || (max = item.getMaxStackSize()) == (stack = inv.getItem(i).getAmount())) continue;
+            int adicionar = max - stack;
+            quantia += adicionar;
+        }
+        return quantia;
+    }
 	
 	public void addProductAmount(int amount) {
 		this.product_amount = this.product_amount + amount > 0 ? this.product_amount + amount : 1;
@@ -340,6 +372,27 @@ public class CashPlayer {
 		}
 		
 		p.spigot().sendMessage(all);
+	}
+	
+	public void backInventory() {
+		if (previus_menus.size() > 0) {
+			this.current_menu = previus_menus.get(previus_menus.size()-1);
+			previus_menus.remove(previus_menus.size()-1);
+			openCurrentInventory();
+		}
+	}
+	
+	private Inventory generateInventory() {
+		Inventory inv = Bukkit.createInventory(null, current_menu.getSize(), current_menu.getName());
+		
+		for (Integer slot : current_menu.getVisualizableItems().keySet()) {
+			EditionComponent component = current_menu.getVisualizableItems().get(slot);
+			ItemStack item = current_menu.generateItem(component, this);
+			
+			inv.setItem(slot, item);
+		}
+		
+		return inv;
 	}
 	
 	
@@ -405,15 +458,17 @@ public class CashPlayer {
 		fc.set(path + "." + ti.getTransactionToken() + ".cash", ti.getCash());
 		fc.set(path + "." + ti.getTransactionToken() + ".player", ti.getPlayer());
 		fc.set(path + "." + ti.getTransactionToken() + ".creation", ti.getCreationDate());
+		fc.set(path + "." + ti.getTransactionToken() + ".cupom", ti.getCupom());
 	}
 	
 	private TransactionInfo loadTransaction(String path, String token, FileConfiguration fc) {
 		String gateway = fc.getString(path + "." + token + ".gateway");
 		String link = fc.getString(path + "." + token + ".link");
 		String player = fc.getString(path + "." + token + ".player");
+		String cupom = fc.getString(path + "." + token + ".cupom");
 		int cash = fc.getInt(path + "." + token + ".cash");
 		long creation = fc.getLong(path + "." + token + ".creation");
 		
-		return new TransactionInfo(player, gateway, cash, creation, link, token);
+		return new TransactionInfo(player, gateway, cupom, cash, creation, link, token);
 	}
 }

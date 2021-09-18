@@ -62,12 +62,12 @@ public class SellProductMenu extends ValuebleItemMenu {
 	private final DecimalFormat f2 = new DecimalFormat("#,##0.00");
 	
 	public ItemStack getSellingItem(CashPlayer player, int amount) {
-		double discount = CashShop.getInstance().getCupomManager().getDiscount(player.getCupom());
-		double value_cash = player.isCashTransaction() ? (((double) this.getValueInCash()*amount)) - (((double) this.getValueInCash()*amount)*(discount/100)) : this.getValueInCash()*amount;
+		double discount = player != null ? CashShop.getInstance().getCupomManager().getDiscount(player.getCupom()) : 0;
+		double value_cash = player != null && player.isCashTransaction() ? (((double) this.getValueInCash()*amount)) - (((double) this.getValueInCash()*amount)*(discount/100)) : this.getValueInCash()*amount;
 		double value_cash_money = CashShop.getInstance().getMainConfig().getInt("coin.value")*amount;
 		ItemStack item = this.getItemProperties().getItem().clone();
 		item = player != null ? ItemGenerator.replaces(item, player) : item;
-		item = !player.isCashTransaction() ? 
+		item = player == null || !player.isCashTransaction() ? 
 				ItemGenerator.addLoreAfter(item, ";=;" + item_config.getString("product.sell").replaceAll("@value", f.format(value_cash)) + (amount > 1 ? " §7(x" + amount + ")" : "") + ";=;§r", "") : 
 					ItemGenerator.addLoreAfter(ItemGenerator.tryReplace(ItemGenerator.tryReplace(item, "@curvalue", f.format(value_cash_money)), "@value", f2.format(value_cash)),  (discount > 0 ? "§d" + f.format(discount) + "% OFF " : "") + (amount > 1 ? "§7(x" + amount + ")" : ""), "");
 		
