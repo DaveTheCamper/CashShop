@@ -12,6 +12,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import me.davethecamper.cashshop.api.CashShopGateway;
 import me.davethecamper.cashshop.api.info.TransactionInfo;
 import me.davethecamper.cashshop.api.info.TransactionResponse;
+import me.davethecamper.cashshop.events.TransactionCompleteEvent;
 import me.davethecamper.cashshop.player.CashPlayer;
 
 public class TransactionsManager {
@@ -80,6 +81,7 @@ public class TransactionsManager {
 						cp.addCash(ti.getCash());
 						cp.setTransactionAsAproved(ti);
 						to_approve.get(cp).remove(ti);
+						Bukkit.getPluginManager().callEvent(new TransactionCompleteEvent(cp.getUniqueId(), ti));
 					}
 				}
 			}

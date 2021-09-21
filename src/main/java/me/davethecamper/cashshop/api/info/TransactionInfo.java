@@ -5,14 +5,14 @@ import me.davethecamper.cashshop.api.CashShopGateway;
 public class TransactionInfo {
 	
 	public TransactionInfo(String link, String transaction_token) {
-		this("null", "null", "null", 0, System.currentTimeMillis(), link, transaction_token);
+		this("null", "null", "null", 0, 0, System.currentTimeMillis(), link, transaction_token);
 	}
 
-	public TransactionInfo(String player, CashShopGateway gateway, String cupom, int cash, long creation_date, String link, String transaction_token) {
-		this(player, gateway != null ? gateway.getIdentifier() : "null", cupom, cash, creation_date, link, transaction_token);
+	public TransactionInfo(String player, CashShopGateway gateway, String cupom, int cash, double real_money, long creation_date, String link, String transaction_token) {
+		this(player, gateway != null ? gateway.getIdentifier() : "null", cupom, cash, real_money, creation_date, link, transaction_token);
 	}
 	
-	public TransactionInfo(String player, String gateway, String cupom, int cash, long creation_date, String link, String transaction_token) {
+	public TransactionInfo(String player, String gateway, String cupom, int cash, double real_money, long creation_date, String link, String transaction_token) {
 		this.player = player;
 		this.link = link;
 		this.transaction_token = transaction_token;
@@ -21,11 +21,14 @@ public class TransactionInfo {
 		this.cash = cash;
 		this.creation_date = creation_date;
 		this.cupom = cupom;
+		this.real_money = real_money;
 	}
 	
 	private String link, transaction_token, api_caller, player, cupom;
 	
 	private int cash;
+	
+	private double real_money;
 	
 	private long creation_date;
 	
@@ -35,6 +38,11 @@ public class TransactionInfo {
 	
 	public int getCash() {
 		return this.cash;
+	}
+	
+	
+	public double getRealMoneySpent() {
+		return this.real_money;
 	}
 	
 	

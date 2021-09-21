@@ -25,8 +25,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import me.davethecamper.cashshop.api.CashShopApi;
 import me.davethecamper.cashshop.api.CashShopGateway;
 import me.davethecamper.cashshop.api.info.InitializationResult;
-import me.davethecamper.cashshop.api.info.TransactionInfo;
-import me.davethecamper.cashshop.api.info.TransactionResponse;
 import me.davethecamper.cashshop.inventory.ReciclableMenu;
 import me.davethecamper.cashshop.inventory.choosers.MainChooseMenu;
 import me.davethecamper.cashshop.inventory.configs.ComboItemMenu;

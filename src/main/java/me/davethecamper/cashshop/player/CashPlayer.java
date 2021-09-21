@@ -70,6 +70,8 @@ public class CashPlayer {
 	public int getCash() {return cash;}
 	
 	public int getProductAmount() {return this.product_amount;}
+	
+	public UUID getUniqueId() {return this.uuid;}
 
 	public String getCupom() {return cupom;}
 
@@ -235,10 +237,11 @@ public class CashPlayer {
 		if (cim.isReplacedItem(slot)) {
 			String identifier = cim.getReplacedItem(slot);
 			CashShopGateway csg = CashShop.getInstance().getGateway(identifier);
-			ProductInfo pi = new ProductInfo(product_amount, "Cash", CashShop.getInstance().getMainConfig().getString("currency.code"));
+			double total_in_money = ((double) product_amount) - (((double) product_amount)*CashShop.getInstance().getCupomManager().getDiscount(getCupom()));
+			ProductInfo pi = new ProductInfo(total_in_money, "Cash", CashShop.getInstance().getMainConfig().getString("currency.code"));
 			TransactionInfo ti = csg.generateTransaction(pi, null);
 			System.out.println(isValidNick(this.gift_for));
-			ti = new TransactionInfo(isValidNick(this.gift_for) ? gift_for : Bukkit.getOfflinePlayer(uuid).getName(), csg, this.cupom, (int) Math.round(pi.getAmount()*CashShop.getInstance().getMainConfig().getInt("coin.value")), System.currentTimeMillis(), ti.getLink(), ti.getTransactionToken());
+			ti = new TransactionInfo(isValidNick(this.gift_for) ? gift_for : Bukkit.getOfflinePlayer(uuid).getName(), csg, this.cupom, (int) Math.round(product_amount*CashShop.getInstance().getMainConfig().getInt("coin.value")), total_in_money, System.currentTimeMillis(), ti.getLink(), ti.getTransactionToken());
 			
 			transactions_pending.put(ti.getTransactionToken(), ti);
 			this.changes = true;
@@ -456,6 +459,7 @@ public class CashPlayer {
 		fc.set(path + "." + ti.getTransactionToken() + ".gateway", ti.getGatewayCaller());
 		fc.set(path + "." + ti.getTransactionToken() + ".link", ti.getLink());
 		fc.set(path + "." + ti.getTransactionToken() + ".cash", ti.getCash());
+		fc.set(path + "." + ti.getTransactionToken() + ".real_money", ti.getRealMoneySpent());
 		fc.set(path + "." + ti.getTransactionToken() + ".player", ti.getPlayer());
 		fc.set(path + "." + ti.getTransactionToken() + ".creation", ti.getCreationDate());
 		fc.set(path + "." + ti.getTransactionToken() + ".cupom", ti.getCupom());
@@ -467,8 +471,9 @@ public class CashPlayer {
 		String player = fc.getString(path + "." + token + ".player");
 		String cupom = fc.getString(path + "." + token + ".cupom");
 		int cash = fc.getInt(path + "." + token + ".cash");
+		double real_money = fc.getDouble(path + "." + token + ".real_money");
 		long creation = fc.getLong(path + "." + token + ".creation");
 		
-		return new TransactionInfo(player, gateway, cupom, cash, creation, link, token);
+		return new TransactionInfo(player, gateway, cupom, cash, real_money, creation, link, token);
 	}
 }
