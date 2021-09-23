@@ -77,6 +77,8 @@ public class CashShop extends JavaPlugin {
 	public ConfigManager configuration;
 	public ConfigManager messages;
 	
+	private TransactionsManager transactions;
+	
 	private String coin_name = "Cash";
 
 	private static CashShopApi api;
@@ -114,11 +116,11 @@ public class CashShop extends JavaPlugin {
 		Bukkit.getPlayer(uuid).openInventory(mcm.getInventory());
 	}
 	
-	public void changePlayerInventory(UUID uuid, ReciclableMenu menu) {players_editors.put(uuid, menu);}
+	public void changePlayerEditorInventory(UUID uuid, ReciclableMenu menu) {players_editors.put(uuid, menu);}
 	
-	public ReciclableMenu getPlayerCurrentInventory(UUID uuid) {return players_editors.get(uuid);}
+	public ReciclableMenu getPlayerEditorCurrentInventory(UUID uuid) {return players_editors.get(uuid);}
 	
-	public boolean haveInventoryOpen(UUID uuid) {return players_editors.containsKey(uuid);}
+	public boolean haveEditorInventoryOpen(UUID uuid) {return players_editors.containsKey(uuid);}
 	
 	
 	
@@ -131,12 +133,13 @@ public class CashShop extends JavaPlugin {
 		
 		load();
 		autoSave();
-		new TransactionsManager(this);
+		this.transactions = new TransactionsManager(this);
 	}
 	
 	@Override
 	public void onDisable() {
 		this.saveAll();
+		transactions.stop();
 	}
 	
 	public static CashShopApi getInstance() {

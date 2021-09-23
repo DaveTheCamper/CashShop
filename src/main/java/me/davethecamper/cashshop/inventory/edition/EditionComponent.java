@@ -2,7 +2,7 @@ package me.davethecamper.cashshop.inventory.edition;
 
 import org.bukkit.inventory.ItemStack;
 
-public class EditionComponent {
+public class EditionComponent implements Cloneable {
 
 	public EditionComponent(EditionComponentType type, String name, ItemStack item) {
 		this.type = type;
@@ -32,6 +32,13 @@ public class EditionComponent {
 	public void setType(EditionComponentType type) {this.type = type;}
 
 	public void setName(String name) {this.name = name;}
+	
+	public void setItemStack(ItemStack item) {this.item = item;}
+	
+	@Override
+	public EditionComponent clone() {
+		return new EditionComponent(type, name, item != null ? item.clone() : item);
+	}
 	
 	
 

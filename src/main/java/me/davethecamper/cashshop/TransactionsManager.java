@@ -25,11 +25,14 @@ public class TransactionsManager {
 	
 	private CashShop main;
 	
+	private Thread thread;
+	
 	private volatile HashMap<CashPlayer, ArrayList<TransactionInfo>> to_approve = new HashMap<>();
+	private volatile HashMap<CashPlayer, ArrayList<TransactionInfo>> to_cancel = new HashMap<>();
 	
 
 	private void threadVerifier() {
-		new Thread() {
+		this.thread = new Thread() {
 			@Override
 			public void run() {
 				new Timer().schedule(new TimerTask() {
@@ -44,10 +47,23 @@ public class TransactionsManager {
 										TransactionInfo ti = cp.getPendingTransactions().get(token);
 										
 										CashShopGateway csg = main.getGateway(ti.getGatewayCaller());
+										TransactionResponse tr = csg.verifyTransaction(ti.getTransactionToken());
 										
-										if (csg.verifyTransaction(ti.getTransactionToken()).equals(TransactionResponse.APPROVED)) {
-											addToApprove(cp, ti);
-											System.out.println("§aEnviado comando para liberar cash ao jogador " + Bukkit.getOfflinePlayer(uuid).getName());
+										System.out.println(uuid + " " + token + " §a" + tr);
+										
+										switch (tr) {
+											case APPROVED:
+												addToApprove(cp, ti);
+												System.out.println("§aEnviado comando para liberar cash ao jogador " + Bukkit.getOfflinePlayer(uuid).getName());
+												break;
+											
+											case CANCELLED:
+												addToCancel(cp, ti);
+												break;
+												
+											default:
+												break;
+											
 										}
 									}
 								}
@@ -59,7 +75,12 @@ public class TransactionsManager {
 					}
 				}, 0, main.configuration.getInt("delay_verify")*1000);;
 			}
-		}.start();
+		};
+		thread.start();
+	}
+	
+	public void stop() {
+		thread.interrupt();
 	}
 	
 	private void addToApprove(CashPlayer player, TransactionInfo ti) {
@@ -69,6 +90,15 @@ public class TransactionsManager {
 		}
 		list.add(ti);
 		to_approve.put(player, list);
+	}
+
+	private void addToCancel(CashPlayer player, TransactionInfo ti) {
+		ArrayList<TransactionInfo> list = new ArrayList<>();
+		if (to_cancel.containsKey(player)) {
+			list.addAll(to_cancel.get(player));
+		}
+		list.add(ti);
+		to_cancel.put(player, list);
 	}
 	
 	
@@ -82,6 +112,12 @@ public class TransactionsManager {
 						cp.setTransactionAsAproved(ti);
 						to_approve.get(cp).remove(ti);
 						Bukkit.getPluginManager().callEvent(new TransactionCompleteEvent(cp.getUniqueId(), ti));
+					}
+				}
+
+				for (CashPlayer cp : to_cancel.keySet()) {
+					for (TransactionInfo ti : new ArrayList<>(to_cancel.get(cp))) {
+						cp.cancelTransaction(ti);
 					}
 				}
 			}

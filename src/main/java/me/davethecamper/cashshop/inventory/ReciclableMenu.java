@@ -9,7 +9,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import me.davethecamper.cashshop.ItemGenerator;
-import me.davethecamper.cashshop.events.ChangeInventoryEvent;
+import me.davethecamper.cashshop.events.ChangeEditorInventoryEvent;
 
 public abstract class ReciclableMenu {
 	
@@ -97,7 +97,7 @@ public abstract class ReciclableMenu {
 				menu.generateInventory();
 			}
 			
-			Bukkit.getPluginManager().callEvent(new ChangeInventoryEvent(player, menu));
+			Bukkit.getPluginManager().callEvent(new ChangeEditorInventoryEvent(player, menu));
 			
 			
 			Bukkit.getPlayer(player).openInventory(menu.getInventory());

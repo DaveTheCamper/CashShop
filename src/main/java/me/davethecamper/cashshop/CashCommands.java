@@ -50,10 +50,10 @@ public class CashCommands implements CommandExecutor {
 		switch (args[0].toLowerCase()) {
 			case "editor":
 				if (p.hasPermission(ADMIN_PERMISSION)) {
-					if (main.getPlayerCurrentInventory(p.getUniqueId()) == null) {
+					if (main.getPlayerEditorCurrentInventory(p.getUniqueId()) == null) {
 						main.createPlayerInventory(p.getUniqueId());
 					} else {
-						p.openInventory(main.getPlayerCurrentInventory(p.getUniqueId()).getInventory());
+						p.openInventory(main.getPlayerEditorCurrentInventory(p.getUniqueId()).getInventory());
 					}
 				}
 				break;

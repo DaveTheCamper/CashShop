@@ -23,6 +23,8 @@ import me.davethecamper.cashshop.api.CashShopGateway;
 import me.davethecamper.cashshop.api.info.ProductInfo;
 import me.davethecamper.cashshop.api.info.TransactionInfo;
 import me.davethecamper.cashshop.api.info.TransactionResponse;
+import me.davethecamper.cashshop.events.BuyCashItemEvent;
+import me.davethecamper.cashshop.events.PreOpenCashInventoryEvent;
 import me.davethecamper.cashshop.inventory.WaitingForChat;
 import me.davethecamper.cashshop.inventory.configs.ConfigInteractiveMenu;
 import me.davethecamper.cashshop.inventory.configs.SellProductMenu;
@@ -110,6 +112,11 @@ public class CashPlayer {
 		transactions_approved.put(ti.getTransactionToken(), ti);
 		this.changes = true;
 		CashShop.getInstance().getCupomManager().addTransaction(ti.getCupom(), ti.getTransactionToken(), ti.getCash());
+	}
+	
+	public void cancelTransaction(TransactionInfo ti) {
+		transactions_pending.remove(ti.getTransactionToken());
+		this.changes = true;
 	}
 	
 
@@ -226,6 +233,7 @@ public class CashPlayer {
 	
 	public void openCurrentInventory() {
 		if (Bukkit.getOfflinePlayer(uuid).isOnline()) {
+			Bukkit.getPluginManager().callEvent(new PreOpenCashInventoryEvent(uuid, this.current_menu));
 			this.current_inventory = generateInventory();
 			Bukkit.getPlayer(uuid).openInventory(this.current_inventory);
 		}
@@ -298,16 +306,20 @@ public class CashPlayer {
 			
 			ProductConfig pc = this.current_product.getProduct();
 			
-			for (ItemStack item : pc.getItems()) {
-				this.giveItem(item.clone());
-			}
-			
-			for (String s : pc.getCommands()) {
-				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), s.replaceAll("@player", Bukkit.getOfflinePlayer(uuid).getName()));
+			for (int i = 0; i < this.product_amount; i++) {
+				for (ItemStack item : pc.getItems()) {
+					this.giveItem(item.clone());
+				}
+				
+				for (String s : pc.getCommands()) {
+					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), s.replaceAll("@player", Bukkit.getOfflinePlayer(uuid).getName()));
+				}
 			}
 			
 			Bukkit.getPlayer(uuid).closeInventory();
 			Bukkit.getPlayer(uuid).sendMessage(CashShop.getInstance().getMessagesConfig().getString("product.buy.sucess"));
+			
+			Bukkit.getPluginManager().callEvent(new BuyCashItemEvent(uuid, this.current_product, this.product_amount));
 		} else {
 			Bukkit.getPlayer(uuid).sendMessage(CashShop.getInstance().getMessagesConfig().getString("product.buy.fail"));
 		}

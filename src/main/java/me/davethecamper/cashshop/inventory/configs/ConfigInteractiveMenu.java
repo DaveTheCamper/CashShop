@@ -111,6 +111,17 @@ public class ConfigInteractiveMenu extends ConfigItemMenu {
 	public String getReplacedItem(int slot) {
 		return replaces.get(slot);
 	}
+	
+	public ArrayList<EditionComponent> getComponentsByName(String name) {
+		ArrayList<EditionComponent> components = new ArrayList<>();
+		
+		for (Integer slot : new ArrayList<>(this.getVisualizableItems().keySet())) {
+			if (this.getVisualizableItems().get(slot).getName().equals(name)) {
+				components.add(this.getVisualizableItems().get(slot));
+			}
+		}
+		return components;
+	}
 
 	public void updateProduct(ItemStack item) {
 		updateSomething(CashShop.REPLACE_ITEM_SELLING_BUTTON, new EditionComponent(EditionComponentType.DISPLAY_ITEM, CashShop.REPLACE_ITEM_SELLING_BUTTON, item));

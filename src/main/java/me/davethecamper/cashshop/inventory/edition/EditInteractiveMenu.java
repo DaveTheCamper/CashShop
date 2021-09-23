@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemStack;
 
 import me.davethecamper.cashshop.CashShop;
 import me.davethecamper.cashshop.ConfigManager;
-import me.davethecamper.cashshop.events.ChangeInventoryEvent;
+import me.davethecamper.cashshop.events.ChangeEditorInventoryEvent;
 import me.davethecamper.cashshop.inventory.WaitingForChat;
 import me.davethecamper.cashshop.inventory.configs.ConfigInteractiveMenu;
 import me.davethecamper.cashshop.inventory.configs.SavableMenu;
@@ -88,7 +88,7 @@ public class EditInteractiveMenu extends SavableMenu {
 		
 		this.current_editor = new EditingPlayer(player, this);
 		
-		Bukkit.getPluginManager().callEvent(new ChangeInventoryEvent(player, this));
+		Bukkit.getPluginManager().callEvent(new ChangeEditorInventoryEvent(player, this));
 		
 		Bukkit.getPlayer(player).openInventory(this.getInventory());
 	}
@@ -105,7 +105,11 @@ public class EditInteractiveMenu extends SavableMenu {
 	}
 	
 	public EditInteractiveMenu clone(ConfigInteractiveMenu dad) {
-		return new EditInteractiveMenu(this.getId(), item_config, dad, new HashMap<>(slots));
+		HashMap<Integer, EditionComponent> components = new HashMap<>();
+		
+		slots.forEach((slot, value) -> components.put(slot, value.clone()));
+		
+		return new EditInteractiveMenu(this.getId(), item_config, dad, new HashMap<>(components));
 	}
 	
 	@Override

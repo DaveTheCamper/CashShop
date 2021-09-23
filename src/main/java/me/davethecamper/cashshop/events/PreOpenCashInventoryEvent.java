@@ -5,27 +5,25 @@ import java.util.UUID;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import me.davethecamper.cashshop.inventory.ReciclableMenu;
+import me.davethecamper.cashshop.inventory.configs.ConfigInteractiveMenu;
 
-public class ChangeInventoryEvent extends Event {
-	
-	public ChangeInventoryEvent(UUID uuid, ReciclableMenu rm) {
+public class PreOpenCashInventoryEvent extends Event {
+
+	public PreOpenCashInventoryEvent(UUID uuid, ConfigInteractiveMenu rm) {
 		this.uuid = uuid;
 		this.reciclableMenu = rm;
 	}
 	
-	
-	
 	private UUID uuid;
 	
-	private ReciclableMenu reciclableMenu;
+	private ConfigInteractiveMenu reciclableMenu;
 
 	
-	public UUID getUuid() {return uuid;}
+	public UUID getUniqueId() {return uuid;}
 
-	public ReciclableMenu getReciclableMenu() {return reciclableMenu;}
+	public ConfigInteractiveMenu getMenu() {return reciclableMenu;}
 	
-
+	
 	private static final HandlerList HANDLERS = new HandlerList();
 	
 	@Override
@@ -36,5 +34,4 @@ public class ChangeInventoryEvent extends Event {
 	public static HandlerList getHandlerList() {
 		return HANDLERS;
 	}
-
 }

@@ -10,7 +10,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 
-import me.davethecamper.cashshop.events.ChangeInventoryEvent;
+import me.davethecamper.cashshop.events.ChangeEditorInventoryEvent;
 import me.davethecamper.cashshop.events.WaitingChatEvent;
 import me.davethecamper.cashshop.inventory.ReciclableMenu;
 import me.davethecamper.cashshop.inventory.choosers.ChoosableMenu;
@@ -39,11 +39,11 @@ public class EventsCatcher implements Listener {
 	public void onClick(InventoryClickEvent e) {
 		UUID uuid = e.getWhoClicked().getUniqueId();
 		
-		if (main.haveInventoryOpen(uuid) && isEditingEditor(uuid)) {
+		if (main.haveEditorInventoryOpen(uuid) && isEditingEditor(uuid)) {
 			if (e.getClickedInventory() == null) return;
 			e.setCancelled(true);
 			
-			ReciclableMenu rm = main.getPlayerCurrentInventory(uuid);
+			ReciclableMenu rm = main.getPlayerEditorCurrentInventory(uuid);
 			
 			if (e.getClickedInventory().equals(e.getView().getTopInventory())) {
 				rm.inventoryClick(uuid, e.getSlot(), e.getHotbarButton(), e.getAction());
@@ -65,7 +65,7 @@ public class EventsCatcher implements Listener {
 				if (next == null) {return;}
 				
 
-				main.changePlayerInventory(uuid, next);
+				main.changePlayerEditorInventory(uuid, next);
 				next.setPlayer(uuid);
 				
 				e.getWhoClicked().openInventory(next.getInventory());
@@ -170,8 +170,8 @@ public class EventsCatcher implements Listener {
 	}
 	
 	@EventHandler
-	public void onChangeInventoryEvent(ChangeInventoryEvent e) {
-		main.changePlayerInventory(e.getUuid(), e.getReciclableMenu());
+	public void onChangeInventoryEvent(ChangeEditorInventoryEvent e) {
+		main.changePlayerEditorInventory(e.getUuid(), e.getReciclableMenu());
 	}
 	
 	@EventHandler
@@ -214,8 +214,8 @@ public class EventsCatcher implements Listener {
 	public void onClose(InventoryCloseEvent e) {
 		UUID uuid = e.getPlayer().getUniqueId();
 		
-		if (main.haveInventoryOpen(uuid)) {
-			if (e.getInventory().equals(main.getPlayerCurrentInventory(uuid).getInventory())) {
+		if (main.haveEditorInventoryOpen(uuid)) {
+			if (e.getInventory().equals(main.getPlayerEditorCurrentInventory(uuid).getInventory())) {
 				setEditingEditor(uuid, false);
 			}
 		}
@@ -232,8 +232,8 @@ public class EventsCatcher implements Listener {
 	public void onOpen(InventoryOpenEvent e) {
 		UUID uuid = e.getPlayer().getUniqueId();
 		
-		if (main.haveInventoryOpen(uuid)) {
-			if (e.getInventory().equals(main.getPlayerCurrentInventory(uuid).getInventory())) {
+		if (main.haveEditorInventoryOpen(uuid)) {
+			if (e.getInventory().equals(main.getPlayerEditorCurrentInventory(uuid).getInventory())) {
 				setEditingEditor(uuid, true);
 			}
 		}

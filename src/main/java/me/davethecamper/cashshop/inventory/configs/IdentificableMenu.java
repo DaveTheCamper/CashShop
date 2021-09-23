@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import me.davethecamper.cashshop.CashShop;
 import me.davethecamper.cashshop.ConfigManager;
 import me.davethecamper.cashshop.ItemGenerator;
-import me.davethecamper.cashshop.events.ChangeInventoryEvent;
+import me.davethecamper.cashshop.events.ChangeEditorInventoryEvent;
 import me.davethecamper.cashshop.inventory.ReciclableMenu;
 import me.davethecamper.cashshop.inventory.WaitingForChat;
 
@@ -65,7 +65,7 @@ public abstract class IdentificableMenu extends ReciclableMenu {
 		this.generateInventory(getInventorySize()-9, getInventorySize());
 		this.setPlayer(player);
 		
-		Bukkit.getPluginManager().callEvent(new ChangeInventoryEvent(player, this));
+		Bukkit.getPluginManager().callEvent(new ChangeEditorInventoryEvent(player, this));
 		
 		Bukkit.getPlayer(player).openInventory(this.getInventory());
 	}
