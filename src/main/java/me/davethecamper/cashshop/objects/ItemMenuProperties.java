@@ -37,7 +37,7 @@ public class ItemMenuProperties implements Cloneable {
 		return s.substring(0, s.length()-3);
 	}
 
-	public ItemStack getItem() {return item;}
+	public ItemStack getItem() {return item.clone();}
 
 	public String getName() {return name;}
 

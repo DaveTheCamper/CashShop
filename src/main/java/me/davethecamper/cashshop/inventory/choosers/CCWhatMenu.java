@@ -104,7 +104,7 @@ public class CCWhatMenu extends ChoosableMenu {
 			
 			case BUTTON_PRODUCT:
 				name = this.getNewName(CashShop.getInstance().getLists().getSortedProducts(), "product", SellProductMenu.class);
-				cim = new SellProductMenu(name, item_config, this, default_properties, new ProductConfig(), 1);
+				cim = new SellProductMenu(name, item_config, this, default_properties, new ProductConfig(), 1, 0);
 				break;
 				
 			case BUTTON_COMBO:

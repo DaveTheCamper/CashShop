@@ -127,9 +127,13 @@ public abstract class IdentificableMenu extends ReciclableMenu {
 		
 	}
 	
-	
+
 	protected void createVarChanger(String var_name, WaitingForChat.Primitives type) {
-		new WaitingForChat(this.getPlayer(), type, var_name, this);
+		this.createVarChanger(var_name, type, true);
+	}
+	
+	protected void createVarChanger(String var_name, WaitingForChat.Primitives type, boolean ignore_negatives) {
+		new WaitingForChat(this.getPlayer(), type, var_name, this, ignore_negatives);
 	}
 	
 	public void changerVar(String var_name, Object o) {

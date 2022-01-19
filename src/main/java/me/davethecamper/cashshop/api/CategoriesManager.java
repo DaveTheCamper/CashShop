@@ -33,23 +33,23 @@ public class CategoriesManager {
 	
 	
 	public ConfigInteractiveMenu getCategorie(String name) {
-		return getSomethingFromTree(name, main.categories);
+		return getSomethingFromTree(name, main.categories) != null ? getSomethingFromTree(name, main.categories).clone() : null;
 	}
 	
 	public ConfigInteractiveMenu getMainCategorie() {
-		return getCategorie(main.LABEL_MAIN);
+		return getCategorie(main.LABEL_MAIN) != null ? getCategorie(main.LABEL_MAIN).clone() : null;
 	}
 	
 	public ConfigInteractiveMenu getTransactionsCategorie() {
-		return getCategorie(main.LABEL_TRANSACTIONS);
+		return getCategorie(main.LABEL_TRANSACTIONS) != null ? getCategorie(main.LABEL_TRANSACTIONS).clone() : null;
 	}
 	
 	public ConfigInteractiveMenu getCheckoutCategorie() {
-		return getCategorie(main.LABEL_CHECKOUT);
+		return getCategorie(main.LABEL_CHECKOUT) != null ? getCategorie(main.LABEL_CHECKOUT).clone() : null;
 	}
 	
 	public ConfigInteractiveMenu getCombosCategorie() {
-		return getCategorie(main.LABEL_COMBOS);
+		return getCategorie(main.LABEL_COMBOS) != null ? getCategorie(main.LABEL_COMBOS).clone() : null;
 	}
 
 	

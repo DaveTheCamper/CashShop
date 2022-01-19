@@ -10,6 +10,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 
+import me.davethecamper.cashshop.events.CashMenuInventoryClickEvent;
+import me.davethecamper.cashshop.events.CashPlayerInventoryClickEvent;
 import me.davethecamper.cashshop.events.ChangeEditorInventoryEvent;
 import me.davethecamper.cashshop.events.WaitingChatEvent;
 import me.davethecamper.cashshop.inventory.ReciclableMenu;
@@ -38,6 +40,8 @@ public class EventsCatcher implements Listener {
 	@EventHandler
 	public void onClick(InventoryClickEvent e) {
 		UUID uuid = e.getWhoClicked().getUniqueId();
+		
+		if (e.getClickedInventory() == null) return;
 		
 		if (main.haveEditorInventoryOpen(uuid) && isEditingEditor(uuid)) {
 			if (e.getClickedInventory() == null) return;
@@ -74,16 +78,35 @@ public class EventsCatcher implements Listener {
 		} else if (main.getNormalPlayerInventory(uuid).haveAnyCurrentInventory() && isUsingMenus(uuid)) {
 			if (e.getClickedInventory() == null) return;
 			e.setCancelled(true);
+			
+			CashPlayer cp = main.getNormalPlayerInventory(uuid);
+			if (e.getClickedInventory().equals(e.getView().getTopInventory())) {
+				CashMenuInventoryClickEvent event = new CashMenuInventoryClickEvent(uuid, cp.getCurrentInteractiveMenu(), e);
+				Bukkit.getPluginManager().callEvent(event);
+				
+				if (event.isCancelled()) {
+					return;
+				}
+				
+				e.setCancelled(event.isCancelClick());				
+			} else {
+				CashPlayerInventoryClickEvent event = new CashPlayerInventoryClickEvent(uuid, cp.getCurrentInteractiveMenu(), e);
+				Bukkit.getPluginManager().callEvent(event);
+				
+				e.setCancelled(event.isCancelClick());
+			}
+			
 
 			if (e.getClickedInventory().equals(e.getView().getTopInventory())) {
-				CashPlayer cp = main.getNormalPlayerInventory(uuid);
 				EditionComponent cc = cp.getCurrentComponent(e.getSlot());
 				
 				if (cc != null) {
 					switch (cc.getType()) {
 						case BUY_PRODUCT:
 							SellProductMenu current_product = CashShop.getInstance().getProduct(cc.getName());
-							cp.updateCurrentProduct(current_product);
+							if (current_product != null && cp.canBuyThisItem(current_product)) {
+								cp.updateCurrentProduct(current_product);
+							}
 							break;
 							
 						case CATEGORY:
@@ -117,7 +140,8 @@ public class EventsCatcher implements Listener {
 									break;
 									
 								case CashShop.GATEWAYS_MENU:
-									if (cp.getProductAmount() >= main.configuration.getInt("currency.minimum_spent")) {
+									double value = ((double) cp.getProductAmount()) - (((double) cp.getProductAmount())*(CashShop.getInstance().getCupomManager().getDiscount(cp.getCupom())/100));
+									if (value >= main.configuration.getInt("currency.minimum_spent")) {
 										cp.openGatewayMenu();
 									} else {
 										e.getWhoClicked().sendMessage(main.messages.getString("payment.error.min_value").replaceAll("@value", main.configuration.getInt("currency.minimum_spent") + " " + main.configuration.getString("currency.code")));
@@ -157,12 +181,14 @@ public class EventsCatcher implements Listener {
 					}
 				}
 				
-				switch (cp.getCurrentInteractiveMenu().getId()) {
-					case CashShop.GATEWAYS_MENU:
-						if (e.getCurrentItem() != null) {
-							cp.selectGateway(e.getSlot());
-						}
-						break;
+				if (cp.getCurrentInteractiveMenu() != null) {
+					switch (cp.getCurrentInteractiveMenu().getId()) {
+						case CashShop.GATEWAYS_MENU:
+							if (e.getCurrentItem() != null) {
+								cp.selectGateway(e.getSlot());
+							}
+							break;
+					}
 				}
 			}
 			
@@ -179,7 +205,11 @@ public class EventsCatcher implements Listener {
 		CashPlayer cp = main.getNormalPlayerInventory(e.getWaitingForChat().getPlayer());
 		switch (e.getWaitingForChat().getVarName()) {
 			case "set_gift":
-				cp.setGiftFor((String) e.getWaitingForChat().getResult());
+				if (Bukkit.getPlayer((String) e.getWaitingForChat().getResult()) != null) {
+					cp.setGiftFor(Bukkit.getPlayer((String) e.getWaitingForChat().getResult()).getName());
+				} else {
+					cp.setGiftFor("...");
+				}
 				break;
 				
 			case "set_discount":

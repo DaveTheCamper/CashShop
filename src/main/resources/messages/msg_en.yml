@@ -5,11 +5,12 @@ commands:
     give: '&eCash given to &a@player&e, amount &a@amount'
     set: '&eCash set to &a@player&e, amount &a@amount'
     remove: '&eCash removed from &a@player&e, amount &a@amount'
+    show: '&ePlayer &a@player &ehave &a@amount &ecash'
     cupom:
-      add: "&aCupom added sucessfuly"
+      add: '&aCupom added sucessfuly'
       remove:
-        sucess: "&aCupom removed sucessfuly"
-        fail: "&cCupom not found"
+        sucess: '&aCupom removed sucessfuly'
+        fail: '&cCupom not found'
 api:
   loaded: API loaded sucessfuly
   error:
@@ -27,6 +28,20 @@ items:
     - ' &7Receiver: &a@player'
     - ' &7Token: &b@token'
     - ''
+  delay:
+    material: CLOCK
+    name: '&f&lDelay to buy'
+    lore:
+    - '&bPlayers can buy'
+    - '&bagain in &a@delay &bhours'
+  delay_expired:
+    material: BARRIER
+    name: '&c&lIn cooldown...'
+    lore:
+      negative:
+      - '&bYou cannot buy this item again'
+      positive:
+      - '&bYou can buy this item in: @time'
   choosable:
     main:
       create:
@@ -247,13 +262,21 @@ chat:
   to_do:
     STRING: '&aWrite a text in chat'
     INTEGER: '&aWrite a number in chat'
-  discount: "&aWrite the cupom name"
-  gift: "&aWrite the receiver name"
-  invalid_cupom: "&cYour cupom code is invalid, check and try again"
+  discount: '&aWrite the cupom name'
+  gift: '&aWrite the receiver name'
+  invalid_cupom: '&cYour cupom code is invalid, check and try again'
+  amount: '&aWrite the amount you want (must be above of 0)'
+  generic_error:
+    INTEGER: "&cInvalid number"
 product:
   sell: '&6Value: &e@value'
+  buy:
+    sucess: '&aBought sucessfuly!'
+    fail: '&cInsufficient cash'
 payment:
   info: '&aOrder processed!'
   hover: '&bOpen link'
   link: '&bNow is just open this @link &band pay in your browser to receive your cash!'
   click: '&9[Click-me]'
+  error:
+    min_value: '&cMinimum value to spent is @value'

@@ -1,17 +1,23 @@
 package me.davethecamper.cashshop.api;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.TreeMap;
+import java.util.UUID;
 
 import me.davethecamper.cashshop.CashShop;
 import me.davethecamper.cashshop.ConfigManager;
 import me.davethecamper.cashshop.CupomManager;
+import me.davethecamper.cashshop.TransactionsManager;
 import me.davethecamper.cashshop.inventory.configs.ComboItemMenu;
 import me.davethecamper.cashshop.inventory.configs.ConfigInteractiveMenu;
 import me.davethecamper.cashshop.inventory.configs.ConfigItemMenu;
 import me.davethecamper.cashshop.inventory.configs.SavableMenu;
 import me.davethecamper.cashshop.inventory.configs.SellProductMenu;
 import me.davethecamper.cashshop.inventory.edition.EditionComponent;
+import me.davethecamper.cashshop.player.CashPlayer;
 
 public class CashShopApi {
 	
@@ -32,6 +38,8 @@ public class CashShopApi {
 	private CashShopStaticMenus static_menus;
 	
 	
+	public TransactionsManager getTransactionsManager() {return this.main.transactions;}
+	
 	public ConfigManager getMainConfig() {return this.main.configuration;}
 	
 	public ConfigManager getMessagesConfig() {return this.main.messages;}
@@ -44,6 +52,8 @@ public class CashShopApi {
 	
 	public CupomManager getCupomManager() {return main.getCupomManager();}
 	
+	public CashPlayer getCashPlayer(UUID uuid) {return main.getNormalPlayerInventory(uuid);}
+	
 	
 	public CashShopGateway getGateway(String name) {return main.getGateway(name);}
 	
@@ -54,35 +64,35 @@ public class CashShopApi {
 	public <Z extends ConfigItemMenu> ConfigItemMenu getConfigItemBasedOnClass(String name, Class<Z> reference) {
 		switch (reference.getSimpleName()) {
 			case "ConfigInteractiveMenu":
-				return categories.getCategorie(name);
+				return categories.getCategorie(name) != null ? categories.getCategorie(name).clone() : null;
 				
 			case "SellProductMenu":
-				return getProduct(name);
+				return getProduct(name) != null ? getProduct(name).clone() : null;
 				
 			case "ComboItemMenu":
-				return getCombo(name);
+				return getCombo(name) != null ? getCombo(name).clone() : null;
 				
 			case "ConfigItemMenu":
-				return getCosmeticItem(name);
+				return getCosmeticItem(name) != null ? getCosmeticItem(name).clone() : null;
 		}
 		return null;
 	}
 	
 
 	public ConfigItemMenu getCosmeticItem(String name) {
-		return getSomethingFromTree(name, main.do_nothing);
+		return getSomethingFromTree(name, main.do_nothing) != null ? getSomethingFromTree(name, main.do_nothing).clone() : null;
 	}
 	
 	public SellProductMenu getProduct(String name) {
-		return getSomethingFromTree(name, main.products);
+		return getSomethingFromTree(name, main.products) != null ? getSomethingFromTree(name, main.products).clone() : null;
 	}
 	
 	public ComboItemMenu getCombo(String name) {
-		return getSomethingFromTree(name, main.combos);
+		return getSomethingFromTree(name, main.combos) != null ? getSomethingFromTree(name, main.combos).clone() : null;
 	}
 	
 	public ConfigItemMenu getStaticItem(String name) {
-		return getSomethingFromTree(name, main.static_items);
+		return getSomethingFromTree(name, main.static_items) != null ? getSomethingFromTree(name, main.static_items).clone() : null;
 	}
 	
 	private <Z> Z getSomethingFromTree(String name, TreeMap<String, Z> tree) {
@@ -196,6 +206,82 @@ public class CashShopApi {
 		this.getLists().updateCache(map);
 	}
 	
+	private HashMap<Integer, Double> money_spent = new HashMap<>();
+	
+	public double getTotalMoneySpent(int year, int month) {
+		int valor = year*12 + month;
+		
+		if (money_spent.containsKey(valor)) {
+			return money_spent.get(valor);
+		}
+		
+		double total = 0;
+		File files = new File(main.getDataFolder() + "/players/");
+		
+		for (File f : files.listFiles()) {
+			if (!f.getName().endsWith(".yml")) continue;
+			UUID uuid = UUID.fromString(f.getName().replaceAll(".yml", ""));
+			total += getCashPlayer(uuid).getAmountSpent(year, month);
+		}
+		
+		money_spent.put(valor, total);
+		
+		return total;
+	}
+	
+
+	public CashPlayer getTopCash() {
+		Calendar c = Calendar.getInstance();
+		c.setTimeInMillis(System.currentTimeMillis());
+		
+		return getTopCash(c.get(Calendar.YEAR), c.get(Calendar.MONTH)+1);
+	}
+	
+	public CashPlayer getTopCash(int year, int month) {
+		double highest = Double.MIN_VALUE;
+		CashPlayer top = null;
+		File files = new File(main.getDataFolder() + "/players/");
+		
+		for (File f : files.listFiles()) {
+			if (!f.getName().endsWith(".yml")) continue;
+			UUID uuid = UUID.fromString(f.getName().replaceAll(".yml", ""));
+			CashPlayer cp = getCashPlayer(uuid);
+			double spent = cp.getAmountSpent(year, month);
+			if (spent > highest) {
+				top = cp;
+				highest = spent;
+			}
+		}
+		
+		return top;
+	}
+	
+	public ArrayList<CashPlayer> getCashRanking(int year, int month) {
+		TreeMap<Double, CashPlayer> tree = new TreeMap<>();
+		ArrayList<CashPlayer> players = new ArrayList<>();
+		File files = new File(main.getDataFolder() + "/players/");
+		
+		for (File f : files.listFiles()) {
+			if (!f.getName().endsWith(".yml")) continue;
+			UUID uuid = UUID.fromString(f.getName().replaceAll(".yml", ""));
+			CashPlayer cp = getCashPlayer(uuid);
+			double spent = cp.getAmountSpent(year, month);
+			
+			if (spent < 1) continue;
+			
+			while (tree.get(spent) != null) {
+				spent += 0.001;
+			}
+			
+			tree.put(spent, cp);
+		}
+		
+		for (Double value : tree.keySet()) {
+			players.add(tree.get(value));
+		}
+		
+		return players;
+	}
 	
 	
 

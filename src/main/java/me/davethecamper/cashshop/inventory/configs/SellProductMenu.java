@@ -12,6 +12,7 @@ import me.davethecamper.cashshop.CashShop;
 import me.davethecamper.cashshop.ConfigManager;
 import me.davethecamper.cashshop.ItemGenerator;
 import me.davethecamper.cashshop.inventory.ReciclableMenu;
+import me.davethecamper.cashshop.inventory.WaitingForChat;
 import me.davethecamper.cashshop.objects.ItemMenuProperties;
 import me.davethecamper.cashshop.objects.ProductConfig;
 import me.davethecamper.cashshop.player.CashPlayer;
@@ -23,10 +24,11 @@ public class SellProductMenu extends ValuebleItemMenu {
 	 */
 	private static final long serialVersionUID = -6784249458971882595L;
 
-	public SellProductMenu(String identificador, ConfigManager item_config, ReciclableMenu previous, ItemMenuProperties item_properties, ProductConfig product, int updated_value) {
+	public SellProductMenu(String identificador, ConfigManager item_config, ReciclableMenu previous, ItemMenuProperties item_properties, ProductConfig product, int updated_value, long delay) {
 		super(identificador, item_config, previous, item_properties, updated_value);
 		
 		this.product = product;
+		this.delay_buy_again = delay;
 		this.setDescriber("product");
 		
 		load();
@@ -35,9 +37,12 @@ public class SellProductMenu extends ValuebleItemMenu {
 	
 	private ProductConfig product;
 	
+	private long delay_buy_again;
+	
 	
 	protected final String COMMANDS = "comandos";
 	protected final String ITEMS = "items_give";
+	protected final String DELAY = "delay";
 	
 	@Override
 	public void reload() {
@@ -50,6 +55,11 @@ public class SellProductMenu extends ValuebleItemMenu {
 				item_config.getString("items.items_give.material"), 
 				item_config.getString("items.items_give.name"), 
 				item_config.getStringAsItemLore("items.items_give.lore")), 23);
+		
+		registerItem(DELAY, ItemGenerator.getItemStack(
+				item_config.getString("items.delay.material"), 
+				item_config.getString("items.delay.name"), 
+				item_config.getStringAsItemLore("items.delay.lore").replaceAll("@delay", this.delay_buy_again + "")), 4);
 		
 		registerItem(COMMANDS, 
 				ItemGenerator.getItemStack(
@@ -78,6 +88,10 @@ public class SellProductMenu extends ValuebleItemMenu {
 		return this.product;
 	}
 	
+	public long getDelayToBuy() {
+		return this.delay_buy_again;
+	}
+	
 	public void updateItems(ProductItemsMenu new_items) {
 		product.updateItems(new_items.getItems());
 		this.startEditing(this.getPlayer());
@@ -86,6 +100,7 @@ public class SellProductMenu extends ValuebleItemMenu {
 
 	@Override
 	public FileConfiguration saveHandler(FileConfiguration fc) {
+		fc.set("delay", this.delay_buy_again);
 		fc.set("selling.items", product.getItems());
 		fc.set("selling.commands", product.getCommands());
 		
@@ -99,7 +114,7 @@ public class SellProductMenu extends ValuebleItemMenu {
 	
 	@Override
 	public SellProductMenu clone(String id) {
-		return new SellProductMenu(id, item_config, this.previous, item_properties.clone(), product.clone(), this.getValueInCash());
+		return new SellProductMenu(id, item_config, this.previous, item_properties.clone(), product.clone(), this.getValueInCash(), delay_buy_again);
 	}
 	
 	@Override
@@ -114,14 +129,28 @@ public class SellProductMenu extends ValuebleItemMenu {
 				break;
 		}
 	}
-	
-	
+
+	@Override
+	public void changerVarHandler(String var_name, Object o) {
+		switch (var_name) {
+			case DELAY:
+				this.delay_buy_again = (Long) o;
+				break;
+				
+			default:
+				super.changerVarHandler(var_name, o);
+		}
+	}
 	
 	@Override
 	public boolean inventoryClickHandler(UUID uuid, int clicked_slot, int slot_button, InventoryAction type) {
 		this.setPlayer(uuid);
 		
 		switch (slots.get(clicked_slot)) {
+			case DELAY:
+				createVarChanger(DELAY, WaitingForChat.Primitives.LONG, false);
+				return true;
+		
 			case ITEMS:
 				new ProductItemsMenu(this.getId(), item_config, this).startEditing(uuid);
 				return true;

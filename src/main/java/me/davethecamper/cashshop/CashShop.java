@@ -77,7 +77,7 @@ public class CashShop extends JavaPlugin {
 	public ConfigManager configuration;
 	public ConfigManager messages;
 	
-	private TransactionsManager transactions;
+	public TransactionsManager transactions;
 	
 	private String coin_name = "Cash";
 
@@ -196,6 +196,7 @@ public class CashShop extends JavaPlugin {
 						
 						int size = fc.get("inventory.name") != null ? fc.getInt("inventory.size") : 0;
 						int value = fc.get("value") != null ? fc.getInt("value") : 1;
+						long delay = fc.get("delay") != null ? fc.getLong("delay") : 0;
 						double combo_value = fc.get("combo.value") != null ? fc.getDouble("combo.value") : 0;
 						
 						
@@ -227,7 +228,7 @@ public class CashShop extends JavaPlugin {
 								break;
 								
 							case "product":
-								addToMap(map, identificador, (Z) new SellProductMenu(identificador, this.messages, null, imp, new ProductConfig(items, commands), value));
+								addToMap(map, identificador, (Z) new SellProductMenu(identificador, this.messages, null, imp, new ProductConfig(items, commands), value, delay));
 								break;
 								
 							case "combo-item":
@@ -286,7 +287,8 @@ public class CashShop extends JavaPlugin {
 		f = new File(cs.getDataFolder().getAbsolutePath() + "/messages/msg_" + configuration.getString("message_file") + ".yml");
 		if (!f.exists()) {
 			f.getParentFile().mkdirs();
-			cs.saveResource("messages/msg_en.yml", isEnabled());
+			cs.saveResource("messages/msg_en.yml", true);
+			cs.saveResource("messages/msg_br.yml", true);
 		}
 		
 		if (!f.exists()) f = new File(cs.getDataFolder().getAbsolutePath() + "/messages/msg_en.yml");

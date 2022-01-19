@@ -33,7 +33,7 @@ public abstract class ReciclableMenu {
 	protected int inventory_size = 36, range_min = -2, range_max = -2;
 	
 
-	public Inventory getInventory() {
+	public final Inventory getInventory() {
 		if (this.inventory == null) generateInventory();
 		return this.inventory;
 	}

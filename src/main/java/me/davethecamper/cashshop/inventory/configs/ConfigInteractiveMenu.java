@@ -5,8 +5,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import me.davethecamper.cashshop.CashShop;
@@ -64,6 +67,9 @@ public class ConfigInteractiveMenu extends ConfigItemMenu {
 	
 	private String name;
 	
+	private Inventory inventory_log;
+	
+	
 	@Override
 	public void reload() {
 		super.reload();
@@ -81,6 +87,25 @@ public class ConfigInteractiveMenu extends ConfigItemMenu {
 	
 	
 	private HashMap<Integer, String> replaces = new HashMap<>();
+
+	public void replaceIndicators(String name, ItemStack item, String identifiers) {
+		ArrayList<Integer> slots = new ArrayList<>();
+		for (Integer slot : new ArrayList<>(this.getVisualizableItems().keySet())) {
+			if (this.getVisualizableItems().get(slot).getName().equals(name)) {
+				slots.add(slot);
+			}
+		}
+		
+		ArrayList<ItemStack> items_t = new ArrayList<>();
+		ArrayList<String> identifiers_t = new ArrayList<>();
+		
+		for (int i = 0; i < slots.size(); i++) {
+			items_t.add(item);
+			identifiers_t.add(identifiers);
+		}
+		
+		replaceIndicators(name, items_t, identifiers_t);
+	}
 	
 	public void replaceIndicators(String name, ArrayList<ItemStack> list, ArrayList<String> identifiers) {
 		ArrayList<Integer> slots = new ArrayList<>();
@@ -158,11 +183,40 @@ public class ConfigInteractiveMenu extends ConfigItemMenu {
 	public String getName() {return name;}
 	
 	public HashMap<Integer, EditionComponent> getVisualizableItems() {return edition.getItems();}
+	
+	public Inventory getLogInventory() {
+		if (this.inventory_log == null) {
+			generateLogInventory(null);
+		}
+		return this.inventory_log;
+	}
 
 
 	public void setSize(int size) {this.size = size;}
 
 	public void setName(String name) {this.name = name;}
+	
+	public void setLogInventory(Inventory inv) {this.inventory_log = inv;}
+	
+	
+	public void openLogInventory(Player p) {
+		CashPlayer cp = CashShop.getInstance().getCashPlayer(p.getUniqueId());
+		cp.updateCurrentInventory(this, false, false);
+		cp.openLogFromCurrentInventory();
+	}
+	
+	private void generateLogInventory(CashPlayer cp) {
+		Inventory inv = Bukkit.createInventory(null, this.getSize(), this.getName());
+		
+		for (Integer slot : this.getVisualizableItems().keySet()) {
+			EditionComponent component = this.getVisualizableItems().get(slot);
+			ItemStack item = this.generateItem(component, cp);
+			
+			inv.setItem(slot, item);
+		}
+		
+		this.inventory_log = inv;
+	}
 	
 
 	
@@ -171,34 +225,37 @@ public class ConfigInteractiveMenu extends ConfigItemMenu {
 	}
 	
 	public ItemStack generateItem(EditionComponent component, CashPlayer player) {
-		ItemStack item = null;
-		switch (component.getType()) {
-			case BUY_PRODUCT:
-				item = CashShop.getInstance().getProduct(component.getName()).getSellingItem(player, 1);
-				break;
-				
-			case CATEGORY:
-				item = CashShop.getInstance().getCategoriesManager().getCategorie(component.getName()).getItemProperties().getItem();
-				break;
-				
-			case COMBO:
-				item = CashShop.getInstance().getCombo(component.getName()).getItemProperties().getItem();
-				break;
-				
-			case DO_NOTHING:
-				item = CashShop.getInstance().getCosmeticItem(component.getName()).getItemProperties().getItem();
-				break;
-				
-			case STATIC:
-				item = CashShop.getInstance().getStaticItem(component.getName()).getItemProperties().getItem();
-				break;
-				
-			case DISPLAY_ITEM:
-				item = component.getItemStack();
-				break;
-				
-			default:
-				return null;
+		ItemStack item = component.getItemStack();
+		if (item == null) {
+			switch (component.getType()) {
+				case BUY_PRODUCT:
+					if (CashShop.getInstance().getProduct(component.getName()) != null) 
+						item = CashShop.getInstance().getProduct(component.getName()).getSellingItem(player, 1);
+					break;
+					
+				case CATEGORY:
+					item = CashShop.getInstance().getCategoriesManager().getCategorie(component.getName()).getItemProperties().getItem();
+					break;
+					
+				case COMBO:
+					item = CashShop.getInstance().getCombo(component.getName()).getItemProperties().getItem();
+					break;
+					
+				case DO_NOTHING:
+					item = CashShop.getInstance().getCosmeticItem(component.getName()).getItemProperties().getItem();
+					break;
+					
+				case STATIC:
+					item = CashShop.getInstance().getStaticItem(component.getName()).getItemProperties().getItem();
+					break;
+					
+				case DISPLAY_ITEM:
+					item = component.getItemStack();
+					break;
+					
+				default:
+					return null;
+			}
 		}
 		
 		if (player != null) {

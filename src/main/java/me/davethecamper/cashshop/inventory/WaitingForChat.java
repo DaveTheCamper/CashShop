@@ -22,6 +22,11 @@ public class WaitingForChat implements Listener {
 	public WaitingForChat(final UUID player, final WaitingForChat.Primitives type, final String var_name, final IdentificableMenu caller) {
 		this(player, type, var_name, caller, caller.getMessages().getString("chat.to_do." + type.toString()));
 	}
+
+	public WaitingForChat(final UUID player, final WaitingForChat.Primitives type, final String var_name, final IdentificableMenu caller, boolean block_negatives) {
+		this(player, type, var_name, caller, caller.getMessages().getString("chat.to_do." + type.toString()));
+		this.block_negative = block_negatives;
+	}
 	
 	public WaitingForChat(final UUID player, final WaitingForChat.Primitives type, final String var_name, final IdentificableMenu caller, String message) {
 		this.player = player;
@@ -35,6 +40,8 @@ public class WaitingForChat implements Listener {
 		Bukkit.getPlayer(player).sendMessage(message);
 		Bukkit.getPlayer(player).closeInventory();
 	}
+	
+	private boolean block_negative = true;
 	
 	private String var_name;
 	
@@ -87,7 +94,7 @@ public class WaitingForChat implements Listener {
 				
 				finish(o);
 			} else {
-				e.getPlayer().sendMessage(caller.getMessages().getString("chat.generic_error." + type.toString()));
+				e.getPlayer().sendMessage(CashShop.getInstance().getMessagesConfig().getString("chat.generic_error." + type.toString()));
 			}
 		}
 	}
@@ -98,25 +105,25 @@ public class WaitingForChat implements Listener {
 				case INTEGER:
 					{
 						int val = Integer.parseInt(message);
-						return val > 0;
+						return val > 0 || !block_negative;
 					}
 					
 				case LONG:
 					{
 						long val = Long.parseLong(message);
-						return val > 0;
+						return val > 0 || !block_negative;
 					}
 					
 				case DOUBLE:
 					{
 						double val = Double.parseDouble(message);
-						return val > 0;
+						return val > 0 || !block_negative;
 					}
 					
 				case FLOAT:
 					{
 						float val = Float.parseFloat(message);
-						return val > 0;
+						return val > 0 || !block_negative;
 					}
 					
 				default: break;

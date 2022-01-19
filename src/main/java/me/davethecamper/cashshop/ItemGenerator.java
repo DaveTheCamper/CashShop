@@ -50,6 +50,34 @@ public class ItemGenerator {
 		return new_item;
 	}
 	
+
+	public static ItemStack changeLore(ItemStack item, String lore) {
+		return changeLore(item, lore, "");
+	}
+
+	public static ItemStack changeLore(ItemStack item, String lore, String color) {
+		ArrayList<String> new_lore = new ArrayList<>();
+		
+		String partes[] = lore.split(";=;");
+		
+		for (int i = 0; i < partes.length; i++) {
+			new_lore.add(color + partes[i]);
+		}
+		
+		return changeLore(item, new_lore);
+	}
+	
+	public static ItemStack changeLore(ItemStack item, ArrayList<String> lore) {
+		ItemStack new_item = item.clone();
+		ItemMeta im = new_item.getItemMeta();
+		
+		im.setLore(lore);
+		
+		new_item.setItemMeta(im);
+		
+		return new_item;
+	}
+	
 	
 	public static ItemStack replaces(ItemStack item, CashPlayer player) {
 		if (has_to_replace.containsKey(item) && !has_to_replace.get(item)) {
@@ -159,12 +187,14 @@ public class ItemGenerator {
 	public static ItemStack getItemStack(String material, String name, String lore) {
 		return getItemStack(material, name, lore, "§f");
 	}
-	
+
+	public static ItemStack getItemStack(String material, String name, ArrayList<String> lore) {
+		return getItemStack(material, name, "§f", lore);
+	}
 
 	public static ItemStack getItemStack(String material, String name, String lore, String color) {
 		return getItemStack(material, name, lore, color, new ArrayList<>());
 	}
-	
 
 	public static ItemStack getItemStack(String material, String name, String lore_aux, ArrayList<String> lore) {
 		return getItemStack(material, name, lore_aux, "§f", lore);

@@ -5,14 +5,14 @@ import me.davethecamper.cashshop.api.CashShopGateway;
 public class TransactionInfo {
 	
 	public TransactionInfo(String link, String transaction_token) {
-		this("null", "null", "null", 0, 0, System.currentTimeMillis(), link, transaction_token);
+		this("null", "null", "null", 0, 0, System.currentTimeMillis(), -1, link, transaction_token);
 	}
 
 	public TransactionInfo(String player, CashShopGateway gateway, String cupom, int cash, double real_money, long creation_date, String link, String transaction_token) {
-		this(player, gateway != null ? gateway.getIdentifier() : "null", cupom, cash, real_money, creation_date, link, transaction_token);
+		this(player, gateway != null ? gateway.getIdentifier() : "null", cupom, cash, real_money, creation_date, -1, link, transaction_token);
 	}
 	
-	public TransactionInfo(String player, String gateway, String cupom, int cash, double real_money, long creation_date, String link, String transaction_token) {
+	public TransactionInfo(String player, String gateway, String cupom, int cash, double real_money, long creation_date, long approve_date, String link, String transaction_token) {
 		this.player = player;
 		this.link = link;
 		this.transaction_token = transaction_token;
@@ -20,6 +20,7 @@ public class TransactionInfo {
 		this.status = TransactionResponse.WAITING_FOR_PAYMENT;
 		this.cash = cash;
 		this.creation_date = creation_date;
+		this.approve_date = approve_date;
 		this.cupom = cupom;
 		this.real_money = real_money;
 	}
@@ -30,7 +31,7 @@ public class TransactionInfo {
 	
 	private double real_money;
 	
-	private long creation_date;
+	private long creation_date, approve_date;
 	
 	private TransactionResponse status;
 	
@@ -48,6 +49,10 @@ public class TransactionInfo {
 	
 	public long getCreationDate() {
 		return this.creation_date;
+	}
+	
+	public long getApproveDate() {
+		return this.approve_date;
 	}
 	
 	
@@ -79,6 +84,11 @@ public class TransactionInfo {
 	
 	public void updateTransactionStatus(TransactionResponse status) {
 		this.status = status;
+	}
+	
+	public void setApproved() {
+		this.status = TransactionResponse.APPROVED;
+		this.approve_date = System.currentTimeMillis();
 	}
 
 }

@@ -202,7 +202,7 @@ public class EditInteractiveMenu extends SavableMenu {
 								break;
 								
 							default:
-								this.current_editor.setCurrentComponent(clicked_slot-9);
+								this.current_editor.setCurrentComponent(clicked_slot-9 + ((current_editor.getPage()-1)*18));
 								break;
 						}
 					} else {
