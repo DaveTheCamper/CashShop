@@ -94,7 +94,7 @@ public class CCWhatMenu extends ChoosableMenu {
 	public ConfigItemMenu getFinalStep(int choose) {
 		String name = "";
 		ConfigItemMenu cim = null;
-		ItemMenuProperties default_properties = new ItemMenuProperties(ItemGenerator.getItemStack("STONE"), "§fDefault name", new ArrayList<>(), false);
+		ItemMenuProperties default_properties = new ItemMenuProperties(ItemGenerator.getItemStack("STONE"), "Â§fDefault name", new ArrayList<>(), false);
 		
 		switch (choose) {
 			case BUTTON_DECORATIVE:
@@ -114,7 +114,7 @@ public class CCWhatMenu extends ChoosableMenu {
 				
 			case BUTTON_CATEGORIE:
 				name = this.getNewName(CashShop.getInstance().getLists().getSortedCategories(), "category", ConfigInteractiveMenu.class);
-				cim = new ConfigInteractiveMenu(name, item_config, this, default_properties, 54, "§7Default category name");
+				cim = new ConfigInteractiveMenu(name, item_config, this, default_properties, 54, "Â§7Default category name");
 				break;
 		}
 		

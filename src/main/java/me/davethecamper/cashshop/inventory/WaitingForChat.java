@@ -88,7 +88,7 @@ public class WaitingForChat implements Listener {
 						break;
 						
 					case STRING:
-						o = message.replaceAll("&", "ง");
+						o = message.replaceAll("&", "ยง");
 						break;
 				}
 				

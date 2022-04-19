@@ -51,13 +51,13 @@ public class TransactionsManager {
 										CashShopGateway csg = main.getGateway(ti.getGatewayCaller());
 										TransactionResponse tr = csg.verifyTransaction(ti.getTransactionToken());
 										
-										System.out.println(uuid + " " + token + " §a" + tr);
+										System.out.println(uuid + " " + token + " Â§a" + tr);
 									
 										if (tr != null) {
 											switch (tr) {
 												case APPROVED:
 													addToApprove(cp, ti);
-													System.out.println("§aEnviado comando para liberar cash ao jogador " + Bukkit.getOfflinePlayer(uuid).getName());
+													System.out.println("Â§aEnviado comando para liberar cash ao jogador " + Bukkit.getOfflinePlayer(uuid).getName());
 													break;
 												
 												case CANCELLED:
@@ -122,7 +122,7 @@ public class TransactionsManager {
 						to_approve.get(cp).remove(ti);
 						Bukkit.getPluginManager().callEvent(new TransactionCompleteEvent(of.getUniqueId(), ti));
 						if (Bukkit.getPlayer(cp.getUniqueId()) != null && Bukkit.getPlayer(cp.getUniqueId()).isOnline()) {
-							Bukkit.getPlayer(cp.getUniqueId()).sendMessage("§aTransação liberada, adicionado " + ti.getCash() + " cash's");
+							Bukkit.getPlayer(cp.getUniqueId()).sendMessage("Â§aTransaÂ§Â§o liberada, adicionado " + ti.getCash() + " cash's");
 							Bukkit.getPlayer(cp.getUniqueId()).playSound(Bukkit.getPlayer(cp.getUniqueId()).getLocation(), XSound.ENTITY_CAT_PURREOW.parseSound(), 1f, 1.3f);
 						}
 					}

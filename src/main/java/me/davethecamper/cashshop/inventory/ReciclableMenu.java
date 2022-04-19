@@ -63,7 +63,7 @@ public abstract class ReciclableMenu {
 		}
 		
 		Inventory inv = Bukkit.createInventory(null, inventory_size, inv_name);
-		ItemStack black = ItemGenerator.getItemStack("BLACK_STAINED_GLASS_PANE", "§r");
+		ItemStack black = ItemGenerator.getItemStack("BLACK_STAINED_GLASS_PANE", "Â§r");
 		this.inventory = inv;
 		this.range_max = range_max;
 		this.range_min = range_min;

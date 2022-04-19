@@ -3,13 +3,13 @@ selling:
   items: []
   commands: []
 item:
-  name: §6Cash
+  name: Â§6Cash
   glow: true
   value: 1
   lore:
-  - §r
-  - §e@value @currency §f= §e@cash_value cash
-  - §r
+  - Â§r
+  - Â§e@value @currency Â§f= Â§e@cash_value cash
+  - Â§r
   item:
     ==: org.bukkit.inventory.ItemStack
     v: 2584

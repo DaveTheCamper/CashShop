@@ -66,21 +66,21 @@ public class CashCommands implements CommandExecutor {
 								other.addCash(amount);
 								cp.removeCash(amount);
 								
-								p.sendMessage(CashShop.getInstance().getMessagesConfig().getString("tag") + " §aVocê enviou §b" + amount + " §acash o jogador §b" + of.getName());
+								p.sendMessage(CashShop.getInstance().getMessagesConfig().getString("tag") + " Â§aVocÂ§ enviou Â§b" + amount + " Â§acash o jogador Â§b" + of.getName());
 								if (of.isOnline()) {
-									of.getPlayer().sendMessage(CashShop.getInstance().getMessagesConfig().getString("tag") + " §aVocê recebeu §b" + amount + " §acash do jogador §b" + p.getName());
+									of.getPlayer().sendMessage(CashShop.getInstance().getMessagesConfig().getString("tag") + " Â§aVocÂ§ recebeu Â§b" + amount + " Â§acash do jogador Â§b" + p.getName());
 								}
 							} else {
-								p.sendMessage(CashShop.getInstance().getMessagesConfig().getString("tag") + " §cPlayer não encontrado");
+								p.sendMessage(CashShop.getInstance().getMessagesConfig().getString("tag") + " Â§cPlayer nÂ§o encontrado");
 							}
 						} else {
-							p.sendMessage(CashShop.getInstance().getMessagesConfig().getString("tag") + " §c/cash enviar [nick] [quantia]");
+							p.sendMessage(CashShop.getInstance().getMessagesConfig().getString("tag") + " Â§c/cash enviar [nick] [quantia]");
 						}
 					}
 					break;
 					
 				case "ver":
-					p.sendMessage(CashShop.getInstance().getMessagesConfig().getString("tag") + " §eVocê tem §6" + cp.getCash() + " §ecash's");
+					p.sendMessage(CashShop.getInstance().getMessagesConfig().getString("tag") + " Â§eVocÂ§ tem Â§6" + cp.getCash() + " Â§ecash's");
 					break;
 					
 				case "editor":
@@ -95,7 +95,7 @@ public class CashCommands implements CommandExecutor {
 					
 			}
 		} else {
-			p.sendMessage(CashShop.getInstance().getMessagesConfig().getString("tag") + " §eVocê tem §6" + cp.getCash() + " §ecash's");
+			p.sendMessage(CashShop.getInstance().getMessagesConfig().getString("tag") + " Â§eVocÂ§ tem Â§6" + cp.getCash() + " Â§ecash's");
 		}
 	}
 	
@@ -116,7 +116,7 @@ public class CashCommands implements CommandExecutor {
 					int year = Integer.parseInt(args[1]);
 					int month = Integer.parseInt(args[2]);
 					
-					sender.sendMessage("§aTotal: §2" + CashShop.getInstance().getTotalMoneySpent(year, month) + "R$");
+					sender.sendMessage("Â§aTotal: Â§2" + CashShop.getInstance().getTotalMoneySpent(year, month) + "R$");
 				}
 				break;
 				
@@ -203,7 +203,7 @@ public class CashCommands implements CommandExecutor {
 								main.getCupomManager().addCupom(name, percentage, hours);
 								sender.sendMessage(main.messages.getString("commands.cash.cupom.add"));
 							} catch (Exception e) {
-								sender.sendMessage("§cUsage /cupom add [name] [percentage] [duration_in_hours]");
+								sender.sendMessage("Â§cUsage /cupom add [name] [percentage] [duration_in_hours]");
 							}
 						}
 						break;
@@ -219,7 +219,7 @@ public class CashCommands implements CommandExecutor {
 									sender.sendMessage(main.messages.getString("commands.cash.cupom.remove.fail"));
 								}
 							} catch (Exception e) {
-								sender.sendMessage("§cUsage /cupom remove [name]");
+								sender.sendMessage("Â§cUsage /cupom remove [name]");
 							}
 						}
 						break;

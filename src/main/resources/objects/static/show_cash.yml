@@ -1,6 +1,6 @@
 type: do-nothing
 item:
-  name: "ง6Current cash: งe@cash"
+  name: "ยง6Current cash: ยงe@cash"
   glow: false
   item:
     ==: org.bukkit.inventory.ItemStack

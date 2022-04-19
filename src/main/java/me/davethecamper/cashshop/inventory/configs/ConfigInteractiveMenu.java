@@ -271,6 +271,8 @@ public class ConfigInteractiveMenu extends ConfigItemMenu {
 		fc.set("inventory.name", getName());
 		fc.set("inventory.size", getSize());
 		
+		fc.set("inventory.items", null);
+		
 		for (Integer slot : edition.getItems().keySet()) {
 			EditionComponent ec = edition.getItems().get(slot);
 			

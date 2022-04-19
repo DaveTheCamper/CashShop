@@ -77,7 +77,7 @@ public class LoreEditorMenu extends SavableMenu {
 	public void changerVarHandler(String var_name, Object o) {
 		switch (var_name) {
 			case "ADD_NEW":
-				lore.add(((String) o).replaceAll("&", "ง"));
+				lore.add(((String) o).replaceAll("&", "ยง"));
 				break;
 				
 			default:

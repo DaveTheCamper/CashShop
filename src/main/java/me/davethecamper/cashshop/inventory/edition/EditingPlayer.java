@@ -22,7 +22,7 @@ public class EditingPlayer {
 	}
 	
 
-	private static final ItemStack BLACK_WINDOW = ItemGenerator.getItemStack("BLACK_STAINED_GLASS_PANE", "งr");
+	private static final ItemStack BLACK_WINDOW = ItemGenerator.getItemStack("BLACK_STAINED_GLASS_PANE", "ยงr");
 	
 	public static final int BUTTON_SAVE = 3;
 	public static final int BUTTON_CANCEL = 5;
@@ -146,7 +146,7 @@ public class EditingPlayer {
 		int slot = 0;
 		for (int i = (this.page-1)*18; i < (this.page)*18; i++) {
 			if (current_options.size() <= i) break;
-			this.getInventory().setItem(slot+9, ItemGenerator.addLoreAfter(current_options.get(i).getItemProperties().getItem().clone(), ";=;" + current_options.get(i).getId(), "ง7งo"));
+			this.getInventory().setItem(slot+9, ItemGenerator.addLoreAfter(current_options.get(i).getItemProperties().getItem().clone(), ";=;" + current_options.get(i).getId(), "ยง7ยงo"));
 			slot++;
 		}
 		

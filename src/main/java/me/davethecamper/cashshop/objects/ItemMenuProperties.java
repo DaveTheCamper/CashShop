@@ -8,6 +8,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 public class ItemMenuProperties implements Cloneable {
+
+	public ItemMenuProperties(ItemStack item) {
+		readItem(item);
+	}
 	
 	public ItemMenuProperties(ItemStack item, String name, ArrayList<String> lore, boolean glow) {
 		this.glow = glow;

@@ -350,26 +350,26 @@ public class CashShop extends JavaPlugin {
 						InitializationResult ir = api.init(fc, coin_name);
 						
 						if (!api.isValidCurrency(configuration.getString("currency.code"))) {
-							Bukkit.getConsoleSender().sendMessage("§f<*> §b" + api.getIdentifier() + " §f-> §c" + messages.getString("api.error.currency"));
+							Bukkit.getConsoleSender().sendMessage("Â§f<*> Â§b" + api.getIdentifier() + " Â§f-> Â§c" + messages.getString("api.error.currency"));
 							continue;
 						}
 						
 						switch (ir) {
 							case INITIALIZATED:
 								apis.put(api.getIdentifier(), api);
-								Bukkit.getConsoleSender().sendMessage("§f<*> §b" + api.getIdentifier() + " §f-> §a" + messages.getString("api.loaded"));
+								Bukkit.getConsoleSender().sendMessage("Â§f<*> Â§b" + api.getIdentifier() + " Â§f-> Â§a" + messages.getString("api.loaded"));
 								break;
 								
 							case INVALID_CREDENTIALS:
-								Bukkit.getConsoleSender().sendMessage("§f<*> §b" + api.getIdentifier() + " §f-> §c" + messages.getString("api.error.credentials"));
+								Bukkit.getConsoleSender().sendMessage("Â§f<*> Â§b" + api.getIdentifier() + " Â§f-> Â§c" + messages.getString("api.error.credentials"));
 								break;
 
 							case INVALID_CURRENCY:
-								Bukkit.getConsoleSender().sendMessage("§f<*> §b" + api.getIdentifier() + " §f-> §c" + messages.getString("api.error.currency"));
+								Bukkit.getConsoleSender().sendMessage("Â§f<*> Â§b" + api.getIdentifier() + " Â§f-> Â§c" + messages.getString("api.error.currency"));
 								break;
 								
 							case OFFLINE_API:
-								Bukkit.getConsoleSender().sendMessage("§f<*> §b" + api.getIdentifier() + " §f-> §c" + messages.getString("api.error.offline"));
+								Bukkit.getConsoleSender().sendMessage("Â§f<*> Â§b" + api.getIdentifier() + " Â§f-> Â§c" + messages.getString("api.error.offline"));
 								break;
 								
 							default:

@@ -28,14 +28,14 @@ public class ConfigManager {
 	
 	private Object get(String s) {
 		if (messages.get(s) == null) {
-			Bukkit.getConsoleSender().sendMessage("§4[ERROR] §6CashShop -> §cmissing configuration §4" + s + " §cin file §4" + this.file_name);
+			Bukkit.getConsoleSender().sendMessage("Â§4[ERROR] Â§6CashShop -> Â§cmissing configuration Â§4" + s + " Â§cin file Â§4" + this.file_name);
 			registerDefault(s);
-			return "§d§oMissing message §d§o" + s;
+			return "Â§dÂ§oMissing message Â§dÂ§o" + s;
 		}
 		return messages.get(s);
 	}
 	
-	public String getString(String s) {return ((String) get(s)).replaceAll("&", "§");}
+	public String getString(String s) {return ((String) get(s)).replaceAll("&", "Â§");}
 	
 	public int getInt(String s) {return ((Integer) get(s));}
 	
@@ -50,7 +50,7 @@ public class ConfigManager {
 	public List<String> getStringList(String s) {
 		List<String> list = (List<String>) getList(s);
 		List<String> new_list = new ArrayList<>();
-		for (String p : new ArrayList<>(list)) {new_list.add(p.replaceAll("&", "§"));}
+		for (String p : new ArrayList<>(list)) {new_list.add(p.replaceAll("&", "Â§"));}
 		return new_list;
 	}
 	
@@ -61,7 +61,7 @@ public class ConfigManager {
 
         for (Object object : list) {
             if ((object instanceof String) || (isPrimitiveWrapper(object))) {
-                lore = lore + String.valueOf(object).replaceAll("&", "§") + ";=;";
+                lore = lore + String.valueOf(object).replaceAll("&", "Â§") + ";=;";
             }
         }
         

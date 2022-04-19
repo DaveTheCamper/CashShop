@@ -78,8 +78,8 @@ public class SellProductMenu extends ValuebleItemMenu {
 		ItemStack item = this.getItemProperties().getItem().clone();
 		item = player != null ? ItemGenerator.replaces(item, player) : item;
 		item = player == null || !player.isCashTransaction() ? 
-				ItemGenerator.addLoreAfter(item, ";=;" + item_config.getString("product.sell").replaceAll("@value", f.format(value_cash)) + (amount > 1 ? " ง7(x" + amount + ")" : "") + ";=;งr", "") : 
-					ItemGenerator.addLoreAfter(ItemGenerator.tryReplace(ItemGenerator.tryReplace(item, "@curvalue", f.format(value_cash_money)), "@value", f2.format(value_cash)),  (discount > 0 ? "งd" + f.format(discount) + "% OFF " : "") + (amount > 1 ? "ง7(x" + amount + ")" : ""), "");
+				ItemGenerator.addLoreAfter(item, ";=;" + item_config.getString("product.sell").replaceAll("@value", f.format(value_cash)) + (amount > 1 ? " ยง7(x" + amount + ")" : "") + ";=;ยงr", "") : 
+					ItemGenerator.addLoreAfter(ItemGenerator.tryReplace(ItemGenerator.tryReplace(item, "@curvalue", f.format(value_cash_money)), "@value", f2.format(value_cash)),  (discount > 0 ? "ยงd" + f.format(discount) + "% OFF " : "") + (amount > 1 ? "ยง7(x" + amount + ")" : ""), "");
 		
 		return item;
 	}
@@ -164,4 +164,7 @@ public class SellProductMenu extends ValuebleItemMenu {
 		}
 	}
 
+	public static SellProductMenu createTemporaryProduct(String identifier, int valor, int delay, ProductConfig product, ItemStack item) {
+		return new SellProductMenu(identifier, CashShop.getInstance().getMessagesConfig(), null, new ItemMenuProperties(item), product, valor, delay);
+	}
 }

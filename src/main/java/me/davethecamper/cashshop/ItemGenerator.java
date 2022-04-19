@@ -185,11 +185,11 @@ public class ItemGenerator {
 	}
 
 	public static ItemStack getItemStack(String material, String name, String lore) {
-		return getItemStack(material, name, lore, "§f");
+		return getItemStack(material, name, lore, "Â§f");
 	}
 
 	public static ItemStack getItemStack(String material, String name, ArrayList<String> lore) {
-		return getItemStack(material, name, "§f", lore);
+		return getItemStack(material, name, "Â§f", lore);
 	}
 
 	public static ItemStack getItemStack(String material, String name, String lore, String color) {
@@ -197,14 +197,14 @@ public class ItemGenerator {
 	}
 
 	public static ItemStack getItemStack(String material, String name, String lore_aux, ArrayList<String> lore) {
-		return getItemStack(material, name, lore_aux, "§f", lore);
+		return getItemStack(material, name, lore_aux, "Â§f", lore);
 	}
 	
 	public static ItemStack getItemStack(String material, String name, String lore_aux, String color, ArrayList<String> lore) {
 		try {
 			XMaterial.matchXMaterial(material).get().parseItem();
 		} catch (Exception e) {
-			Bukkit.getConsoleSender().sendMessage("§4[ERROR] §6CashShop -> §cunknown material §4" + material + " §cdid you download the currect version?");
+			Bukkit.getConsoleSender().sendMessage("Â§4[ERROR] Â§6CashShop -> Â§cunknown material Â§4" + material + " Â§cdid you download the currect version?");
 		}
 		
 		ItemStack item = XMaterial.matchXMaterial(material).get().parseItem();

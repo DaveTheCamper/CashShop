@@ -60,7 +60,7 @@ public class ChooseEditionMenu extends ChoosableMenu {
 		int slot = 0;
 		for (int i = (page-1)*45; i < categories.size(); i++) {
 			if (slot < 9*5) {
-				this.registerButton(slot, ItemGenerator.addLoreAfter(categories.get(i).getItemProperties().getItem().clone(), ";=;" + categories.get(i).getId(), "ง7งo"));
+				this.registerButton(slot, ItemGenerator.addLoreAfter(categories.get(i).getItemProperties().getItem().clone(), ";=;" + categories.get(i).getId(), "ยง7ยงo"));
 				slot++;
 			} else {
 				break;
