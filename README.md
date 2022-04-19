@@ -1,6 +1,6 @@
 # CashShop
 
-##Gateways:
+## Gateways:
 
   <ul>
     <li><a href="https://github.com/DaveTheCamper/PayPalGateway" target="_blank">PayPal</a></li>
