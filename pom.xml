@@ -127,7 +127,7 @@
     <repository>
       <id>github</id>
       <name>GitHub Packages</name>
-      <url>https://maven.pkg.github.com/tomast1337/CashShop</url>
+      <url>https://maven.pkg.github.com/DaveTheCamper/CashShop</url>
     </repository>
   </distributionManagement>
 
