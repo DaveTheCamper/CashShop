@@ -1,5 +1,12 @@
 # CashShop
 
+## Gateways:
+
+  <ul>
+    <li><a href="https://github.com/DaveTheCamper/PayPalGateway" target="_blank">PayPal</a></li>
+    <li><a href="https://github.com/DaveTheCamper/PagSeguroGateway" target="_blank">PagSeguro</a></li>
+  </ul>
+
 ## Como usar:
 
 ### pom.xml
