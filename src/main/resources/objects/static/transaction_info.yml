@@ -5,17 +5,4 @@ item:
   lore:
   - §9This indicate which slots
   - §9can have transaction info
-  item:
-    ==: org.bukkit.inventory.ItemStack
-    v: 2584
-    type: WRITABLE_BOOK
-    meta:
-      ==: ItemMeta
-      meta-type: BOOK
-      display-name: '{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"aqua","text":"Transaction
-        indicator"}],"text":""}'
-      lore:
-      - '{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"blue","text":"This
-        indicate which slots"}],"text":""}'
-      - '{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"blue","text":"can
-        have transaction info"}],"text":""}'
+  type: WRITABLE_BOOK

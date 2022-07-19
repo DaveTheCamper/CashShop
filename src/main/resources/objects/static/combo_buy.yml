@@ -107,12 +107,4 @@ item:
   name: §2§lBuy cash
   glow: false
   lore: []
-  item:
-    ==: org.bukkit.inventory.ItemStack
-    v: 2584
-    type: EMERALD
-    meta:
-      ==: ItemMeta
-      meta-type: UNSPECIFIC
-      display-name: '{"extra":[{"bold":true,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"dark_green","text":"Buy
-        cash"}],"text":""}'
+  type: EMERALD

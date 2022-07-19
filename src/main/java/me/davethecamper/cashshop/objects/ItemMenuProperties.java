@@ -7,10 +7,20 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import me.davethecamper.cashshop.ItemGenerator;
+
 public class ItemMenuProperties implements Cloneable {
 
 	public ItemMenuProperties(ItemStack item) {
 		readItem(item);
+	}
+
+	public ItemMenuProperties(String material, String name, ArrayList<String> lore, boolean glow) {
+		this.glow = glow;
+		this.name = name;
+		this.lore = lore;
+		
+		this.item = ItemGenerator.getItemStack(material, name, lore, glow);
 	}
 	
 	public ItemMenuProperties(ItemStack item, String name, ArrayList<String> lore, boolean glow) {
@@ -61,6 +71,13 @@ public class ItemMenuProperties implements Cloneable {
 	public void setLore(ArrayList<String> lore) {
 		this.lore = new ArrayList<String>(lore);
 		updateItem();
+	}
+	
+	public void hideFlags() {
+		ItemMeta im = this.item.getItemMeta();
+		im.addItemFlags(ItemFlag.values());
+		
+		item.setItemMeta(im);
 	}
 	
 	public void readItem(ItemStack item) {

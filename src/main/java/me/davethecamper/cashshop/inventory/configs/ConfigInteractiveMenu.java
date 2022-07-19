@@ -88,6 +88,19 @@ public class ConfigInteractiveMenu extends ConfigItemMenu {
 	
 	private HashMap<Integer, String> replaces = new HashMap<>();
 
+	public int getTotalReplacers(String name) {
+		int total = 0;
+		
+		HashMap<Integer, EditionComponent> map = CashShop.getInstance().getCategoriesManager().getCategorie(this.getId()).getVisualizableItems();
+		for (Integer slot : map.keySet()) {
+			if (map.get(slot).getName().equals(name)) {
+				total++;
+			}
+		}
+		
+		return total;
+	}
+	
 	public void replaceIndicators(String name, ItemStack item, String identifiers) {
 		ArrayList<Integer> slots = new ArrayList<>();
 		for (Integer slot : new ArrayList<>(this.getVisualizableItems().keySet())) {

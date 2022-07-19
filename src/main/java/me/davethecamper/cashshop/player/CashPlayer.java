@@ -147,6 +147,12 @@ public class CashPlayer {
 	public void updateGift() {
 		new WaitingForChat(uuid, WaitingForChat.Primitives.STRING, "set_gift", CashShop.getInstance().getMessagesConfig().getString("chat.gift"));
 	}
+	
+	public void reloadCurrentMenu() {
+		this.updateCurrentInventory(CashShop.getInstance().getCategoriesManager().getCategorie(this.current_menu.getId()));
+		
+		if (previus_menus.size() > 0) {previus_menus.remove(previus_menus.size()-1);}
+	}
 
 	public void updateCurrentInventory(ConfigInteractiveMenu new_menu) {
 		updateCurrentInventory(new_menu, true);
@@ -302,7 +308,15 @@ public class CashPlayer {
 
 
 	public void updateCurrentProduct() {
-		updateCurrentProduct(this.current_product, this.product_amount, false);
+		if (this.current_product != null) {
+			updateCurrentProduct(this.current_product, this.product_amount, false);
+		} else {
+			ConfigInteractiveMenu menu = this.getCurrentInteractiveMenu();
+			if (this.previus_menus.size() > 0) this.previus_menus.remove(this.previus_menus.size()-1);
+			
+			this.updateCurrentInventory(CashShop.getInstance().getCategoriesManager().getCategorie(menu.getId()));
+		}
+		
 	}
 	
 	public void updateCurrentProduct(SellProductMenu new_item) {
@@ -316,6 +330,7 @@ public class CashPlayer {
 		this.current_product = new_item;
 		
 		ConfigInteractiveMenu buy_menu = this.current_checkout;
+		
 		buy_menu.updateProduct(this.current_product.getSellingItem(this, this.product_amount));
 		
 		updateCurrentInventory(buy_menu, add_list);

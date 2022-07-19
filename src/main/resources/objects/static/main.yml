@@ -44,11 +44,4 @@ item:
   name: Main category
   glow: false
   lore: []
-  item:
-    ==: org.bukkit.inventory.ItemStack
-    v: 2584
-    type: YELLOW_STAINED_GLASS_PANE
-    meta:
-      ==: ItemMeta
-      meta-type: UNSPECIFIC
-      display-name: '{"extra":[{"text":"Main category"}],"text":""}'
+  type: YELLOW_STAINED_GLASS_PANE

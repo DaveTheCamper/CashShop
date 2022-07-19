@@ -69,18 +69,4 @@ item:
   glow: true
   lore:
   - §aSelect your payment method
-  item:
-    ==: org.bukkit.inventory.ItemStack
-    v: 2584
-    type: ENCHANTED_BOOK
-    meta:
-      ==: ItemMeta
-      meta-type: ENCHANTED
-      display-name: '{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"blue","text":"Gateways"}],"text":""}'
-      lore:
-      - '{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"green","text":"Select
-        your payment method"}],"text":""}'
-      enchants:
-        ARROW_DAMAGE: 1
-      ItemFlags:
-      - HIDE_ENCHANTS
+  type: ENCHANTED_BOOK

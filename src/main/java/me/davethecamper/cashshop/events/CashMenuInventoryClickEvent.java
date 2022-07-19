@@ -3,15 +3,15 @@ package me.davethecamper.cashshop.events;
 import java.util.UUID;
 
 import org.bukkit.event.Cancellable;
-import org.bukkit.event.Event;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 import me.davethecamper.cashshop.inventory.configs.ConfigInteractiveMenu;
+import me.davethecamper.cashshop.inventory.edition.EditionComponent;
 
-public class CashMenuInventoryClickEvent extends Event implements Cancellable {
+public class CashMenuInventoryClickEvent extends CustomInventoryClickEvent implements Cancellable {
 
 	public CashMenuInventoryClickEvent(UUID uuid, ConfigInteractiveMenu rm, InventoryClickEvent click_event) {
+		super(click_event);
 		this.player = uuid;
 		this.menu = rm;
 		this.event = click_event;
@@ -32,6 +32,10 @@ public class CashMenuInventoryClickEvent extends Event implements Cancellable {
 	
 	
 	public boolean isCancelClick() {return cancel_click;}
+	
+	public boolean isVisualizableItem() {return this.menu.getVisualizableItems().containsKey(event.getSlot());}
+	
+	public EditionComponent getEditionComponent() {return this.menu.getVisualizableItems().get(event.getSlot());}
 
 	public UUID getPlayer() {return player;}
 
@@ -39,18 +43,6 @@ public class CashMenuInventoryClickEvent extends Event implements Cancellable {
 	
 	public InventoryClickEvent getClickEvent() {return this.event;}
 	
-	
-
-	private static final HandlerList HANDLERS = new HandlerList();
-	
-	@Override
-	public HandlerList getHandlers() {
-		return HANDLERS;
-	}
-
-	public static HandlerList getHandlerList() {
-		return HANDLERS;
-	}
 
 
 	@Override

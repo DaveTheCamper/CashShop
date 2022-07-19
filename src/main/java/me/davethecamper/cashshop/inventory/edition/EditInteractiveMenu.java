@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 
 import me.davethecamper.cashshop.CashShop;
 import me.davethecamper.cashshop.ConfigManager;
+import me.davethecamper.cashshop.ItemGenerator;
 import me.davethecamper.cashshop.events.ChangeEditorInventoryEvent;
 import me.davethecamper.cashshop.inventory.WaitingForChat;
 import me.davethecamper.cashshop.inventory.configs.ConfigInteractiveMenu;
@@ -68,6 +69,8 @@ public class EditInteractiveMenu extends SavableMenu {
 		
 		try {
 			ItemStack item = dad.generateItem(component);
+			item = ItemGenerator.addLoreAfter(item.clone(), component.getName(), "§7§o");
+			
 			this.registerItem(component.getName() + slot, item, slot);
 		} catch (Exception e) {
 			e.printStackTrace();

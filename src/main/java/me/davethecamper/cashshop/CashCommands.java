@@ -66,12 +66,12 @@ public class CashCommands implements CommandExecutor {
 								other.addCash(amount);
 								cp.removeCash(amount);
 								
-								p.sendMessage(CashShop.getInstance().getMessagesConfig().getString("tag") + " §aVoc§ enviou §b" + amount + " §acash o jogador §b" + of.getName());
+								p.sendMessage(CashShop.getInstance().getMessagesConfig().getString("tag") + " §aVocê enviou §b" + amount + " §acash o jogador §b" + of.getName());
 								if (of.isOnline()) {
-									of.getPlayer().sendMessage(CashShop.getInstance().getMessagesConfig().getString("tag") + " §aVoc§ recebeu §b" + amount + " §acash do jogador §b" + p.getName());
+									of.getPlayer().sendMessage(CashShop.getInstance().getMessagesConfig().getString("tag") + " §aVocê recebeu §b" + amount + " §acash do jogador §b" + p.getName());
 								}
 							} else {
-								p.sendMessage(CashShop.getInstance().getMessagesConfig().getString("tag") + " §cPlayer n§o encontrado");
+								p.sendMessage(CashShop.getInstance().getMessagesConfig().getString("tag") + " §cPlayer não encontrado");
 							}
 						} else {
 							p.sendMessage(CashShop.getInstance().getMessagesConfig().getString("tag") + " §c/cash enviar [nick] [quantia]");
@@ -80,7 +80,7 @@ public class CashCommands implements CommandExecutor {
 					break;
 					
 				case "ver":
-					p.sendMessage(CashShop.getInstance().getMessagesConfig().getString("tag") + " §eVoc§ tem §6" + cp.getCash() + " §ecash's");
+					p.sendMessage(CashShop.getInstance().getMessagesConfig().getString("tag") + " §eVocê tem §6" + cp.getCash() + " §ecash's");
 					break;
 					
 				case "editor":
@@ -95,7 +95,7 @@ public class CashCommands implements CommandExecutor {
 					
 			}
 		} else {
-			p.sendMessage(CashShop.getInstance().getMessagesConfig().getString("tag") + " §eVoc§ tem §6" + cp.getCash() + " §ecash's");
+			p.sendMessage(CashShop.getInstance().getMessagesConfig().getString("tag") + " §eVocê tem §6" + cp.getCash() + " §ecash's");
 		}
 	}
 	

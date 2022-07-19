@@ -8,9 +8,10 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 import me.davethecamper.cashshop.inventory.configs.ConfigInteractiveMenu;
 
-public class CashPlayerInventoryClickEvent extends Event {
+public class CashPlayerInventoryClickEvent extends CustomInventoryClickEvent {
 
 	public CashPlayerInventoryClickEvent(UUID uuid, ConfigInteractiveMenu rm, InventoryClickEvent click_event) {
+		super(click_event);
 		this.player = uuid;
 		this.menu = rm;
 		this.event = click_event;

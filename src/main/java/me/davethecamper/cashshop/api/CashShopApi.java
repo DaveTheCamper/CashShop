@@ -283,6 +283,9 @@ public class CashShopApi {
 		return players;
 	}
 	
+	public void disableCommandUsage(String command) {
+		this.main.getCommand(command).setExecutor(null);
+	}
 	
 
 }

@@ -58,9 +58,9 @@ public final class CashShopClassLoader extends URLClassLoader {
     	    
     	    try {
 				this.loadClass(className);
-			} catch (ClassNotFoundException e1) {
+			} catch (Exception e1) {
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				//e1.printStackTrace();
 			}
     	}
     }

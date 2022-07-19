@@ -86,7 +86,7 @@ items:
         lore:
         - '&bCreate new category'
       decorative:
-        material: NAUTILUS_SHELL
+        material: POPPY
         name: '&6Decorative items'
         lore:
         - '&bCreate new decorative item'
@@ -115,7 +115,7 @@ items:
         lore:
         - '&bEdit categories'
       decorative:
-        material: NAUTILUS_SHELL
+        material: POPPY
         name: '&6Decorative items'
         lore:
         - '&bEdit decorative items'
@@ -213,7 +213,7 @@ items:
   edition:
     choose:
       nothing:
-        material: NAUTILUS_SHELL
+        material: POPPY
         name: '&6Add decorative item'
         lore:
         - ''

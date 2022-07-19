@@ -1,0 +1,6 @@
+type: do-nothing
+item:
+  name: "§r"
+  glow: false
+  lore: []
+  type: BLACK_STAINED_GLASS_PANE

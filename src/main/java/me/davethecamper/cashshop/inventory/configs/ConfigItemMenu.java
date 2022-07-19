@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.inventory.ItemStack;
@@ -169,6 +170,8 @@ public class ConfigItemMenu extends DeletebleMenu {
 	
 	@Override
 	public boolean inventoryPlayerClickHandler(int clicked_slot, ItemStack item) {
+		if (item == null || item.getType().equals(Material.AIR)) return true;
+		
 		getItemProperties().readItem(item);
 		
 		updateItem();

@@ -7,6 +7,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -48,6 +50,15 @@ public class ItemGenerator {
 		new_item.setItemMeta(im);
 		
 		return new_item;
+	}
+	
+	public static ItemStack changeDisplayName(ItemStack item, String name) {
+		ItemMeta im = item.getItemMeta();
+		
+		im.setDisplayName(name);
+		item.setItemMeta(im);
+		
+		return item;
 	}
 	
 
@@ -191,16 +202,20 @@ public class ItemGenerator {
 	public static ItemStack getItemStack(String material, String name, ArrayList<String> lore) {
 		return getItemStack(material, name, "§f", lore);
 	}
+	
+	public static ItemStack getItemStack(String material, String name, ArrayList<String> lore, boolean glow) {
+		return getItemStack(material, name, "", "§f", lore, glow);
+	}
 
 	public static ItemStack getItemStack(String material, String name, String lore, String color) {
-		return getItemStack(material, name, lore, color, new ArrayList<>());
+		return getItemStack(material, name, lore, color, new ArrayList<>(), false);
 	}
 
 	public static ItemStack getItemStack(String material, String name, String lore_aux, ArrayList<String> lore) {
-		return getItemStack(material, name, lore_aux, "§f", lore);
+		return getItemStack(material, name, lore_aux, "§f", lore, false);
 	}
 	
-	public static ItemStack getItemStack(String material, String name, String lore_aux, String color, ArrayList<String> lore) {
+	public static ItemStack getItemStack(String material, String name, String lore_aux, String color, ArrayList<String> lore, boolean glow) {
 		try {
 			XMaterial.matchXMaterial(material).get().parseItem();
 		} catch (Exception e) {
@@ -219,6 +234,11 @@ public class ItemGenerator {
 					lore.add(color + split[i]);
 				}
 			}
+		}
+		
+		if (glow) {
+			im.addEnchant(Enchantment.ARROW_DAMAGE, 1, true);
+			im.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 		}
 
 		if (lore.size() > 0) im.setLore(lore);

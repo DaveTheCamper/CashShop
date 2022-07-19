@@ -186,10 +186,16 @@ public class CashShop extends JavaPlugin {
 			for (File folder : f.listFiles()) {
 				if (folder.isDirectory()) {
 					for (File object : folder.listFiles()) {
+						Bukkit.getConsoleSender().sendMessage("§aCarregando objeto §f>> §a" + object.getName());
+						
 						FileConfiguration fc = YamlConfiguration.loadConfiguration(object);
 						
-						ItemMenuProperties imp = fc.get("item.name") != null ? 
-								new ItemMenuProperties(fc.getItemStack("item.item"), fc.getString("item.name"), new ArrayList<>(fc.getStringList("item.lore")), fc.getBoolean("item.glow")) : null;
+						ItemMenuProperties imp = 
+								fc.get("item.name") != null ? 
+										fc.get("item.item") != null ?
+												new ItemMenuProperties(fc.getItemStack("item.item"), fc.getString("item.name"), new ArrayList<>(fc.getStringList("item.lore")), fc.getBoolean("item.glow"))
+												: new ItemMenuProperties(fc.getString("item.type"), fc.getString("item.name"), new ArrayList<>(fc.getStringList("item.lore")), fc.getBoolean("item.glow")) 
+										: null;
 						
 						HashMap<Integer, EditionComponent> component = null;
 						String name = fc.get("inventory.name") != null ? fc.getString("inventory.name") : "";

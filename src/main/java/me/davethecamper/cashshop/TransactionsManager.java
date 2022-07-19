@@ -122,7 +122,7 @@ public class TransactionsManager {
 						to_approve.get(cp).remove(ti);
 						Bukkit.getPluginManager().callEvent(new TransactionCompleteEvent(of.getUniqueId(), ti));
 						if (Bukkit.getPlayer(cp.getUniqueId()) != null && Bukkit.getPlayer(cp.getUniqueId()).isOnline()) {
-							Bukkit.getPlayer(cp.getUniqueId()).sendMessage("§aTransa§§o liberada, adicionado " + ti.getCash() + " cash's");
+							Bukkit.getPlayer(cp.getUniqueId()).sendMessage("§aTransação liberada, adicionado " + ti.getCash() + " cash's");
 							Bukkit.getPlayer(cp.getUniqueId()).playSound(Bukkit.getPlayer(cp.getUniqueId()).getLocation(), XSound.ENTITY_CAT_PURREOW.parseSound(), 1f, 1.3f);
 						}
 					}
