@@ -16,6 +16,7 @@ import me.davethecamper.cashshop.events.ChangeEditorInventoryEvent;
 import me.davethecamper.cashshop.events.WaitingChatEvent;
 import me.davethecamper.cashshop.inventory.ReciclableMenu;
 import me.davethecamper.cashshop.inventory.choosers.ChoosableMenu;
+import me.davethecamper.cashshop.inventory.choosers.MainChooseMenu;
 import me.davethecamper.cashshop.inventory.configs.ConfigInteractiveMenu;
 import me.davethecamper.cashshop.inventory.configs.SellProductMenu;
 import me.davethecamper.cashshop.inventory.configs.ValuebleItemMenu;
@@ -42,7 +43,7 @@ public class EventsCatcher implements Listener {
 		UUID uuid = e.getWhoClicked().getUniqueId();
 		
 		if (e.getClickedInventory() == null) return;
-		
+
 		if (main.haveEditorInventoryOpen(uuid) && isEditingEditor(uuid)) {
 			if (e.getClickedInventory() == null) return;
 			e.setCancelled(true);
@@ -197,6 +198,11 @@ public class EventsCatcher implements Listener {
 	
 	@EventHandler
 	public void onChangeInventoryEvent(ChangeEditorInventoryEvent e) {
+		if (e.getReciclableMenu() == null) {
+			main.changePlayerEditorInventory(e.getUuid(), new MainChooseMenu(e.getUuid(), CashShop.getInstance().getMessagesConfig()));
+			return;
+		}
+		
 		main.changePlayerEditorInventory(e.getUuid(), e.getReciclableMenu());
 	}
 	
@@ -245,7 +251,7 @@ public class EventsCatcher implements Listener {
 		UUID uuid = e.getPlayer().getUniqueId();
 		
 		if (main.haveEditorInventoryOpen(uuid)) {
-			if (e.getInventory().equals(main.getPlayerEditorCurrentInventory(uuid).getInventory())) {
+			if (main.getPlayerEditorCurrentInventory(uuid).getInventory() == null || e.getInventory().equals(main.getPlayerEditorCurrentInventory(uuid).getInventory())) {
 				setEditingEditor(uuid, false);
 			}
 		}
@@ -263,7 +269,7 @@ public class EventsCatcher implements Listener {
 		UUID uuid = e.getPlayer().getUniqueId();
 		
 		if (main.haveEditorInventoryOpen(uuid)) {
-			if (e.getInventory().equals(main.getPlayerEditorCurrentInventory(uuid).getInventory())) {
+			if (main.getPlayerEditorCurrentInventory(uuid).getInventory() != null && e.getInventory().equals(main.getPlayerEditorCurrentInventory(uuid).getInventory())) {
 				setEditingEditor(uuid, true);
 			}
 		}

@@ -53,13 +53,15 @@ public abstract class SavableMenu extends IdentificableMenu implements Cloneable
 		
 		fc = saveHandler(fc);
 		
-		try {
-			fc.save(f);
-		} catch (IOException e) {
-			e.printStackTrace();
+		if (!fc.isSet("nonSaveObject")) {
+			try {
+				fc.save(f);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			CashShop.getInstance().registerObject(path, this.getId(), this);
 		}
-		
-		CashShop.getInstance().registerObject(path, this.getId(), this);
 	}
 	
 	protected abstract FileConfiguration saveHandler(FileConfiguration fc);

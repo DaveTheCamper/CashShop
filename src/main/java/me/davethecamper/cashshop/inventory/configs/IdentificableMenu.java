@@ -102,6 +102,16 @@ public abstract class IdentificableMenu extends ReciclableMenu {
 		}
 	}
 	
+	protected void updateItemSlot(String name, int slot) {
+		if (identificable_to_item.containsKey(name)) {
+			ItemStack item = identificable_to_item.get(name);
+			
+			removeItem(name);
+			
+			registerItem(name, item, slot);
+		}
+	}
+	
 	protected void registerItem(String name, ItemStack item, int slot) {
 		identificable_to_item.put(name, item);
 		identificable_to_slot.put(name, slot);

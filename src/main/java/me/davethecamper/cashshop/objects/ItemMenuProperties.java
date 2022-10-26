@@ -31,7 +31,7 @@ public class ItemMenuProperties implements Cloneable {
 	}
 	
 	
-	private ArrayList<String> lore;
+	private ArrayList<String> lore = new ArrayList<>();
 	
 	private ItemStack item;
 	

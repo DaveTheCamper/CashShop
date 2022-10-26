@@ -36,6 +36,7 @@ public class ConfigItemMenu extends DeletebleMenu {
 	protected final String ITEM = "item";
 	protected final String CHANGE_NAME = "change_name";
 	protected final String GLOW = "glow";
+	protected final String HIDE_FLAGS = "flags";
 	protected final String ADD_LORE = "add_lore";
 	
 	@Override
@@ -52,6 +53,7 @@ public class ConfigItemMenu extends DeletebleMenu {
 		updateName();
 		updateGlow();
 		updateLore();
+		updateFlags();
 	}
 	
 	private void updateName() {
@@ -75,7 +77,15 @@ public class ConfigItemMenu extends DeletebleMenu {
 				ItemGenerator.getItemStack(
 						item_config.getString("items.item_properties.lore.material"), 
 						item_config.getString("items.item_properties.lore.name"), 
-						(item_properties.getLore().size() > 0 ? item_properties.getLoreAsString() : "") + (item_properties.getLore().size() > 0 ? ";=;" : "") + item_config.getStringAsItemLore("items.item_properties.lore.lore")), 21);
+						(item_properties.getLore() != null && item_properties.getLore().size() > 0 ? item_properties.getLoreAsString() : "") + (item_properties.getLore() != null && item_properties.getLore().size() > 0 ? ";=;" : "") + item_config.getStringAsItemLore("items.item_properties.lore.lore")), 21);
+	}
+	
+	private void updateFlags() {
+		this.registerItem(HIDE_FLAGS, 
+				ItemGenerator.getItemStack(
+						item_config.getString("items.item_properties.flags.material"), 
+						item_config.getString("items.item_properties.flags.name"), 
+						item_config.getStringAsItemLore("items.item_properties.flags.lore")), 18);
 	}
 	
 	public void changeLore(ArrayList<String> lore, String what) {
@@ -158,6 +168,11 @@ public class ConfigItemMenu extends DeletebleMenu {
 				updateGlow();
 				updateItem();
 				return true;
+				
+			case HIDE_FLAGS:
+				item_properties.hideFlags();
+				updateItem();
+				return true;
 
 			case ADD_LORE:
 				new LoreEditorMenu(this.getId(), ADD_LORE, item_config, this).startEditing(uuid);
@@ -178,6 +193,8 @@ public class ConfigItemMenu extends DeletebleMenu {
 		updateName();
 		updateGlow();
 		updateLore();
+		updateFlags();
+		
 		return true;
 	}
 

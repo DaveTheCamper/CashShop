@@ -24,7 +24,11 @@ public class WaitingForChat implements Listener {
 	}
 
 	public WaitingForChat(final UUID player, final WaitingForChat.Primitives type, final String var_name, final IdentificableMenu caller, boolean block_negatives) {
-		this(player, type, var_name, caller, caller.getMessages().getString("chat.to_do." + type.toString()));
+		this(player, type, var_name, caller, block_negatives, caller.getMessages().getString("chat.to_do." + type.toString()));
+	}
+
+	public WaitingForChat(final UUID player, final WaitingForChat.Primitives type, final String var_name, final IdentificableMenu caller, boolean block_negatives, String message) {
+		this(player, type, var_name, caller, message);
 		this.block_negative = block_negatives;
 	}
 	

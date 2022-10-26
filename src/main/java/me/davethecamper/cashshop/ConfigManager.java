@@ -122,13 +122,34 @@ public class ConfigManager {
 
 		if (args.length % 2 == 0) {
 			for (int i = 0; i < new_list.size(); i++) {
+				String newStr = new_list.get(i);
 				for (int arg = 0; arg < args.length; arg += 2) {
-					new_list.set(i, new_list.get(i).replaceAll(args[arg], args[arg+1]));
+					newStr = newStr.replaceAll(args[arg], args[arg+1]);
+				}
+				
+				if (newStr.contains("\n")) {
+					String words[] = newStr.split("\n");
+					new_list.set(i, words[0]);
+					
+					for (int y = words.length-1; y > 0; y--) {
+						shiftDown(new_list, i+1);
+						new_list.set(i+1, words[y]);
+					}
+				} else {
+					new_list.set(i, newStr);
 				}
 			}
 		}
 		
 		return new_list;
+	}
+	
+	private void shiftDown(List<String> list, int position) {
+		list.add("");
+		
+		for (int i = list.size()-1; i > position; i--) {
+			list.set(i, list.get(i-1));
+		}
 	}
 	
 	public String getStringAsItemLore(String s) {

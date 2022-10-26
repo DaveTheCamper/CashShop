@@ -89,6 +89,45 @@ public class ItemGenerator {
 		return new_item;
 	}
 	
+
+	public static ItemStack replaces(ItemStack item, String...args) {
+		ItemStack aditional = item.clone();
+		ItemMeta im = aditional.getItemMeta();
+		
+		if (im.hasDisplayName()) {
+			String name = im.getDisplayName();
+			
+			if (args.length % 2 == 0) {
+				for (int arg = 0; arg < args.length; arg += 2) {
+					name = name.replaceAll(args[arg], args[arg+1]);
+				}
+			}
+			
+			im.setDisplayName(name);
+		}
+		
+		if (im.hasLore()) {
+			ArrayList<String> lore = new ArrayList<>(im.getLore());
+			
+			for (int i = 0; i < lore.size(); i++) {
+				String s = lore.get(i);
+
+				if (args.length % 2 == 0) {
+					for (int arg = 0; arg < args.length; arg += 2) {
+						s = s.replaceAll(args[arg], args[arg+1]);
+					}
+				}
+				
+				lore.set(i, s);
+			}
+			
+			im.setLore(lore);
+		}
+		
+		aditional.setItemMeta(im);
+		
+		return aditional;
+	}
 	
 	public static ItemStack replaces(ItemStack item, CashPlayer player) {
 		if (has_to_replace.containsKey(item) && !has_to_replace.get(item)) {
@@ -186,7 +225,6 @@ public class ItemGenerator {
 		return replace_something ? current : "";
 	}
 	
-
 	public static ItemStack getItemStack(String material) {
 		return getItemStack(material, "");
 	}
@@ -199,12 +237,16 @@ public class ItemGenerator {
 		return getItemStack(material, name, lore, "§f");
 	}
 
+	public static ItemStack getItemStack(String material, String name, String lore, boolean glow) {
+		return getItemStack(material, name, lore, "§f", new ArrayList<>(), glow);
+	}
+
 	public static ItemStack getItemStack(String material, String name, ArrayList<String> lore) {
-		return getItemStack(material, name, "§f", lore);
+		return getItemStack(material, name, "", lore);
 	}
 	
 	public static ItemStack getItemStack(String material, String name, ArrayList<String> lore, boolean glow) {
-		return getItemStack(material, name, "", "§f", lore, glow);
+		return getItemStack(material, name, "", "§f", lore , glow);
 	}
 
 	public static ItemStack getItemStack(String material, String name, String lore, String color) {
@@ -215,19 +257,25 @@ public class ItemGenerator {
 		return getItemStack(material, name, lore_aux, "§f", lore, false);
 	}
 	
+	@SuppressWarnings("deprecation")
 	public static ItemStack getItemStack(String material, String name, String lore_aux, String color, ArrayList<String> lore, boolean glow) {
+		ItemStack item = null;
 		try {
-			XMaterial.matchXMaterial(material).get().parseItem();
+			item = XMaterial.matchXMaterial(material).get().parseItem();
 		} catch (Exception e) {
-			Bukkit.getConsoleSender().sendMessage("§4[ERROR] §6CashShop -> §cunknown material §4" + material + " §cdid you download the currect version?");
+			try {
+				String partes[] = material.split(":");
+				item = new ItemStack(Integer.valueOf(partes[0]), partes.length > 1 ? Byte.valueOf(partes[1]) : 0);
+			} catch (Exception e2) {
+				Bukkit.getConsoleSender().sendMessage("§4[ERROR] §6CashShop -> §cunknown material §4" + material + " §cdid you download the currect version?");
+			}
 		}
 		
-		ItemStack item = XMaterial.matchXMaterial(material).get().parseItem();
 		ItemMeta im = item.getItemMeta();
 		
-		if (name.length() > 0) im.setDisplayName(name);
+		if (name.length() > 0) im.setDisplayName(name.replaceAll("&", "§"));
 
-		if (lore_aux.length() > 0) {
+		if (lore_aux.length() > 0 && !lore_aux.equals("§f")) {
 			String split[] = lore_aux.split(";=;");
 			if (split.length > 0) {
 				for (int i = 0; i < split.length; i++) {
@@ -239,6 +287,7 @@ public class ItemGenerator {
 		if (glow) {
 			im.addEnchant(Enchantment.ARROW_DAMAGE, 1, true);
 			im.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+			im.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		}
 
 		if (lore.size() > 0) im.setLore(lore);

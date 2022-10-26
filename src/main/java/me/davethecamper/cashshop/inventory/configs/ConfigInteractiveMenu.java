@@ -88,6 +88,19 @@ public class ConfigInteractiveMenu extends ConfigItemMenu {
 	
 	private HashMap<Integer, String> replaces = new HashMap<>();
 
+	public int getTotalReplacersByRegex(String name) {
+		int total = 0;
+		
+		HashMap<Integer, EditionComponent> map = CashShop.getInstance().getCategoriesManager().getCategorie(this.getId()).getVisualizableItems();
+		for (Integer slot : map.keySet()) {
+			if (map.get(slot).getName().contains(name)) {
+				total++;
+			}
+		}
+		
+		return total;
+	}
+
 	public int getTotalReplacers(String name) {
 		int total = 0;
 		
@@ -271,7 +284,7 @@ public class ConfigInteractiveMenu extends ConfigItemMenu {
 			}
 		}
 		
-		if (player != null) {
+		if (player != null && item != null) {
 			item = ItemGenerator.replaces(item.clone(), player);
 		}
 		
@@ -346,4 +359,6 @@ public class ConfigInteractiveMenu extends ConfigItemMenu {
 					return super.inventoryClickHandler(uuid, clicked_slot, slot_button, type);
 		}
 	}
+	
+	
 }

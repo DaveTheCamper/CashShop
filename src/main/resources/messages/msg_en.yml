@@ -163,6 +163,11 @@ items:
       lore:
       - '&7&oClick to edit'
       hint: MISSING_CONFIGURATION_SETTING_DEFAULT
+    flags:
+      material: SHEARS
+      name: '&bFlags'
+      lore:
+      - '&7Remove item flags'
   valuable:
     material: GOLD_INGOT
     name: '&bValue'

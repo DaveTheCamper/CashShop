@@ -1,14 +1,21 @@
 package me.davethecamper.cashshop.inventory.configs;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.inventory.ItemStack;
 
+import me.davethecamper.cashshop.CashShop;
 import me.davethecamper.cashshop.ConfigManager;
+import me.davethecamper.cashshop.ItemGenerator;
+import me.davethecamper.cashshop.inventory.edition.EditionComponent;
+import me.davethecamper.cashshop.inventory.edition.EditionComponentType;
+import me.davethecamper.cashshop.objects.ItemMenuProperties;
 
 public class ProductItemsMenu extends SavableMenu {
 
@@ -63,7 +70,34 @@ public class ProductItemsMenu extends SavableMenu {
 		new_items.addAll(new_items);
 	}
 	
+
+	public void startEditing(UUID player, boolean viewOnly) {
+		if (viewOnly) {
+			this.generateInventory(getInventorySize()-9, getInventorySize());
+			ConfigInteractiveMenu menu = new ConfigInteractiveMenu("temporary_display_product_items", this.getMessages(), null, new ItemMenuProperties(ItemGenerator.getItemStack("STONE")), getDisplayComponents(), this.getInventorySize(), "§8Itens");
+			
+			CashShop.getInstance().getCashPlayer(player).updateCurrentInventory(menu);
+		} else {
+			this.startEditing(player);
+		}
+	}
 	
+	private HashMap<Integer, EditionComponent> getDisplayComponents() {
+		HashMap<Integer, EditionComponent> map = new HashMap<>();
+		
+		for (int i = 0; i < this.getInventorySize(); i++) {
+			if (this.getInventory().getItem(i) != null && !this.getInventory().getItem(i).getType().equals(Material.AIR)) {
+				map.put(i, new EditionComponent(EditionComponentType.DO_NOTHING, "display_product_item", this.getInventory().getItem(i)));
+			}
+		}
+		
+		map.put(47, new EditionComponent(EditionComponentType.DO_NOTHING, "display_product_item", ItemGenerator.getItemStack("BLACK_STAINED_GLASS_PANE", "§r")));
+		map.put(51, new EditionComponent(EditionComponentType.DO_NOTHING, "display_product_item", ItemGenerator.getItemStack("BLACK_STAINED_GLASS_PANE", "§r")));
+		
+		map.put(49, new EditionComponent(EditionComponentType.STATIC, "back_button", CashShop.getInstance().getStaticItem("back_button").getItemProperties().getItem().clone()));
+		
+		return map;
+	}
 	
 	@Override
 	public void saveHandler() {
