@@ -29,10 +29,12 @@
         <profile>
             <id>github</id>
             <repositories>
-                    <repository>
+            
+                <repository>
                     <id>central</id>
                     <url>https://repo1.maven.org/maven2</url>
                 </repository>
+                
                 <repository>
                     <id>github</id>
                     <url>https://maven.pkg.github.com/DaveTheCamper/CashShop</url>
@@ -40,6 +42,7 @@
                     <enabled>true</enabled>
                     </snapshots>
                 </repository>
+                
             </repositories>
         </profile>
     </profiles>
