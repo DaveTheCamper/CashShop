@@ -39,7 +39,7 @@
                     <id>github</id>
                     <url>https://maven.pkg.github.com/DaveTheCamper/CashShop</url>
                     <snapshots>
-                    <enabled>true</enabled>
+                        <enabled>true</enabled>
                     </snapshots>
                 </repository>
                 
