@@ -14,11 +14,13 @@
 <dependency>
     <groupId>me.davethecamper.cashshop</groupId>
     <artifactId>cash-shop</artifactId>
-    <version>0.0.1</version>
+    <version>**{VERSÃO}**</version>
 </dependency>
 ```
 ### settings.xml
 ```xml
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
     <activeProfiles>
         <activeProfile>github</activeProfile>
     </activeProfiles>
@@ -27,17 +29,20 @@
         <profile>
             <id>github</id>
             <repositories>
-                    <repository>
+            
+                <repository>
                     <id>central</id>
                     <url>https://repo1.maven.org/maven2</url>
                 </repository>
+                
                 <repository>
                     <id>github</id>
                     <url>https://maven.pkg.github.com/DaveTheCamper/CashShop</url>
                     <snapshots>
-                    <enabled>true</enabled>
+                        <enabled>true</enabled>
                     </snapshots>
                 </repository>
+                
             </repositories>
         </profile>
     </profiles>
@@ -49,6 +54,7 @@
             <password>**{SEU.TOKEN.GITHUB}**</password>
         </server>
     </servers>
+</settings>
 ```
 
 Mais informações sobre ``pom.xml`` https://maven.apache.org/pom.html
