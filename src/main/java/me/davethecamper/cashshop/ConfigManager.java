@@ -25,6 +25,11 @@ public class ConfigManager {
 		this.file = file;
 		this.file_name = file.getName();
 		this.plugin = plugin;
+		
+		if (!file.exists()) {
+			plugin.saveResource(getFilePathFromPlugin(file, plugin), true);
+		}
+		
 		loadMessages(YamlConfiguration.loadConfiguration(file), "");
 	}
 	
@@ -47,6 +52,19 @@ public class ConfigManager {
 			}
 		}
 		return messages.get(s) == null ? configurationSections.get(s) : messages.get(s);
+	}
+	
+	private static String getFilePathFromPlugin(File f, Plugin plugin) {
+		try {
+			String path = f.getAbsolutePath();
+			int index = path.indexOf(plugin.getName());
+			
+			return path.substring(index + plugin.getName().length(), path.length());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 	
 	private static Plugin tryRetreivePlugin(File f) {
