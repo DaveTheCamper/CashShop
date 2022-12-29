@@ -15,7 +15,7 @@
     <groupId>me.davethecamper.cashshop</groupId>
     <artifactId>cash-shop</artifactId>
     <version>**{VERSÃO}**</version>
-</dependency>
+</dependency> 
 ```
 ### settings.xml
 ```xml
