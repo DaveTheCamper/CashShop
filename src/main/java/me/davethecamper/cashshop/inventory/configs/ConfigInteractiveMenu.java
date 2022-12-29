@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -15,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import me.davethecamper.cashshop.CashShop;
 import me.davethecamper.cashshop.ConfigManager;
 import me.davethecamper.cashshop.ItemGenerator;
+import me.davethecamper.cashshop.events.CashMenuInventoryClickEvent;
 import me.davethecamper.cashshop.inventory.ReciclableMenu;
 import me.davethecamper.cashshop.inventory.WaitingForChat;
 import me.davethecamper.cashshop.inventory.edition.EditInteractiveMenu;
@@ -159,6 +161,7 @@ public class ConfigInteractiveMenu extends ConfigItemMenu {
 		return replaces.containsKey(slot);
 	}
 	
+	
 	public String getReplacedItem(int slot) {
 		return replaces.get(slot);
 	}
@@ -172,6 +175,17 @@ public class ConfigInteractiveMenu extends ConfigItemMenu {
 			}
 		}
 		return components;
+	}
+	
+	public EditionComponent getComponentBySlot(int slot) {
+		return this.getVisualizableItems().get(slot);
+	}
+	
+	
+	public void updateConsumerByName(Consumer<CashMenuInventoryClickEvent> consumer, String name) {
+		for (EditionComponent ec : this.getComponentsByName(name)) {
+			ec.setConsumer(consumer);
+		}
 	}
 
 	public void updateProduct(ItemStack item) {

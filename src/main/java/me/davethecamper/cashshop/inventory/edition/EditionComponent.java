@@ -1,6 +1,10 @@
 package me.davethecamper.cashshop.inventory.edition;
 
+import java.util.function.Consumer;
+
 import org.bukkit.inventory.ItemStack;
+
+import me.davethecamper.cashshop.events.CashMenuInventoryClickEvent;
 
 public class EditionComponent implements Cloneable {
 
@@ -21,14 +25,21 @@ public class EditionComponent implements Cloneable {
 	
 	private ItemStack item;
 	
+	private Consumer<CashMenuInventoryClickEvent> consumer;
+	
 	
 	public EditionComponentType getType() {return type;}
 	
 	public String getName() {return name;}
 	
 	public ItemStack getItemStack() {return item;}
-
 	
+	public Consumer<CashMenuInventoryClickEvent> getConsumer() {return consumer;}
+	
+	
+
+	public void setConsumer(Consumer<CashMenuInventoryClickEvent> consumer) {this.consumer = consumer;}
+
 	public void setType(EditionComponentType type) {this.type = type;}
 
 	public void setName(String name) {this.name = name;}

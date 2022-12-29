@@ -59,7 +59,7 @@ public class ConfigManager {
 			String path = f.getAbsolutePath();
 			int index = path.indexOf(plugin.getName());
 			
-			return path.substring(index + plugin.getName().length(), path.length());
+			return path.substring(index + plugin.getName().length() + 1, path.length());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -191,7 +191,8 @@ public class ConfigManager {
 			items.put(s, ItemGenerator.getItemStack(
 					this.getString(s + ".material"), 
 					this.getString(s + ".name"), 
-					this.getStringAsItemLore(s + ".lore")));
+					this.getStringAsItemLore(s + ".lore"),
+					this.contains(s + ".glow") ? this.getBoolean(s) : false));
 		}
 		return items.get(s);
 	}

@@ -83,6 +83,11 @@ public class EventsCatcher implements Listener {
 			CashPlayer cp = main.getNormalPlayerInventory(uuid);
 			if (e.getClickedInventory().equals(e.getView().getTopInventory())) {
 				CashMenuInventoryClickEvent event = new CashMenuInventoryClickEvent(uuid, cp.getCurrentInteractiveMenu(), e);
+				
+				if (cp.getCurrentInteractiveMenu().getComponentBySlot(e.getSlot()) != null) {
+					cp.getCurrentInteractiveMenu().getComponentBySlot(e.getSlot()).getConsumer().accept(event);
+				}
+				
 				Bukkit.getPluginManager().callEvent(event);
 				
 				if (event.isCancelled()) {
