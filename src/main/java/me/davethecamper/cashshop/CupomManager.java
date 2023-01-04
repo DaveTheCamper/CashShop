@@ -3,6 +3,7 @@ package me.davethecamper.cashshop;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
@@ -22,6 +23,8 @@ public class CupomManager {
 	private HashMap<String, Cupom> cupons = new HashMap<>();
 	
 
+	public Collection<Cupom> getCurrentActiveCupons() {return cupons.values();}
+	
 	public void addTransaction(String name, String token, double amount) {
 		if (this.isValid(name)) {
 			cupons.get(name).addUsage(token, amount);

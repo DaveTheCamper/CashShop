@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>me.davethecamper.cashshop</groupId>
   <artifactId>cash-shop</artifactId>
-  <version>119.7</version>
+  <version>18.8</version>
   <packaging>jar</packaging>
   
   <name>cash-shop</name>

@@ -186,6 +186,12 @@ public class ConfigInteractiveMenu extends ConfigItemMenu {
 		for (EditionComponent ec : this.getComponentsByName(name)) {
 			ec.setConsumer(consumer);
 		}
+		
+		for (Integer i : replaces.keySet()) {
+			if (replaces.get(i).equals(name)) {
+				this.getComponentBySlot(i).setConsumer(consumer);
+			}
+		}
 	}
 
 	public void updateProduct(ItemStack item) {
