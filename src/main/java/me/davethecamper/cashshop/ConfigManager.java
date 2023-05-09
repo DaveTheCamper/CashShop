@@ -56,10 +56,10 @@ public class ConfigManager {
 	
 	private static String getFilePathFromPlugin(File f, Plugin plugin) {
 		try {
+			String pluginAbsolutePath = plugin.getDataFolder().getAbsolutePath();
 			String path = f.getAbsolutePath();
-			int index = path.indexOf(plugin.getName());
 			
-			return path.substring(index + plugin.getName().length() + 1, path.length());
+			return path.substring(pluginAbsolutePath.length()+1, path.length());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -192,7 +192,7 @@ public class ConfigManager {
 					this.getString(s + ".material"), 
 					this.getString(s + ".name"), 
 					this.getStringAsItemLore(s + ".lore"),
-					this.contains(s + ".glow") ? this.getBoolean(s) : false));
+					this.contains(s + ".glow") ? this.getBoolean(s + ".glow") : false));
 		}
 		return items.get(s);
 	}

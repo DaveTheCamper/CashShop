@@ -12,20 +12,20 @@ commands:
       add: '&aCupom adicionado com sucesso!'
       remove:
         sucess: '&aCupom removido com sucesso!'
-        fail: '&cCupom n„o encontrado.'
+        fail: '&cCupom n√£o encontrado.'
 api:
   loaded: API carregada com sucesso!
   error:
-    credentials: H· algo de errado com as suas credenciais...
-    currency: Esta API n„o suporta a moeda atual
-    offline: Esta API est· offline. Talvez em manutenÁ„o?
+    credentials: H√° algo de errado com as suas credenciais...
+    currency: Esta API n√£o suporta a moeda atual
+    offline: Esta API est√° offline. Talvez em manuten√ß√£o?
 items:
   transactions:
-    approved: '&aTransaÁ„o aprovada!'
-    pending: '&cTransaÁ„o pendente.'
+    approved: '&aTransa√ß√£o aprovada!'
+    pending: '&cTransa√ß√£o pendente.'
     info:
     - ''
-    - ' &7Data de criaÁ„o: &a@date'
+    - ' &7Data de cria√ß√£o: &a@date'
     - ' &7Quantia: &a@cash'
     - ' &7Recebedor: &a@player'
     - ' &7Token: &b@token'
@@ -41,19 +41,19 @@ items:
     name: '&c&lEm cooldown...'
     lore:
       negative:
-      - '&bVocÍ n„o pode comprar este item novamente'
+      - '&bVoc√™ n√£o pode comprar este item novamente'
       positive:
-      - '&bVocÍ pode comprar em: @time'
+      - '&bVoc√™ pode comprar em: @time'
   choosable:
     main:
       create:
         material: NETHER_STAR
         name: '&f&lCriar novo'
         lore:
-        - '&bVocÍ pode criar um(a) novo(a):'
-        - ' &f- &aCategoria de invent·rio'
+        - '&bVoc√™ pode criar um(a) novo(a):'
+        - ' &f- &aCategoria de invent√°rio'
         - ' &f- &aProduto'
-        - ' &f- &aCombinaÁ„o de item'
+        - ' &f- &aCombina√ß√£o de item'
         - ' &f- &aItem decorativo'
       edit:
         material: ANVIL
@@ -65,7 +65,7 @@ items:
         material: NETHER_STAR
         name: '&f&lCriar'
         lore:
-        - '&bCriar o item com as configuraÁıes padrıes'
+        - '&bCriar o item com as configura√ß√µes padr√µes'
       clone:
         material: OAK_SAPLING
         name: '&f&lClonar'
@@ -108,7 +108,7 @@ items:
         name: '&6Listas'
         lore:
         - '&bCoisas como:'
-        - ' &f- &aLista de transaÁıes'
+        - ' &f- &aLista de transa√ß√µes'
         - ' &f- &aLista de checkouts'
         - ' &f- &aLista de combos de venda'
       categories:
@@ -125,7 +125,7 @@ items:
     material: BARRIER
     name: '&cVoltar'
     lore:
-    - '&7&oVoltar ‡ ˙ltima p·gina'
+    - '&7&oVoltar √† √∫ltima p√°gina'
   identifier:
     material: NAME_TAG
     name: Identifier
@@ -147,11 +147,11 @@ items:
     lore:
     - '&cDigite 9 no seu teclado'
     - ''
-    - '&7&oEsta aÁ„o n„o pode ser desfeita'
+    - '&7&oEsta a√ß√£o n√£o pode ser desfeita'
   item_properties:
     name:
       material: NAME_TAG
-      name: '&bNome de exibiÁ„o'
+      name: '&bNome de exibi√ß√£o'
       lore:
       - '&bNome atual: &r@name'
     glow:
@@ -192,9 +192,9 @@ items:
       lore:
       - ''
     hint:
-    - '&7&oBot„o 1 = Mover para cima'
-    - '&7&oBot„o 2 = Mover para baixo'
-    - '&7&oBot„o 9 = Remover'
+    - '&7&oBot√£o 1 = Mover para cima'
+    - '&7&oBot√£o 2 = Mover para baixo'
+    - '&7&oBot√£o 9 = Remover'
   category:
     edit:
       material: ORANGE_DYE
@@ -206,12 +206,12 @@ items:
       name: '&bTamanho'
       lore:
       - '&aTamanho: &2@size'
-      - '&7&oTamanho do invent·rio'
+      - '&7&oTamanho do invent√°rio'
     title:
       material: NAME_TAG
-      name: '&aMudar tÌtulo'
+      name: '&aMudar t√≠tulo'
       lore:
-      - '&aTÌtulo atual: &r@title'
+      - '&aT√≠tulo atual: &r@title'
   currency:
     material: EMERALD
     name: '&bValor da moeda'
@@ -226,27 +226,27 @@ items:
         - ''
       products:
         material: DIAMOND
-        name: '&6Adicionar bot„o de produto'
+        name: '&6Adicionar bot√£o de produto'
         lore:
         - ''
       categories:
         material: PAINTING
-        name: '&6Adicionar bot„o de categoria'
+        name: '&6Adicionar bot√£o de categoria'
         lore:
         - ''
       exclusive:
         material: END_PORTAL_FRAME
-        name: '&6Botıes de menu exclusivo'
+        name: '&6Bot√µes de menu exclusivo'
         lore:
         - ''
       combo:
         material: CHEST
-        name: '&6Adicionar bot„o de combo'
+        name: '&6Adicionar bot√£o de combo'
         lore:
         - ''
       done:
         material: LIME_STAINED_GLASS_PANE
-        name: '&aConcluÌdo'
+        name: '&aConclu√≠do'
         lore:
         - ''
     search:
@@ -257,25 +257,25 @@ items:
   navigable:
     backward:
       material: PAPER
-      name: '&f&lP·gina anterior'
+      name: '&f&lP√°gina anterior'
       lore:
       - ''
     forward:
       material: PAPER
-      name: '&f&lPrÛxima p·gina'
+      name: '&f&lPr√≥xima p√°gina'
       lore:
       - ''
 chat:
   to_do:
     STRING: '&aEscreva o texto no chat'
-    INTEGER: '&aEscreva o n˙mero no chat'
+    INTEGER: '&aEscreva o n√∫mero no chat'
     DOUBLE: MISSING_CONFIGURATION_SETTING_DEFAULT
   discount: '&aEscreva o nome do cupom'
   gift: '&aEscreva o nome do recebedor'
-  invalid_cupom: '&cSeu cÛdigo de cupom È inv·lido, confira e tente de novo'
+  invalid_cupom: '&cSeu c√≥digo de cupom √© inv√°lido, confira e tente de novo'
   amount: '&aEscreva a quantia que deseja (deve ser mais que 0)'
   generic_error:
-    INTEGER: '&cNumero inv·lido'
+    INTEGER: '&cNumero inv√°lido'
     DOUBLE: MISSING_CONFIGURATION_SETTING_DEFAULT
 product:
   sell: '&6Valor: &e@value'
@@ -285,8 +285,8 @@ product:
 payment:
   info: '&aPedido processado!'
   hover: '&bAbrir link'
-  link: '&bAgora È sÛ abrir @link &bno seu navegador para realizar o pagamento e adquirir
+  link: '&bAgora √© s√≥ abrir @link &bno seu navegador para realizar o pagamento e adquirir
     seu cash!'
   click: '&9[Clique aqui]'
   error:
-    min_value: '&cO valor mÌnimo para gastar È @value'
+    min_value: '&cO valor m√≠nimo para gastar √© @value'

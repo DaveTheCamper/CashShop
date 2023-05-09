@@ -18,6 +18,7 @@ import me.davethecamper.cashshop.inventory.configs.SavableMenu;
 import me.davethecamper.cashshop.inventory.configs.SellProductMenu;
 import me.davethecamper.cashshop.inventory.edition.EditionComponent;
 import me.davethecamper.cashshop.player.CashPlayer;
+import net.milkbowl.vault.economy.Economy;
 
 public class CashShopApi {
 	
@@ -53,6 +54,8 @@ public class CashShopApi {
 	public CupomManager getCupomManager() {return main.getCupomManager();}
 	
 	public CashPlayer getCashPlayer(UUID uuid) {return main.getNormalPlayerInventory(uuid);}
+	
+	public Economy getEconomy() {return main.getEconomy();}
 	
 	
 	public CashShopGateway getGateway(String name) {return main.getGateway(name);}

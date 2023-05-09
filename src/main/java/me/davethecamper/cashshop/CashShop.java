@@ -19,9 +19,11 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import lombok.Getter;
 import me.davethecamper.cashshop.api.CashShopApi;
 import me.davethecamper.cashshop.api.CashShopGateway;
 import me.davethecamper.cashshop.api.info.InitializationResult;
@@ -38,6 +40,7 @@ import me.davethecamper.cashshop.objects.CashShopClassLoader;
 import me.davethecamper.cashshop.objects.ItemMenuProperties;
 import me.davethecamper.cashshop.objects.ProductConfig;
 import me.davethecamper.cashshop.player.CashPlayer;
+import net.milkbowl.vault.economy.Economy;
 
 public class CashShop extends JavaPlugin {
 
@@ -84,6 +87,9 @@ public class CashShop extends JavaPlugin {
 	private static CashShopApi api;
 	private CashShop cs;
 	private CupomManager cm;
+	
+	@Getter
+	private Economy economy;
 	
 
 	private HashMap<String, CashShopGateway> apis = new HashMap<>();
@@ -134,6 +140,13 @@ public class CashShop extends JavaPlugin {
 		load();
 		autoSave();
 		this.transactions = new TransactionsManager(this);
+		
+
+        if (!setupEconomy() ) {
+            System.out.println("[" + getDescription().getName() + "] - Disabled due to no Vault dependency found!");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
 	}
 	
 	@Override
@@ -416,6 +429,22 @@ public class CashShop extends JavaPlugin {
 			}
 		}
 	}
+	
+    private boolean setupEconomy() {
+        if (getServer().getPluginManager().getPlugin("Vault") == null) {
+            return false;
+        }
+        
+        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+        if (rsp == null) {
+            return false;
+        }
+        
+        economy = rsp.getProvider();
+        
+        return economy != null;
+    }
+
 	
 	
 	private void loadCommands() {

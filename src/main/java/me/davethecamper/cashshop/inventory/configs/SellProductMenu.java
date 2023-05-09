@@ -8,6 +8,8 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.inventory.ItemStack;
 
+import lombok.Getter;
+import lombok.Setter;
 import me.davethecamper.cashshop.CashShop;
 import me.davethecamper.cashshop.ConfigManager;
 import me.davethecamper.cashshop.ItemGenerator;
@@ -38,6 +40,10 @@ public class SellProductMenu extends ValuebleItemMenu {
 	private ProductConfig product;
 	
 	private long delay_buy_again;
+	
+	@Getter
+	@Setter
+	private boolean isMoney;
 	
 	
 	protected final String COMMANDS = "comandos";

@@ -126,12 +126,12 @@ public class CashPlayer {
 	}
 	
 
-	public void addCash(int amount) {
+	public void addCash(long amount) {
 		this.cash += amount;
 		this.changes = true;
 	}
 	
-	public void removeCash(int amount) {
+	public void removeCash(long amount) {
 		addCash(-amount);
 	}
 			
@@ -341,13 +341,13 @@ public class CashPlayer {
 	}
 	
 	public void buyCurrentProduct(int amount, SellProductMenu menu, boolean remove_cash) {
-		int cash_needed = amount*menu.getValueInCash();
+		long cash_needed = amount*menu.getValueInCash();
 		
-		if (this.canBuyThisItem(menu) || !remove_cash) {
-			if (this.getCash() >= cash_needed || !remove_cash) {
+		if (!remove_cash || this.canBuyThisItem(menu)) {
+			if (!remove_cash || verifyCurrency(menu, cash_needed)) {
 				this.current_menu = null;
 				
-				if (remove_cash) this.removeCash(cash_needed);
+				if (remove_cash) this.removeCurrency(menu, cash_needed);
 				
 				ProductConfig pc = menu.getProduct();
 				
@@ -371,6 +371,38 @@ public class CashPlayer {
 				Bukkit.getPlayer(uuid).sendMessage(CashShop.getInstance().getMessagesConfig().getString("product.buy.fail"));
 			}
 		}
+	}
+	
+	private void removeCurrency(SellProductMenu menu, long value) {
+		if (menu.isMoney()) {
+			CashShop.getInstance().getEconomy().withdrawPlayer(Bukkit.getOfflinePlayer(this.getUniqueId()), value);
+			return;
+		}
+		
+		this.removeCash(value);
+	}
+	
+	private boolean verifyCurrency(SellProductMenu menu, long value) {
+		if (menu.isMoney()) {
+			return CashShop.getInstance().getEconomy().getBalance(Bukkit.getOfflinePlayer(this.getUniqueId())) >= value;
+		}
+		
+		return this.getCash() >= value;
+	}
+	
+	public boolean canBuyThisItem(SellProductMenu product) {
+		if (product != null && product.getDelayToBuy() != 0) {
+			if (last_buy_time.get(product.getId()) != null) {
+				if (product.getDelayToBuy() < 0) {
+					return false;
+				} else {
+					long tempo_armazenado = last_buy_time.get(product.getId());
+					
+					return tempo_armazenado + (product.getDelayToBuy()*1000*3600) < System.currentTimeMillis();
+				}
+			}
+		}
+		return true;
 	}
 	
 	private void giveItem(ItemStack item) {
@@ -399,21 +431,6 @@ public class CashPlayer {
         }
         return quantia;
     }
-	
-	public boolean canBuyThisItem(SellProductMenu product) {
-		if (product != null && product.getDelayToBuy() != 0) {
-			if (last_buy_time.get(product.getId()) != null) {
-				if (product.getDelayToBuy() < 0) {
-					return false;
-				} else {
-					long tempo_armazenado = last_buy_time.get(product.getId());
-					
-					return tempo_armazenado + (product.getDelayToBuy()*1000*3600) < System.currentTimeMillis();
-				}
-			}
-		}
-		return true;
-	}
 
 	public long getDelayToBuyAgain(SellProductMenu product) {
 		if (product.getDelayToBuy() != 0) {
