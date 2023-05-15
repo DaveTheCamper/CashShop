@@ -191,7 +191,6 @@ public class CashShop extends JavaPlugin {
 		loadObjects();
 	}
 	
-	@SuppressWarnings("unchecked")
 	private <Z extends ConfigItemMenu> void loadObjects() {
 		File f = new File(this.getDataFolder().getAbsolutePath() + "/objects/");
 		
@@ -203,65 +202,73 @@ public class CashShop extends JavaPlugin {
 						
 						FileConfiguration fc = YamlConfiguration.loadConfiguration(object);
 						
-						ItemMenuProperties imp = 
-								fc.get("item.name") != null ? 
-										fc.get("item.item") != null ?
-												new ItemMenuProperties(fc.getItemStack("item.item"), fc.getString("item.name"), new ArrayList<>(fc.getStringList("item.lore")), fc.getBoolean("item.glow"))
-												: new ItemMenuProperties(fc.getString("item.type"), fc.getString("item.name"), new ArrayList<>(fc.getStringList("item.lore")), fc.getBoolean("item.glow")) 
-										: null;
-						
-						HashMap<Integer, EditionComponent> component = null;
-						String name = fc.get("inventory.name") != null ? fc.getString("inventory.name") : "";
-						
-						int size = fc.get("inventory.name") != null ? fc.getInt("inventory.size") : 0;
-						int value = fc.get("value") != null ? fc.getInt("value") : 1;
-						long delay = fc.get("delay") != null ? fc.getLong("delay") : 0;
-						double combo_value = fc.get("combo.value") != null ? fc.getDouble("combo.value") : 0;
-						
-						
-						if (fc.get("inventory.items") != null) {
-							component = new HashMap<>();
-							for (String s : fc.getConfigurationSection("inventory.items.slot").getKeys(false)) {
-								EditionComponent c = new EditionComponent(EditionComponentType.valueOf(fc.getString("inventory.items.slot." + s + ".type")), fc.getString("inventory.items.slot." + s + ".name"));
-								component.put(Integer.parseInt(s), c);
-							}
-						}
-						
-						ArrayList<ItemStack> items = fc.get("selling.items") != null ? new ArrayList<ItemStack>((Collection<? extends ItemStack>) fc.getList("selling.items")) : null;
-						
-						ArrayList<String> commands = fc.get("selling.commands") != null ? new ArrayList<>(fc.getStringList("selling.commands")) : null;
- 						
-						
-						String identificador = object.getName().substring(0, object.getName().length()-4);
-						String type = fc.getString("type");
-						
-						TreeMap<String, Z> map = (TreeMap<String, Z>) getMapBasedOnType(type, object);
-						
-						switch (type) {
-							case "do-nothing":
-								addToMap(map, identificador, (Z) new ConfigItemMenu(identificador, this.messages, null, imp));
-								break;
-								
-							case "category":
-								addToMap(map, identificador, (Z) new ConfigInteractiveMenu(identificador, this.messages, null, imp, component, size, name));
-								break;
-								
-							case "product":
-								addToMap(map, identificador, (Z) new SellProductMenu(identificador, this.messages, null, imp, new ProductConfig(items, commands), value, delay));
-								break;
-								
-							case "combo-item":
-								addToMap(map, identificador, (Z) new ComboItemMenu(identificador, this.messages, null, imp, value, combo_value));
-								break;
-								
-							case "valueable":
-								addToMap(map, identificador, (Z) new ValuebleItemMenu(identificador, this.messages, null, imp, value));
-								break;
-						}
+						load(fc, object.getName(), f.getParentFile().getName().contains("static"));
 					}
 				}
 			}
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public <Z extends ConfigItemMenu> Z load(FileConfiguration fc, String filename, boolean isStatic) {
+		ItemMenuProperties imp = 
+				fc.get("item.name") != null ? 
+						fc.get("item.item") != null ?
+								new ItemMenuProperties(fc.getItemStack("item.item"), fc.getString("item.name"), new ArrayList<>(fc.getStringList("item.lore")), fc.getBoolean("item.glow"))
+								: new ItemMenuProperties(fc.getString("item.type"), fc.getString("item.name"), new ArrayList<>(fc.getStringList("item.lore")), fc.getBoolean("item.glow")) 
+						: null;
+		
+		HashMap<Integer, EditionComponent> component = null;
+		String name = fc.get("inventory.name") != null ? fc.getString("inventory.name") : "";
+		
+		int size = fc.get("inventory.name") != null ? fc.getInt("inventory.size") : 0;
+		int value = fc.get("value") != null ? fc.getInt("value") : 1;
+		long delay = fc.get("delay") != null ? fc.getLong("delay") : 0;
+		double combo_value = fc.get("combo.value") != null ? fc.getDouble("combo.value") : 0;
+		
+		
+		if (fc.get("inventory.items") != null) {
+			component = new HashMap<>();
+			for (String s : fc.getConfigurationSection("inventory.items.slot").getKeys(false)) {
+				EditionComponent c = new EditionComponent(EditionComponentType.valueOf(fc.getString("inventory.items.slot." + s + ".type")), fc.getString("inventory.items.slot." + s + ".name"));
+				component.put(Integer.parseInt(s), c);
+			}
+		}
+		
+		ArrayList<ItemStack> items = fc.get("selling.items") != null ? new ArrayList<ItemStack>((Collection<? extends ItemStack>) fc.getList("selling.items")) : null;
+		
+		ArrayList<String> commands = fc.get("selling.commands") != null ? new ArrayList<>(fc.getStringList("selling.commands")) : null;
+			
+		
+		String identificador = filename.substring(0, filename.length()-4);
+		String type = fc.getString("type");
+		
+		TreeMap<String, Z> map = (TreeMap<String, Z>) getMapBasedOnType(type, isStatic);
+		Z z = null;
+		
+		switch (type) {
+			case "do-nothing":
+				addToMap(map, identificador, z = (Z) new ConfigItemMenu(identificador, this.messages, null, imp));
+				break;
+				
+			case "category":
+				addToMap(map, identificador, z = (Z) new ConfigInteractiveMenu(identificador, this.messages, null, imp, component, size, name));
+				break;
+				
+			case "product":
+				addToMap(map, identificador, z = (Z) new SellProductMenu(identificador, this.messages, null, imp, new ProductConfig(items, commands), value, delay));
+				break;
+				
+			case "combo-item":
+				addToMap(map, identificador, z = (Z) new ComboItemMenu(identificador, this.messages, null, imp, value, combo_value));
+				break;
+				
+			case "valueable":
+				addToMap(map, identificador, z = (Z) new ValuebleItemMenu(identificador, this.messages, null, imp, value));
+				break;
+		}
+		
+		return z;
 	}
 	
 	private void verifyExitentStaticItems() {
@@ -274,8 +281,8 @@ public class CashShop extends JavaPlugin {
 	}
 	
 	
-	private TreeMap<String, ? extends ConfigItemMenu> getMapBasedOnType(String type, File f) {
-		if (f.getParentFile().getName().contains("static")) {
+	private TreeMap<String, ? extends ConfigItemMenu> getMapBasedOnType(String type, boolean isStatic) {
+		if (isStatic) {
 			return this.static_items;
 		}
 		

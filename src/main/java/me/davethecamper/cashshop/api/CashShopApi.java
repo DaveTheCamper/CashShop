@@ -1,11 +1,18 @@
 package me.davethecamper.cashshop.api;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.UUID;
+
+import org.bukkit.configuration.file.YamlConfiguration;
 
 import me.davethecamper.cashshop.CashShop;
 import me.davethecamper.cashshop.ConfigManager;
@@ -207,6 +214,16 @@ public class CashShopApi {
 		}
 		
 		this.getLists().updateCache(map);
+	}
+	
+	public <Z extends ConfigItemMenu> void save(String name, InputStream stream) {
+		try (Reader reader = new InputStreamReader(stream, "UTF-8")) {
+			Z z = main.load(YamlConfiguration.loadConfiguration(reader), name, false);
+		
+			z.save();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private HashMap<Integer, Double> money_spent = new HashMap<>();

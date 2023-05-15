@@ -447,7 +447,12 @@ public class CashPlayer {
 	public void addProductAmount(int amount) {
 		if (this.current_product.getDelayToBuy() == 0) {
 			this.product_amount = this.product_amount + amount > 0 ? this.product_amount + amount : 1;
+			ArrayList<ConfigInteractiveMenu> oldList = new ArrayList<>(previus_menus);
+			
 			updateCurrentProduct(this.current_product, this.product_amount, false);
+			
+			this.previus_menus.clear();
+			this.previus_menus.addAll(oldList);
 		}
 	}
 

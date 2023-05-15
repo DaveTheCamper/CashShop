@@ -86,7 +86,11 @@ public class EventsCatcher implements Listener {
 				
 				if (cp.getCurrentInteractiveMenu().getComponentBySlot(e.getSlot()) != null) {
 					if (cp.getCurrentInteractiveMenu().getComponentBySlot(e.getSlot()).getConsumer() != null) {
+						ConfigInteractiveMenu curr = cp.getCurrentInteractiveMenu();
+						
 						cp.getCurrentInteractiveMenu().getComponentBySlot(e.getSlot()).getConsumer().accept(event);	
+						
+						if (curr != cp.getCurrentInteractiveMenu()) return;
 					}
 				}
 				
@@ -99,9 +103,13 @@ public class EventsCatcher implements Listener {
 				e.setCancelled(event.isCancelClick());				
 			} else {
 				CashPlayerInventoryClickEvent event = new CashPlayerInventoryClickEvent(uuid, cp.getCurrentInteractiveMenu(), e);
+				ConfigInteractiveMenu curr = cp.getCurrentInteractiveMenu();
+				
 				Bukkit.getPluginManager().callEvent(event);
 				
 				e.setCancelled(event.isCancelClick());
+				
+				if (curr != cp.getCurrentInteractiveMenu()) return;
 			}
 			
 
