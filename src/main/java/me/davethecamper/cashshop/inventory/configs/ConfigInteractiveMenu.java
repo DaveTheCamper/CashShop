@@ -3,6 +3,7 @@ package me.davethecamper.cashshop.inventory.configs;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -116,7 +117,7 @@ public class ConfigInteractiveMenu extends ConfigItemMenu {
 		return total;
 	}
 	
-	public void replaceIndicators(String name, ItemStack item, String identifiers) {
+	public List<Integer> replaceIndicators(String name, ItemStack item, String identifiers) {
 		ArrayList<Integer> slots = new ArrayList<>();
 		for (Integer slot : new ArrayList<>(this.getVisualizableItems().keySet())) {
 			if (this.getVisualizableItems().get(slot).getName().equals(name)) {
@@ -132,10 +133,10 @@ public class ConfigInteractiveMenu extends ConfigItemMenu {
 			identifiers_t.add(identifiers);
 		}
 		
-		replaceIndicators(name, items_t, identifiers_t);
+		return replaceIndicators(name, items_t, identifiers_t);
 	}
 	
-	public void replaceIndicators(String name, ArrayList<ItemStack> list, ArrayList<String> identifiers) {
+	public List<Integer> replaceIndicators(String name, ArrayList<ItemStack> list, ArrayList<String> identifiers) {
 		ArrayList<Integer> slots = new ArrayList<>();
 		for (Integer slot : new ArrayList<>(this.getVisualizableItems().keySet())) {
 			if (this.getVisualizableItems().get(slot).getName().equals(name)) {
@@ -155,6 +156,8 @@ public class ConfigInteractiveMenu extends ConfigItemMenu {
 				this.getVisualizableItems().put(slot, new EditionComponent(EditionComponentType.DISPLAY_ITEM, "null", ItemGenerator.getItemStack("AIR")));
 			}
 		}
+		
+		return slots;
 	}
 
 	public boolean isReplacedItem(int slot) {
