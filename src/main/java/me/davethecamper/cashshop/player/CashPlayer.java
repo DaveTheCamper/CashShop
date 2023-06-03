@@ -19,7 +19,9 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import lombok.Data;
 import me.davethecamper.cashshop.CashShop;
 import me.davethecamper.cashshop.ConfigManager;
 import me.davethecamper.cashshop.ItemGenerator;
@@ -39,89 +41,82 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
+@Data
 public class CashPlayer {
 	
 	public CashPlayer(UUID uuid) {
-		this.uuid = uuid;
+		this.uniqueId = uuid;
 		load();
 	}
 	
 	
-	private TreeMap<String, TransactionInfo> transactions_pending = new TreeMap<>();
-	private TreeMap<String, TransactionInfo> transactions_approved = new TreeMap<>();
+	private TreeMap<String, TransactionInfo> transactionsPending = new TreeMap<>();
+	private TreeMap<String, TransactionInfo> transactionsApproved = new TreeMap<>();
 	
-	private HashMap<String, Long> last_buy_time = new HashMap<>();
+	private HashMap<String, Long> lastBuyTime = new HashMap<>();
 	
-	private UUID uuid;
+	private UUID uniqueId;
 	
 	private int cash = 0;
-	private int product_amount = 1;
+	private int productAmount = 1;
 	
-	private boolean is_cash_transaction = false;
+	private boolean isCashTransaction = false;
 	private boolean changes = false;
+	private boolean updating = false;
+	private boolean runningUpdater = false;
 	
-	private String cupom = "...", gift_for = "...";
+	private String cupom = "...", giftFor = "...";
 	
+	
+	private BukkitRunnable updaterRunnable;
 
-	private ArrayList<ConfigInteractiveMenu> previus_menus = new ArrayList<>();
+	private ArrayList<ConfigInteractiveMenu> previusMenus = new ArrayList<>();
 	
-	private ConfigInteractiveMenu current_menu;
-	private ConfigInteractiveMenu current_checkout;
+	private ConfigInteractiveMenu currentMenu;
+	private ConfigInteractiveMenu currentCheckout;
 	
-	private SellProductMenu current_product;
+	private SellProductMenu currentProduct;
 	
-	private Inventory current_inventory;
+	private Inventory currentInventory;
 
 	
 	
-	public int getCash() {return cash;}
+	public EditionComponent getCurrentComponent(int slot) {return this.currentMenu.getVisualizableItems().get(slot);}
 	
-	public int getProductAmount() {return this.product_amount;}
+	public ConfigInteractiveMenu getCurrentInteractiveMenu() {return this.currentMenu;}
 	
-	public UUID getUniqueId() {return this.uuid;}
-
-	public String getCupom() {return cupom;}
-
-	public String getGiftFor() {return gift_for;}
+	public TreeMap<String, TransactionInfo> getPendingTransactions() {return this.transactionsPending;}
 	
-	public Inventory getCurrentInventory() {return this.current_inventory;}
+	public boolean isCashTransaction() {return this.isCashTransaction;}
 	
-	public EditionComponent getCurrentComponent(int slot) {return this.current_menu.getVisualizableItems().get(slot);}
-	
-	public ConfigInteractiveMenu getCurrentInteractiveMenu() {return this.current_menu;}
-	
-	public TreeMap<String, TransactionInfo> getPendingTransactions() {return this.transactions_pending;}
-	
-	public boolean isCashTransaction() {return this.is_cash_transaction;}
-	
-	public boolean isOnline() {return Bukkit.getOfflinePlayer(uuid).isOnline();}
+	public boolean isOnline() {return Bukkit.getOfflinePlayer(uniqueId).isOnline();}
 	
 	public boolean hasChanges() {return this.changes;}
 	
-	public boolean haveAnyCurrentInventory() {return this.current_menu != null;}
+	public boolean haveAnyCurrentInventory() {return this.currentMenu != null;}
 	
-	public boolean haveCurrentInventoryFromMain() {return this.current_menu != null && previus_menus.size() > 0 && previus_menus.get(0).getId().equals("main");}
+	public boolean haveCurrentInventoryFromMain() {return this.currentMenu != null && previusMenus.size() > 0 && previusMenus.get(0).getId().equals("main");}
 	
 
 	public void setCash(int cash) {changes = true; this.cash = cash;}
 	
-	public void setProductAmount(int amount) {this.product_amount = amount;}
+	public void setProductAmount(int amount) {this.productAmount = amount;}
 
 	public void setCupom(String cupom) {this.cupom = cupom;}
 
-	public void setGiftFor(String gift_for) {this.gift_for = gift_for;}
+	public void setGiftFor(String gift_for) {this.giftFor = gift_for;}
 	
 	public void setTransactionAsAproved(TransactionInfo ti) {
 		ti.setApproved();
 		
-		transactions_pending.remove(ti.getTransactionToken());
-		transactions_approved.put(ti.getTransactionToken(), ti);
+		transactionsPending.remove(ti.getTransactionToken());
+		transactionsApproved.put(ti.getTransactionToken(), ti);
 		this.changes = true;
 		CashShop.getInstance().getCupomManager().addTransaction(ti.getCupom(), ti.getTransactionToken(), ti.getCash());
 	}
 	
 	public void cancelTransaction(TransactionInfo ti) {
-		transactions_pending.remove(ti.getTransactionToken());
+		transactionsPending.remove(ti.getTransactionToken());
 		this.changes = true;
 	}
 	
@@ -137,21 +132,21 @@ public class CashPlayer {
 			
 	
 	public void updateProductAmount() {
-		new WaitingForChat(uuid, WaitingForChat.Primitives.INTEGER, "set_amount", CashShop.getInstance().getMessagesConfig().getString("chat.amount"));
+		new WaitingForChat(uniqueId, WaitingForChat.Primitives.INTEGER, "set_amount", CashShop.getInstance().getMessagesConfig().getString("chat.amount"));
 	}
 	
 	public void updateDiscount() {
-		new WaitingForChat(uuid, WaitingForChat.Primitives.STRING, "set_discount", CashShop.getInstance().getMessagesConfig().getString("chat.discount"));
+		new WaitingForChat(uniqueId, WaitingForChat.Primitives.STRING, "set_discount", CashShop.getInstance().getMessagesConfig().getString("chat.discount"));
 	}
 	
 	public void updateGift() {
-		new WaitingForChat(uuid, WaitingForChat.Primitives.STRING, "set_gift", CashShop.getInstance().getMessagesConfig().getString("chat.gift"));
+		new WaitingForChat(uniqueId, WaitingForChat.Primitives.STRING, "set_gift", CashShop.getInstance().getMessagesConfig().getString("chat.gift"));
 	}
 	
 	public void reloadCurrentMenu() {
-		this.updateCurrentInventory(CashShop.getInstance().getCategoriesManager().getCategorie(this.current_menu.getId()));
+		this.updateCurrentInventory(CashShop.getInstance().getCategoriesManager().getCategorie(this.currentMenu.getId()));
 		
-		if (previus_menus.size() > 0) {previus_menus.remove(previus_menus.size()-1);}
+		if (previusMenus.size() > 0) {previusMenus.remove(previusMenus.size()-1);}
 	}
 
 	public void updateCurrentInventory(ConfigInteractiveMenu new_menu) {
@@ -163,13 +158,13 @@ public class CashPlayer {
 	}
 	
 	public void updateCurrentInventory(ConfigInteractiveMenu new_menu, boolean add_list, boolean open_inventory) {
-		if (current_menu != null && add_list && add_list) {
-			previus_menus.add(current_menu);
+		if (currentMenu != null && add_list && add_list) {
+			previusMenus.add(currentMenu);
 		} else {
-			previus_menus.clear();
+			previusMenus.clear();
 		}
 		
-		this.current_menu = new_menu;
+		this.currentMenu = new_menu;
 		if (open_inventory) openCurrentInventory();
 	}
 	
@@ -230,8 +225,8 @@ public class CashPlayer {
 		ArrayList<ItemStack> items = new ArrayList<>();
 		ArrayList<String> identifiers = new ArrayList<>();
 		
-		generateTransactionItems(transactions_pending, items, identifiers, false);
-		generateTransactionItems(transactions_approved, items, identifiers, true);
+		generateTransactionItems(transactionsPending, items, identifiers, false);
+		generateTransactionItems(transactionsApproved, items, identifiers, true);
 		
 		cim.replaceIndicators(CashShop.REPLACE_TRANSACTION_BUTTON, items, identifiers);
 		
@@ -239,11 +234,11 @@ public class CashPlayer {
 	}
 
 	public void openBuyCashMenu() {
-		is_cash_transaction = true;
+		isCashTransaction = true;
 		
 		ConfigInteractiveMenu cim = (ConfigInteractiveMenu) CashShop.getInstance().getStaticItem(CashShop.CHECKOUT_MENU);
 		cim.updateSomething(CashShop.CONFIRM_BUY_BUTTON, new EditionComponent(EditionComponentType.STATIC, CashShop.GATEWAYS_MENU));
-		this.current_checkout = cim;
+		this.currentCheckout = cim;
 		
 		updateCurrentInventory(cim);
 		
@@ -253,40 +248,40 @@ public class CashPlayer {
 	}
 	
 	public void openCurrentInventory() {
-		if (Bukkit.getOfflinePlayer(uuid).isOnline()) {
-			Bukkit.getPluginManager().callEvent(new PreOpenCashInventoryEvent(uuid, this.current_menu));
-			this.current_inventory = generateInventory();
-			Bukkit.getPlayer(uuid).openInventory(this.current_inventory);
+		if (Bukkit.getOfflinePlayer(uniqueId).isOnline()) {
+			Bukkit.getPluginManager().callEvent(new PreOpenCashInventoryEvent(uniqueId, this.currentMenu));
+			this.currentInventory = generateInventory();
+			Bukkit.getPlayer(uniqueId).openInventory(this.currentInventory);
 		}
 	}
 
 	public void openLogFromCurrentInventory() {
-		if (Bukkit.getOfflinePlayer(uuid).isOnline()) {
-			if (this.current_menu.getLogInventory() == null) {
-				this.current_menu.setLogInventory(generateInventory());
+		if (Bukkit.getOfflinePlayer(uniqueId).isOnline()) {
+			if (this.currentMenu.getLogInventory() == null) {
+				this.currentMenu.setLogInventory(generateInventory());
 			}
-			this.current_inventory = this.current_menu.getLogInventory();
-			Bukkit.getPlayer(uuid).openInventory(this.current_inventory);
+			this.currentInventory = this.currentMenu.getLogInventory();
+			Bukkit.getPlayer(uniqueId).openInventory(this.currentInventory);
 		}
 	}
 	
 	public void selectGateway(int slot) {
-		ConfigInteractiveMenu cim = (ConfigInteractiveMenu) current_menu;
+		ConfigInteractiveMenu cim = (ConfigInteractiveMenu) currentMenu;
 		
 		if (cim.isReplacedItem(slot)) {
 			String identifier = cim.getReplacedItem(slot);
 			CashShopGateway csg = CashShop.getInstance().getGateway(identifier);
-			double total_in_money = ((double) product_amount) - (((double) product_amount)*(CashShop.getInstance().getCupomManager().getDiscount(getCupom())/100));
+			double total_in_money = ((double) productAmount) - (((double) productAmount)*(CashShop.getInstance().getCupomManager().getDiscount(getCupom())/100));
 			ProductInfo pi = new ProductInfo(total_in_money, "Cash", CashShop.getInstance().getMainConfig().getString("currency.code"));
 			TransactionInfo ti = csg.generateTransaction(pi, null);
-			System.out.println(isValidNick(this.gift_for));
-			ti = new TransactionInfo(isValidNick(this.gift_for) ? gift_for : Bukkit.getOfflinePlayer(uuid).getName(), csg, this.cupom, (int) Math.round(product_amount*CashShop.getInstance().getMainConfig().getInt("coin.value")), total_in_money, System.currentTimeMillis(), ti.getLink(), ti.getTransactionToken());
+			System.out.println(isValidNick(this.giftFor));
+			ti = new TransactionInfo(isValidNick(this.giftFor) ? giftFor : Bukkit.getOfflinePlayer(uniqueId).getName(), csg, this.cupom, (int) Math.round(productAmount*CashShop.getInstance().getMainConfig().getInt("coin.value")), total_in_money, System.currentTimeMillis(), ti.getLink(), ti.getTransactionToken());
 			
-			transactions_pending.put(ti.getTransactionToken(), ti);
+			transactionsPending.put(ti.getTransactionToken(), ti);
 			this.changes = true;
 			
-			Bukkit.getPlayer(uuid).closeInventory();
-			this.current_menu = null;
+			Bukkit.getPlayer(uniqueId).closeInventory();
+			this.currentMenu = null;
 			
 			sendLink(ti);
 		} else {
@@ -308,11 +303,11 @@ public class CashPlayer {
 
 
 	public void updateCurrentProduct() {
-		if (this.current_product != null) {
-			updateCurrentProduct(this.current_product, this.product_amount, false);
+		if (this.currentProduct != null) {
+			updateCurrentProduct(this.currentProduct, this.productAmount, false);
 		} else {
 			ConfigInteractiveMenu menu = this.getCurrentInteractiveMenu();
-			if (this.previus_menus.size() > 0) this.previus_menus.remove(this.previus_menus.size()-1);
+			if (this.previusMenus.size() > 0) this.previusMenus.remove(this.previusMenus.size()-1);
 			
 			this.updateCurrentInventory(CashShop.getInstance().getCategoriesManager().getCategorie(menu.getId()));
 		}
@@ -320,24 +315,24 @@ public class CashPlayer {
 	}
 	
 	public void updateCurrentProduct(SellProductMenu new_item) {
-		is_cash_transaction = false;
-		this.current_checkout = (ConfigInteractiveMenu) CashShop.getInstance().getStaticItem(CashShop.CHECKOUT_MENU);
+		isCashTransaction = false;
+		this.currentCheckout = (ConfigInteractiveMenu) CashShop.getInstance().getStaticItem(CashShop.CHECKOUT_MENU);
 		updateCurrentProduct(new_item, 1, true);
 	}
 
 	private void updateCurrentProduct(SellProductMenu new_item, int amount, boolean add_list) {
-		this.product_amount = amount;
-		this.current_product = new_item;
+		this.productAmount = amount;
+		this.currentProduct = new_item;
 		
-		ConfigInteractiveMenu buy_menu = this.current_checkout;
+		ConfigInteractiveMenu buy_menu = this.currentCheckout;
 		
-		buy_menu.updateProduct(this.current_product.getSellingItem(this, this.product_amount));
+		buy_menu.updateProduct(this.currentProduct.getSellingItem(this, this.productAmount));
 		
 		updateCurrentInventory(buy_menu, add_list);
 	}
 
 	public void buyCurrentProduct() {
-		buyCurrentProduct(this.product_amount, this.current_product, true);
+		buyCurrentProduct(this.productAmount, this.currentProduct, true);
 	}
 	
 	public void buyCurrentProduct(int amount, SellProductMenu menu, boolean remove_cash) {
@@ -345,7 +340,7 @@ public class CashPlayer {
 		
 		if (!remove_cash || this.canBuyThisItem(menu)) {
 			if (!remove_cash || verifyCurrency(menu, cash_needed)) {
-				this.current_menu = null;
+				this.currentMenu = null;
 				
 				if (remove_cash) this.removeCurrency(menu, cash_needed);
 				
@@ -357,18 +352,18 @@ public class CashPlayer {
 					}
 					
 					for (String s : pc.getCommands()) {
-						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), s.replaceAll("@player", Bukkit.getOfflinePlayer(uuid).getName()));
+						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), s.replaceAll("@player", Bukkit.getOfflinePlayer(uniqueId).getName()));
 					}
 				}
 				
-				this.last_buy_time.put(menu.getId(), System.currentTimeMillis());
+				this.lastBuyTime.put(menu.getId(), System.currentTimeMillis());
 				
-				Bukkit.getPlayer(uuid).closeInventory();
-				Bukkit.getPlayer(uuid).sendMessage(CashShop.getInstance().getMessagesConfig().getString("product.buy.sucess"));
+				Bukkit.getPlayer(uniqueId).closeInventory();
+				Bukkit.getPlayer(uniqueId).sendMessage(CashShop.getInstance().getMessagesConfig().getString("product.buy.sucess"));
 				
-				Bukkit.getPluginManager().callEvent(new BuyCashItemEvent(uuid, menu, amount));
+				Bukkit.getPluginManager().callEvent(new BuyCashItemEvent(uniqueId, menu, amount));
 			} else {
-				Bukkit.getPlayer(uuid).sendMessage(CashShop.getInstance().getMessagesConfig().getString("product.buy.fail"));
+				Bukkit.getPlayer(uniqueId).sendMessage(CashShop.getInstance().getMessagesConfig().getString("product.buy.fail"));
 			}
 		}
 	}
@@ -392,11 +387,11 @@ public class CashPlayer {
 	
 	public boolean canBuyThisItem(SellProductMenu product) {
 		if (product != null && product.getDelayToBuy() != 0) {
-			if (last_buy_time.get(product.getId()) != null) {
+			if (lastBuyTime.get(product.getId()) != null) {
 				if (product.getDelayToBuy() < 0) {
 					return false;
 				} else {
-					long tempo_armazenado = last_buy_time.get(product.getId());
+					long tempo_armazenado = lastBuyTime.get(product.getId());
 					
 					return tempo_armazenado + (product.getDelayToBuy()*1000*3600) < System.currentTimeMillis();
 				}
@@ -406,7 +401,7 @@ public class CashPlayer {
 	}
 	
 	private void giveItem(ItemStack item) {
-		Player p = Bukkit.getPlayer(uuid);
+		Player p = Bukkit.getPlayer(uniqueId);
         if (espacoInv((Inventory)p.getInventory(), item) >= item.getAmount()) {
             p.getInventory().addItem(item.clone());
         } else {
@@ -434,8 +429,8 @@ public class CashPlayer {
 
 	public long getDelayToBuyAgain(SellProductMenu product) {
 		if (product.getDelayToBuy() != 0) {
-			if (last_buy_time.get(product.getId()) != null) {
-				long tempo_armazenado = last_buy_time.get(product.getId());
+			if (lastBuyTime.get(product.getId()) != null) {
+				long tempo_armazenado = lastBuyTime.get(product.getId());
 				
 				return ((tempo_armazenado + (product.getDelayToBuy()*1000*3600)) - System.currentTimeMillis())/1000;
 			}
@@ -445,14 +440,14 @@ public class CashPlayer {
 	}
 	
 	public void addProductAmount(int amount) {
-		if (this.current_product.getDelayToBuy() == 0) {
-			this.product_amount = this.product_amount + amount > 0 ? this.product_amount + amount : 1;
-			ArrayList<ConfigInteractiveMenu> oldList = new ArrayList<>(previus_menus);
+		if (this.currentProduct.getDelayToBuy() == 0) {
+			this.productAmount = this.productAmount + amount > 0 ? this.productAmount + amount : 1;
+			ArrayList<ConfigInteractiveMenu> oldList = new ArrayList<>(previusMenus);
 			
-			updateCurrentProduct(this.current_product, this.product_amount, false);
+			updateCurrentProduct(this.currentProduct, this.productAmount, false);
 			
-			this.previus_menus.clear();
-			this.previus_menus.addAll(oldList);
+			this.previusMenus.clear();
+			this.previusMenus.addAll(oldList);
 		}
 	}
 
@@ -461,7 +456,7 @@ public class CashPlayer {
 	}
 	
 	private void sendLink(TransactionInfo ti) {
-		Player p = Bukkit.getPlayer(uuid);
+		Player p = Bukkit.getPlayer(uniqueId);
 		ConfigManager messages = CashShop.getInstance().getMessagesConfig();
 		p.sendMessage(messages.getString("payment.info"));
 		
@@ -489,18 +484,18 @@ public class CashPlayer {
 	}
 	
 	public void backInventory() {
-		if (previus_menus.size() > 0) {
-			this.current_menu = previus_menus.get(previus_menus.size()-1);
-			previus_menus.remove(previus_menus.size()-1);
+		if (previusMenus.size() > 0) {
+			this.currentMenu = previusMenus.get(previusMenus.size()-1);
+			previusMenus.remove(previusMenus.size()-1);
 			openCurrentInventory();
 		}
 	}
 	
 	private Inventory generateInventory() {
-		Inventory inv = Bukkit.createInventory(null, current_menu.getSize(), current_menu.getName());
+		Inventory inv = Bukkit.createInventory(null, currentMenu.getSize(), currentMenu.getName());
 		
-		for (Integer slot : current_menu.getVisualizableItems().keySet()) {
-			EditionComponent component = current_menu.getVisualizableItems().get(slot).clone();
+		for (Integer slot : currentMenu.getVisualizableItems().keySet()) {
+			EditionComponent component = currentMenu.getVisualizableItems().get(slot).clone();
 			
 			switch (component.getType()) {
 				case BUY_PRODUCT:
@@ -520,7 +515,7 @@ public class CashPlayer {
 					break;
 			}
 			
-			ItemStack item = current_menu.generateItem(component, this);
+			ItemStack item = currentMenu.generateItem(component, this);
 			
 			inv.setItem(slot, item);
 		}
@@ -551,8 +546,8 @@ public class CashPlayer {
 		double total = 0;
 		Calendar c = Calendar.getInstance();
 		
-		for (String s : transactions_approved.keySet()) {
-			TransactionInfo ti = transactions_approved.get(s);
+		for (String s : transactionsApproved.keySet()) {
+			TransactionInfo ti = transactionsApproved.get(s);
 			c.setTimeInMillis(ti.getApproveDate());
 			
 			if (c.get(Calendar.YEAR) == year && c.get(Calendar.MONTH)+1 == month) {
@@ -563,11 +558,32 @@ public class CashPlayer {
 		return total;
 	}
 	
-	
+	public void startUpdater(int millis) {
+		if (updaterRunnable != null && runningUpdater) return;
+			
+		runningUpdater = true;
+		
+		updaterRunnable = new BukkitRunnable() {
+			@Override
+			public void run() {
+				updating = true;
+				reloadCurrentMenu();
+				updating = false;
+			}
+			
+			@Override
+			public synchronized void cancel() throws IllegalStateException {
+				super.cancel();
+				runningUpdater = false;
+			}
+		};
+		
+		updaterRunnable.runTaskTimer(Bukkit.getPluginManager().getPlugin("CashShop"), millis, millis);
+	}
 	
 	
 	public void save() {
-		File f = new File(Bukkit.getPluginManager().getPlugin(CashShop.PLUGIN_NAME).getDataFolder().getAbsolutePath() + "/players/" + uuid + ".yml");
+		File f = new File(Bukkit.getPluginManager().getPlugin(CashShop.PLUGIN_NAME).getDataFolder().getAbsolutePath() + "/players/" + uniqueId + ".yml");
 		
 		if (!f.getParentFile().exists()) {
 			f.getParentFile().mkdirs();
@@ -581,16 +597,16 @@ public class CashPlayer {
 		fc.set("transactions.approved", null);
 		fc.set("buy_times", null);
 		
-		for (String token : transactions_pending.keySet()) {
-			setTransactionToFile("transactions.pending", transactions_pending.get(token), fc);
+		for (String token : transactionsPending.keySet()) {
+			setTransactionToFile("transactions.pending", transactionsPending.get(token), fc);
 		}
 		
-		for (String token : transactions_approved.keySet()) {
-			setTransactionToFile("transactions.approved", transactions_approved.get(token), fc);
+		for (String token : transactionsApproved.keySet()) {
+			setTransactionToFile("transactions.approved", transactionsApproved.get(token), fc);
 		}
 		
-		for (String id : this.last_buy_time.keySet()) {
-			fc.set("buy_times." + id, this.last_buy_time.get(id));
+		for (String id : this.lastBuyTime.keySet()) {
+			fc.set("buy_times." + id, this.lastBuyTime.get(id));
 		}
 		
 		
@@ -603,7 +619,7 @@ public class CashPlayer {
 	}
 	
 	public void load() {
-		File f = new File(Bukkit.getPluginManager().getPlugin(CashShop.PLUGIN_NAME).getDataFolder().getAbsolutePath() + "/players/" + uuid + ".yml");
+		File f = new File(Bukkit.getPluginManager().getPlugin(CashShop.PLUGIN_NAME).getDataFolder().getAbsolutePath() + "/players/" + uniqueId + ".yml");
 		
 		if (f.exists()) {
 			FileConfiguration fc = YamlConfiguration.loadConfiguration(f);
@@ -612,20 +628,20 @@ public class CashPlayer {
 			if (fc.get("transactions.pending") != null) {
 				for (String token : fc.getConfigurationSection("transactions.pending").getKeys(false)) {
 					TransactionInfo transaction = loadTransaction("transactions.pending", token, fc);
-					transactions_pending.put(token, transaction);
+					transactionsPending.put(token, transaction);
 				}
 			}
 
 			if (fc.get("transactions.approved") != null) {
 				for (String token : fc.getConfigurationSection("transactions.approved").getKeys(false)) {
 					TransactionInfo transaction = loadTransaction("transactions.approved", token, fc);
-					transactions_approved.put(token, transaction);
+					transactionsApproved.put(token, transaction);
 				}
 			}
 			
 			if (fc.get("buy_times") != null) {
 				for (String id : fc.getConfigurationSection("buy_times").getKeys(false)) {
-					last_buy_time.put(id, fc.getLong("buy_times." + id));
+					lastBuyTime.put(id, fc.getLong("buy_times." + id));
 				}
 			}
 			

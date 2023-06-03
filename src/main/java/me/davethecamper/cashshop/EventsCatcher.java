@@ -304,7 +304,17 @@ public class EventsCatcher implements Listener {
 
 	private boolean isUsingMenus(UUID uuid) {return is_using_menus.containsKey(uuid) ? is_using_menus.get(uuid) : false;}
 	
-	private void setUsingMenus(UUID uuid, Boolean arg) { is_using_menus.put(uuid, arg);}
+	private void setUsingMenus(UUID uuid, Boolean arg) { 
+		is_using_menus.put(uuid, arg);
+		
+		if (!arg) {
+			CashPlayer cp = CashShop.getInstance().getCashPlayer(uuid);
+			
+			if (!cp.isUpdating() && cp.isRunningUpdater()) {
+				cp.getUpdaterRunnable().cancel();
+			}
+		}
+	}
 	
 	
 
