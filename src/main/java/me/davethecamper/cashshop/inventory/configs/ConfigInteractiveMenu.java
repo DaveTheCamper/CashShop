@@ -14,6 +14,7 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import lombok.Getter;
 import me.davethecamper.cashshop.CashShop;
 import me.davethecamper.cashshop.ConfigManager;
 import me.davethecamper.cashshop.ItemGenerator;
@@ -88,7 +89,7 @@ public class ConfigInteractiveMenu extends ConfigItemMenu {
 		updateTitleButton();
 	}
 	
-	
+	@Getter
 	private HashMap<Integer, String> replaces = new HashMap<>();
 
 	public int getTotalReplacersByRegex(String name) {
@@ -184,6 +185,13 @@ public class ConfigInteractiveMenu extends ConfigItemMenu {
 		return this.getVisualizableItems().get(slot);
 	}
 	
+	
+	public void updateEntirelyInventory(ConfigInteractiveMenu i) {
+		this.replaces = new HashMap<>(i.getReplaces());
+		
+		this.getVisualizableItems().clear();
+		this.getVisualizableItems().putAll(i.getVisualizableItems());
+	}
 	
 	public void updateConsumerByName(Consumer<CashMenuInventoryClickEvent> consumer, String name) {
 		for (EditionComponent ec : this.getComponentsByName(name)) {

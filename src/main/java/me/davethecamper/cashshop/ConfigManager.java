@@ -3,6 +3,7 @@ package me.davethecamper.cashshop;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +20,10 @@ public class ConfigManager {
 
 	public ConfigManager(File file) {
 		this(file, tryRetreivePlugin(file));
+	}
+	
+	public ConfigManager(String fileName, Plugin plugin) {
+		this(new File(plugin.getDataFolder().getAbsolutePath() + File.separator + fileName), plugin);
 	}
 	
 	public ConfigManager(File file, Plugin plugin) {

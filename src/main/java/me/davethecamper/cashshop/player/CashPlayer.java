@@ -19,6 +19,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import lombok.Data;
@@ -64,6 +65,7 @@ public class CashPlayer {
 	private boolean changes = false;
 	private boolean updating = false;
 	private boolean runningUpdater = false;
+	private boolean usingMenus;
 	
 	private String cupom = "...", giftFor = "...";
 	
@@ -144,9 +146,27 @@ public class CashPlayer {
 	}
 	
 	public void reloadCurrentMenu() {
-		this.updateCurrentInventory(CashShop.getInstance().getCategoriesManager().getCategorie(this.currentMenu.getId()));
-		
-		if (previusMenus.size() > 0) {previusMenus.remove(previusMenus.size()-1);}
+		if (this.isUsingMenus()) {
+
+			new BukkitRunnable() {
+				@Override
+				public void run() {
+					ConfigInteractiveMenu cat = CashShop.getInstance().getCategoriesManager().getCategorie(currentMenu.getId());
+					Player p = Bukkit.getPlayer(uniqueId);
+					PreOpenCashInventoryEvent pre = new PreOpenCashInventoryEvent(uniqueId, cat);
+					
+					Bukkit.getPluginManager().callEvent(pre);
+					
+					currentMenu.updateEntirelyInventory(pre.getMenu());
+					Inventory generatedInv = generateInventory(pre.getMenu());
+					Inventory inv = p.getOpenInventory().getTopInventory();
+					
+					for (int i = 0; i < inv.getSize(); i++) {
+						inv.setItem(i, generatedInv.getItem(i));
+					}
+				}
+			}.runTask(Bukkit.getPluginManager().getPlugin("CashShop"));
+		}
 	}
 
 	public void updateCurrentInventory(ConfigInteractiveMenu new_menu) {
@@ -249,9 +269,14 @@ public class CashPlayer {
 	
 	public void openCurrentInventory() {
 		if (Bukkit.getOfflinePlayer(uniqueId).isOnline()) {
-			Bukkit.getPluginManager().callEvent(new PreOpenCashInventoryEvent(uniqueId, this.currentMenu));
-			this.currentInventory = generateInventory();
-			Bukkit.getPlayer(uniqueId).openInventory(this.currentInventory);
+			new BukkitRunnable() {
+				@Override
+				public void run() {
+					Bukkit.getPluginManager().callEvent(new PreOpenCashInventoryEvent(uniqueId, currentMenu));
+					currentInventory = generateInventory();
+					Bukkit.getPlayer(uniqueId).openInventory(currentInventory);
+				}
+			}.runTask(Bukkit.getPluginManager().getPlugin("CashShop"));
 		}
 	}
 
@@ -490,8 +515,12 @@ public class CashPlayer {
 			openCurrentInventory();
 		}
 	}
-	
+
 	private Inventory generateInventory() {
+		return generateInventory(this.currentMenu);
+	}
+	
+	private Inventory generateInventory(ConfigInteractiveMenu currentMenu) {
 		Inventory inv = Bukkit.createInventory(null, currentMenu.getSize(), currentMenu.getName());
 		
 		for (Integer slot : currentMenu.getVisualizableItems().keySet()) {
@@ -562,23 +591,40 @@ public class CashPlayer {
 		if (updaterRunnable != null && runningUpdater) return;
 			
 		runningUpdater = true;
+		Plugin plugin = Bukkit.getPluginManager().getPlugin("CashShop");
+		CashPlayer cp = this;
 		
 		updaterRunnable = new BukkitRunnable() {
 			@Override
 			public void run() {
+				if (!cp.isUsingMenus()) {
+					this.cancel();
+					return;
+				}
+				
 				updating = true;
-				reloadCurrentMenu();
+				callReload();
 				updating = false;
 			}
 			
+			private void callReload() {
+				new BukkitRunnable() {
+					@Override
+					public void run() {
+						cp.reloadCurrentMenu();
+					}
+				}.runTask(plugin);
+			}
+			
 			@Override
-			public synchronized void cancel() throws IllegalStateException {
-				super.cancel();
+			public void cancel() throws IllegalStateException {
+				updating = false;
 				runningUpdater = false;
+				super.cancel();
 			}
 		};
 		
-		updaterRunnable.runTaskTimer(Bukkit.getPluginManager().getPlugin("CashShop"), millis, millis);
+		updaterRunnable.runTaskTimer(plugin, millis, millis);
 	}
 	
 	
