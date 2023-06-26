@@ -4,6 +4,9 @@ import java.util.ArrayList;
 
 import org.bukkit.inventory.ItemStack;
 
+import lombok.Builder;
+
+@Builder
 public class ProductConfig implements Cloneable {
 	
 	
