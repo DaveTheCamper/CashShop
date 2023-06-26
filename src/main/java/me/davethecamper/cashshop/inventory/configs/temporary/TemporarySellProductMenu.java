@@ -29,9 +29,13 @@ public class TemporarySellProductMenu extends SellProductMenu {
 	
 	private Consumer<TemporarySellProductMenu> callback;
 	
+	public boolean hasIntentionToSave = false;
+	
+	
 	@Override
 	public FileConfiguration saveHandler(FileConfiguration fc) {
 		fc.set("nonSaveObject", true);
+		hasIntentionToSave = true;
 		
 		return fc;
 	}
