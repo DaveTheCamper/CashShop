@@ -142,13 +142,13 @@ public class EventsCatcher implements Listener {
 								case CashShop.ADD_AMOUNT_1_BUTTON:
 								case CashShop.ADD_AMOUNT_5_BUTTON:
 								case CashShop.ADD_AMOUNT_10_BUTTON:
-									cp.addProductAmount(((ValuebleItemMenu) CashShop.getInstance().getStaticItem(cc.getName())).getValueInCash());
+									cp.addProductAmount((int) ((ValuebleItemMenu) CashShop.getInstance().getStaticItem(cc.getName())).getValueInCash());
 									break;
 
 								case CashShop.REMOVE_AMOUNT_1_BUTTON:
 								case CashShop.REMOVE_AMOUNT_5_BUTTON:
 								case CashShop.REMOVE_AMOUNT_10_BUTTON:
-									cp.removeProductAmount(((ValuebleItemMenu) CashShop.getInstance().getStaticItem(cc.getName())).getValueInCash());
+									cp.removeProductAmount((int) ((ValuebleItemMenu) CashShop.getInstance().getStaticItem(cc.getName())).getValueInCash());
 									break;
 									
 								case CashShop.CHECKOUT_MENU:

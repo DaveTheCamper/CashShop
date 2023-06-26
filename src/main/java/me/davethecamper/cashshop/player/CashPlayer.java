@@ -361,7 +361,7 @@ public class CashPlayer {
 	}
 	
 	public void buyCurrentProduct(int amount, SellProductMenu menu, boolean remove_cash) {
-		long cash_needed = amount*menu.getValueInCash();
+		long cash_needed = (long) (amount*menu.getValueInCash());
 		
 		if (!remove_cash || this.canBuyThisItem(menu)) {
 			if (!remove_cash || verifyCurrency(menu, cash_needed)) {

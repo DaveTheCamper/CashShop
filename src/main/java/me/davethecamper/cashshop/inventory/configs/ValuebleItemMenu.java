@@ -19,7 +19,7 @@ public class ValuebleItemMenu extends ConfigItemMenu {
 	private static final long serialVersionUID = 7086558541634491119L;
 
 
-	public ValuebleItemMenu(String identificador, ConfigManager item_config, ReciclableMenu previous, ItemMenuProperties item_properties, int updated_value) {
+	public ValuebleItemMenu(String identificador, ConfigManager item_config, ReciclableMenu previous, ItemMenuProperties item_properties, double updated_value) {
 		super(identificador, item_config, previous, item_properties);
 
 		this.value = updated_value;
@@ -28,7 +28,7 @@ public class ValuebleItemMenu extends ConfigItemMenu {
 		load();
 	}
 	
-	private int value;
+	private double value;
 	
 	protected final String VALUE_TAG = "value_tag";
 	
@@ -64,11 +64,11 @@ public class ValuebleItemMenu extends ConfigItemMenu {
 	}
 
 	
-	public int getValueInCash() {
+	public double getValueInCash() {
 		return value;
 	}
 	
-	public void setValueInCash(int arg) {
+	public void setValueInCash(double arg) {
 		if (arg > 0) {
 			this.value = arg;
 		}
@@ -78,7 +78,7 @@ public class ValuebleItemMenu extends ConfigItemMenu {
 	public void changerVarHandler(String var_name, Object o) {
 		switch (var_name) {
 			case VALUE_TAG:
-				this.value = (Integer) o;
+				this.value = (Double) o;
 				this.reload();
 				break;
 				
@@ -91,7 +91,7 @@ public class ValuebleItemMenu extends ConfigItemMenu {
 	protected boolean inventoryClickHandler(UUID uuid, int clicked_slot, int slot_button, InventoryAction type) {
 		switch (slots.get(clicked_slot)) {
 			case VALUE_TAG:
-				this.createVarChanger(VALUE_TAG, WaitingForChat.Primitives.INTEGER);
+				this.createVarChanger(VALUE_TAG, WaitingForChat.Primitives.DOUBLE);
 				return true;
 				
 			default:

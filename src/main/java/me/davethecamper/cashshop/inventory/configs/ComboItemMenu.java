@@ -19,7 +19,7 @@ public class ComboItemMenu extends ValuebleItemMenu {
 	private static final long serialVersionUID = -5008341982011601850L;
 
 
-	public ComboItemMenu(String identificador, ConfigManager item_config, ReciclableMenu previous, ItemMenuProperties item_properties, int updated_value, double updated_currency) {
+	public ComboItemMenu(String identificador, ConfigManager item_config, ReciclableMenu previous, ItemMenuProperties item_properties, double updated_value, double updated_currency) {
 		super(identificador, item_config, previous, item_properties, updated_value);
 		
 		this.value_currency = updated_currency;

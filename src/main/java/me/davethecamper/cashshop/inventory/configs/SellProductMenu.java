@@ -26,7 +26,7 @@ public class SellProductMenu extends ValuebleItemMenu {
 	 */
 	private static final long serialVersionUID = -6784249458971882595L;
 
-	public SellProductMenu(String identificador, ConfigManager item_config, ReciclableMenu previous, ItemMenuProperties item_properties, ProductConfig product, int updated_value, long delay) {
+	public SellProductMenu(String identificador, ConfigManager item_config, ReciclableMenu previous, ItemMenuProperties item_properties, ProductConfig product, double updated_value, long delay) {
 		super(identificador, item_config, previous, item_properties, updated_value);
 		
 		this.product = product;
