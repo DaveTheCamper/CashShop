@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>me.davethecamper.cashshop</groupId>
 	<artifactId>cash-shop</artifactId>
-	<version>${minecraftVersion}.14</version>
+	<version>${minecraftVersion}.15</version>
 	<packaging>jar</packaging>
 
 	<name>cash-shop</name>
