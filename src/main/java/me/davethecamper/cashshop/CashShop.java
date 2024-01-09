@@ -198,11 +198,12 @@ public class CashShop extends JavaPlugin {
 			for (File folder : f.listFiles()) {
 				if (folder.isDirectory()) {
 					for (File object : folder.listFiles()) {
-						Bukkit.getConsoleSender().sendMessage("§aCarregando objeto §f>> §a" + object.getName());
+						boolean isStatic = object.getAbsolutePath().contains("static");
+						Bukkit.getConsoleSender().sendMessage("§aCarregando objeto §f>> §a" + object.getName() + " " + isStatic);
 						
 						FileConfiguration fc = YamlConfiguration.loadConfiguration(object);
 						
-						load(fc, object.getName(), f.getParentFile().getName().contains("static"));
+						load(fc, object.getName(), isStatic);
 					}
 				}
 			}

@@ -304,7 +304,7 @@ public class CashShopApi {
 	}
 	
 	public void disableCommandUsage(String command) {
-		this.main.getCommand(command).setExecutor(null);
+		//this.main.getCommand(command).setExecutor(null);
 	}
 	
 

@@ -3,6 +3,7 @@ package me.davethecamper.cashshop.inventory.configs.temporary;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import me.davethecamper.cashshop.CashShop;
@@ -33,6 +34,13 @@ public class TemporarySellProductMenu extends SellProductMenu {
 	
 	
 	@Override
+	public void startEditing(UUID player) {
+		this.setPrevious(((CashShop) Bukkit.getPluginManager().getPlugin("CashShop")).getPlayerEditorCurrentInventory(player));
+		
+		super.startEditing(player);
+	}
+	
+	@Override
 	public FileConfiguration saveHandler(FileConfiguration fc) {
 		fc.set("nonSaveObject", true);
 		hasIntentionToSave = true;
@@ -42,6 +50,8 @@ public class TemporarySellProductMenu extends SellProductMenu {
 	
 	@Override
 	protected void backOneInventory(UUID player, ReciclableMenu menu) {
+		super.backOneInventory(player, getPreviousMenu());
+		
 		callback.accept(this);
 	}
 	

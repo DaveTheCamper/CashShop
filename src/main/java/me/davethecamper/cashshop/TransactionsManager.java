@@ -6,6 +6,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
+import me.davethecamper.cashshop.api.info.ProductInfo;
+import me.davethecamper.cashshop.inventory.configs.ConfigInteractiveMenu;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -135,6 +137,23 @@ public class TransactionsManager {
 				}
 			}
 		}.runTaskTimer(main, 0, main.configuration.getInt("delay_verify")*3);
+	}
+
+	public void createPlayerTransaction(String identifier, CashPlayer player) {
+		double amount = player.getProductAmount();;
+		double total_in_money = amount - (amount * (CashShop.getInstance().getCupomManager().getDiscount(player.getCupom()) / 100));
+
+		CashShopGateway csg = CashShop.getInstance().getGateway(identifier);
+		ProductInfo pi = new ProductInfo(total_in_money, "Cash", CashShop.getInstance().getMainConfig().getString("currency.code"));
+		TransactionInfo ti = csg.generateTransaction(pi, null);
+
+		System.out.println(isValidNick(this.giftFor));
+		ti = new TransactionInfo(isValidNick(this.giftFor) ? giftFor : Bukkit.getOfflinePlayer(uniqueId).getName(), csg, this.cupom, (int) Math.round(productAmount * CashShop.getInstance().getMainConfig().getInt("coin.value")), total_in_money, System.currentTimeMillis(), ti.getLink(), ti.getTransactionToken());
+
+		player.getTransactionsPending().put(ti.getTransactionToken(), ti);
+		player.setChanges(true);
+
+		csg.sendLink(player, ti);
 	}
 	
 

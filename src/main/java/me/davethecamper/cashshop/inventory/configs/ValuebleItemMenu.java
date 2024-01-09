@@ -42,6 +42,8 @@ public class ValuebleItemMenu extends ConfigItemMenu {
 	
 	@Override
 	public void reload() {
+		changeIdentifierSlot(6);
+		
 		super.reload();
 		load();
 	}

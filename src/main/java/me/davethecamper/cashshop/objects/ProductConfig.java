@@ -2,11 +2,13 @@ package me.davethecamper.cashshop.objects;
 
 import java.util.ArrayList;
 
+import lombok.ToString;
 import org.bukkit.inventory.ItemStack;
 
 import lombok.Builder;
 
 @Builder
+@ToString
 public class ProductConfig implements Cloneable {
 	
 	

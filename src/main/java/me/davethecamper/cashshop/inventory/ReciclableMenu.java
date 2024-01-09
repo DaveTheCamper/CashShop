@@ -8,6 +8,7 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import me.davethecamper.cashshop.CashShop;
 import me.davethecamper.cashshop.ItemGenerator;
 import me.davethecamper.cashshop.events.ChangeEditorInventoryEvent;
 
@@ -92,14 +93,14 @@ public abstract class ReciclableMenu {
 	
 	protected void backOneInventory(UUID player, ReciclableMenu menu) {
 		if (Bukkit.getOfflinePlayer(player).isOnline()) {
-			if (menu.updateBeforeBack()) {
+			if (menu != null && menu.updateBeforeBack()) {
 				menu.reload();
 				menu.generateInventory();
 			}
 			
 			Bukkit.getPluginManager().callEvent(new ChangeEditorInventoryEvent(player, menu));
 			
-			
+			menu = ((CashShop) Bukkit.getPluginManager().getPlugin("CashShop")).getPlayerEditorCurrentInventory(player);
 			Bukkit.getPlayer(player).openInventory(menu.getInventory());
 		}
 	}

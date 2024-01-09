@@ -1,16 +1,15 @@
 package me.davethecamper.cashshop;
 
+import me.davethecamper.cashshop.api.info.TransactionInfo;
+import me.davethecamper.cashshop.inventory.configs.ConfigInteractiveMenu;
+import me.davethecamper.cashshop.inventory.configs.SellProductMenu;
+import me.davethecamper.cashshop.player.CashPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import me.davethecamper.cashshop.api.info.TransactionInfo;
-import me.davethecamper.cashshop.inventory.configs.ConfigInteractiveMenu;
-import me.davethecamper.cashshop.inventory.configs.SellProductMenu;
-import me.davethecamper.cashshop.player.CashPlayer;
 
 public class CashCommands implements CommandExecutor {
 	
@@ -29,9 +28,9 @@ public class CashCommands implements CommandExecutor {
 		switch (name) {
 			case "cash":
 				if (sender instanceof Player) {
-					playerCashCommands(sender, cmd, args);
-				} else {
-					
+					boolean result = playerCashCommands(sender, cmd, args);
+
+					if (result) return true;
 				}
 				
 				anyCashCommands(sender, cmd, args);
@@ -49,7 +48,7 @@ public class CashCommands implements CommandExecutor {
 
 	
 	@SuppressWarnings("deprecation")
-	private void playerCashCommands(CommandSender sender, Command cmd, String[] args) {
+	private boolean playerCashCommands(CommandSender sender, Command cmd, String[] args) {
 		Player p = (Player) sender;
 		CashPlayer cp = CashShop.getInstance().getCashPlayer(p.getUniqueId());
 		if (args.length > 0) {
@@ -94,9 +93,11 @@ public class CashCommands implements CommandExecutor {
 					break;
 					
 			}
-		} else {
+		} else if (!p.hasPermission(ADMIN_PERMISSION)) {
 			p.sendMessage(CashShop.getInstance().getMessagesConfig().getString("tag") + " §eVocê tem §6" + cp.getCash() + " §ecash's");
 		}
+
+		return p.hasPermission(ADMIN_PERMISSION);
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -230,6 +231,7 @@ public class CashCommands implements CommandExecutor {
 	
 	private void playerShopCommands(CommandSender sender, Command cmd, String[] args) {
 		Player p = (Player) sender;
+
 		if (main.getNormalPlayerInventory(p.getUniqueId()).haveCurrentInventoryFromMain()) {
 			main.getNormalPlayerInventory(p.getUniqueId()).openCurrentInventory();
 		} else {

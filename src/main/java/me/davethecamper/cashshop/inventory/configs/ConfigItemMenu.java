@@ -41,6 +41,8 @@ public class ConfigItemMenu extends DeletebleMenu {
 	
 	@Override
 	public void reload() {
+		this.changeIdentifierSlot(15);
+		
 		super.reload();
 		load();
 	}
@@ -61,7 +63,7 @@ public class ConfigItemMenu extends DeletebleMenu {
 				ItemGenerator.getItemStack(
 						item_config.getString("items.item_properties.name.material"), 
 						item_config.getString("items.item_properties.name.name"), 
-						item_config.getStringAsItemLore("items.item_properties.name.lore").replaceAll("@name", item_properties.getName() + "")), 19);
+						item_config.getStringAsItemLore("items.item_properties.name.lore").replace("@name", item_properties.getName() + "")), 19);
 	}
 	
 	private void updateGlow() {

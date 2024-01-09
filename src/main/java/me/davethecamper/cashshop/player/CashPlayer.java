@@ -1,16 +1,17 @@
 package me.davethecamper.cashshop.player;
 
-import java.io.File;
-import java.io.IOException;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.TreeMap;
-import java.util.UUID;
-
+import lombok.Data;
+import me.davethecamper.cashshop.CashShop;
+import me.davethecamper.cashshop.ItemGenerator;
+import me.davethecamper.cashshop.api.info.TransactionInfo;
+import me.davethecamper.cashshop.events.BuyCashItemEvent;
+import me.davethecamper.cashshop.events.PreOpenCashInventoryEvent;
+import me.davethecamper.cashshop.inventory.WaitingForChat;
+import me.davethecamper.cashshop.inventory.configs.ConfigInteractiveMenu;
+import me.davethecamper.cashshop.inventory.configs.SellProductMenu;
+import me.davethecamper.cashshop.inventory.edition.EditionComponent;
+import me.davethecamper.cashshop.inventory.edition.EditionComponentType;
+import me.davethecamper.cashshop.objects.ProductConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -22,25 +23,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import lombok.Data;
-import me.davethecamper.cashshop.CashShop;
-import me.davethecamper.cashshop.ConfigManager;
-import me.davethecamper.cashshop.ItemGenerator;
-import me.davethecamper.cashshop.api.CashShopGateway;
-import me.davethecamper.cashshop.api.info.ProductInfo;
-import me.davethecamper.cashshop.api.info.TransactionInfo;
-import me.davethecamper.cashshop.events.BuyCashItemEvent;
-import me.davethecamper.cashshop.events.PreOpenCashInventoryEvent;
-import me.davethecamper.cashshop.inventory.WaitingForChat;
-import me.davethecamper.cashshop.inventory.configs.ConfigInteractiveMenu;
-import me.davethecamper.cashshop.inventory.configs.SellProductMenu;
-import me.davethecamper.cashshop.inventory.edition.EditionComponent;
-import me.davethecamper.cashshop.inventory.edition.EditionComponentType;
-import me.davethecamper.cashshop.objects.ProductConfig;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
+import java.io.File;
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.*;
 
 @Data
 public class CashPlayer {
@@ -269,6 +255,8 @@ public class CashPlayer {
 	
 	public void openCurrentInventory() {
 		if (Bukkit.getOfflinePlayer(uniqueId).isOnline()) {
+			if (Objects.isNull(currentMenu)) return;
+
 			new BukkitRunnable() {
 				@Override
 				public void run() {
@@ -295,24 +283,15 @@ public class CashPlayer {
 		
 		if (cim.isReplacedItem(slot)) {
 			String identifier = cim.getReplacedItem(slot);
-			CashShopGateway csg = CashShop.getInstance().getGateway(identifier);
-			double total_in_money = ((double) productAmount) - (((double) productAmount)*(CashShop.getInstance().getCupomManager().getDiscount(getCupom())/100));
-			ProductInfo pi = new ProductInfo(total_in_money, "Cash", CashShop.getInstance().getMainConfig().getString("currency.code"));
-			TransactionInfo ti = csg.generateTransaction(pi, null);
-			System.out.println(isValidNick(this.giftFor));
-			ti = new TransactionInfo(isValidNick(this.giftFor) ? giftFor : Bukkit.getOfflinePlayer(uniqueId).getName(), csg, this.cupom, (int) Math.round(productAmount*CashShop.getInstance().getMainConfig().getInt("coin.value")), total_in_money, System.currentTimeMillis(), ti.getLink(), ti.getTransactionToken());
-			
-			transactionsPending.put(ti.getTransactionToken(), ti);
-			this.changes = true;
-			
+
+			CashShop.getInstance().getTransactionsManager().createPlayerTransaction(identifier, this);
+
 			Bukkit.getPlayer(uniqueId).closeInventory();
 			this.currentMenu = null;
-			
-			sendLink(ti);
-		} else {
-			System.out.println("Not replaceble");
 		}
 	}
+
+
 	
 	private boolean isValidNick(String nick) {
 		char chars[] = nick.toCharArray();
@@ -364,6 +343,8 @@ public class CashPlayer {
 		long cash_needed = (long) (amount*menu.getValueInCash());
 		
 		if (!remove_cash || this.canBuyThisItem(menu)) {
+			Player player = Bukkit.getPlayer(uniqueId);
+
 			if (!remove_cash || verifyCurrency(menu, cash_needed)) {
 				this.currentMenu = null;
 				
@@ -382,13 +363,18 @@ public class CashPlayer {
 				}
 				
 				this.lastBuyTime.put(menu.getId(), System.currentTimeMillis());
-				
-				Bukkit.getPlayer(uniqueId).closeInventory();
-				Bukkit.getPlayer(uniqueId).sendMessage(CashShop.getInstance().getMessagesConfig().getString("product.buy.sucess"));
+
+
+				Bukkit.getLogger().info("[CASH] O jogador " + player.getName() + " comprou product=" + pc);
+				Bukkit.getLogger().info("[CASH] " + player.getName() + " id=" + menu.getId() + ", cash=" + menu.isMoney() +
+						", value=" + cash_needed + ", remove=" + remove_cash);
+
+				player.closeInventory();
+				player.sendMessage(CashShop.getInstance().getMessagesConfig().getString("product.buy.sucess"));
 				
 				Bukkit.getPluginManager().callEvent(new BuyCashItemEvent(uniqueId, menu, amount));
 			} else {
-				Bukkit.getPlayer(uniqueId).sendMessage(CashShop.getInstance().getMessagesConfig().getString("product.buy.fail"));
+				player.sendMessage(CashShop.getInstance().getMessagesConfig().getString("product.buy.fail"));
 			}
 		}
 	}
@@ -478,34 +464,6 @@ public class CashPlayer {
 
 	public void removeProductAmount(int amount) {
 		addProductAmount(-amount);
-	}
-	
-	private void sendLink(TransactionInfo ti) {
-		Player p = Bukkit.getPlayer(uniqueId);
-		ConfigManager messages = CashShop.getInstance().getMessagesConfig();
-		p.sendMessage(messages.getString("payment.info"));
-		
-		TextComponent link = new TextComponent(messages.getString("payment.click"));
-		link.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(messages.getString("payment.hover")).create()));
-		link.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, ti.getLink()));
-
-		TextComponent all = new TextComponent("");
-		String split[] = messages.getString("payment.link").split("@link");
-		for (int i = 0; i < split.length; i++) {
-			TextComponent info = new TextComponent(split[i]);
-			
-			if (i == split.length-1) {
-				all.addExtra(info);
-				if (split.length == 1) {
-					all.addExtra(link);
-				}
-			} else {
-				all.addExtra(info);
-				all.addExtra(link);
-			}
-		}
-		
-		p.spigot().sendMessage(all);
 	}
 	
 	public void backInventory() {

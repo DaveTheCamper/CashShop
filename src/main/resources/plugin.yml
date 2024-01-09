@@ -8,3 +8,4 @@ commands:
     description: Cash commands and in game editor.
   shop:
     description: Player shop acess command.
+    aliases: [loja]

@@ -8,6 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 
 import me.davethecamper.cashshop.events.CashMenuInventoryClickEvent;
@@ -187,6 +188,8 @@ public class EventsCatcher implements Listener {
 						case DISPLAY_ITEM:
 							switch (cc.getName()) {
 								case CashShop.REPLACE_ITEM_SELLING_BUTTON:
+									if (cp.getCurrentProduct().getDelayToBuy() > 0) return;
+									
 									cp.updateProductAmount();
 									break;
 							}
@@ -219,6 +222,14 @@ public class EventsCatcher implements Listener {
 		}
 		
 		main.changePlayerEditorInventory(e.getUuid(), e.getReciclableMenu());
+	}
+
+	@EventHandler
+	public void onDrag(InventoryDragEvent e) {
+		UUID uuid = e.getWhoClicked().getUniqueId();
+		if (main.haveEditorInventoryOpen(uuid) && isEditingEditor(uuid)) {
+			e.setCancelled(true);
+		}
 	}
 	
 	@EventHandler
