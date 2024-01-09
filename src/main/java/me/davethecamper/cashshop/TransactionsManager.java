@@ -136,7 +136,7 @@ public class TransactionsManager {
 					}
 				}
 			}
-		}.runTaskTimer(main, 0, main.configuration.getInt("delay_verify")*3);
+		}.runTaskTimer(main, 0, main.configuration.getInt("delay_verify")* 3L);
 	}
 
 	public void createPlayerTransaction(String identifier, CashPlayer player) {
@@ -145,15 +145,35 @@ public class TransactionsManager {
 
 		CashShopGateway csg = CashShop.getInstance().getGateway(identifier);
 		ProductInfo pi = new ProductInfo(total_in_money, "Cash", CashShop.getInstance().getMainConfig().getString("currency.code"));
-		TransactionInfo ti = csg.generateTransaction(pi, null);
 
-		System.out.println(isValidNick(this.giftFor));
-		ti = new TransactionInfo(isValidNick(this.giftFor) ? giftFor : Bukkit.getOfflinePlayer(uniqueId).getName(), csg, this.cupom, (int) Math.round(productAmount * CashShop.getInstance().getMainConfig().getInt("coin.value")), total_in_money, System.currentTimeMillis(), ti.getLink(), ti.getTransactionToken());
+		Bukkit.getScheduler().runTaskAsynchronously(Bukkit.getPluginManager().getPlugin("CashShop"), () -> {
+			TransactionInfo ti = csg.generateTransaction(pi, null);
 
-		player.getTransactionsPending().put(ti.getTransactionToken(), ti);
-		player.setChanges(true);
+			ti = new TransactionInfo(isValidNick(player.getGiftFor()) ? player.getGiftFor() : Bukkit.getOfflinePlayer(player.getUniqueId()).getName(), csg, player.getCupom(), (int) Math.round(amount * CashShop.getInstance().getMainConfig().getInt("coin.value")), total_in_money, System.currentTimeMillis(), ti.getLink(), ti.getTransactionToken());
 
-		csg.sendLink(player, ti);
+			synchronized (player.getTransactionsPending()) {
+				player.getTransactionsPending().put(ti.getTransactionToken(), ti);
+			}
+
+			player.setChanges(true);
+
+			final TransactionInfo finalTransaction = ti;
+
+			Bukkit.getScheduler().runTask(Bukkit.getPluginManager().getPlugin("CashShop"), () ->
+					csg.sendLink(player, finalTransaction));
+		});
+	}
+
+	private boolean isValidNick(String nick) {
+		char chars[] = nick.toCharArray();
+		if (chars.length >= 16 || chars.length == 0) return false;
+
+		for (int i = 0; i < chars.length; i++) {
+			if (!Character.isDigit(chars[i]) && !Character.isLetter(chars[i]) && chars[i] != '_') {
+				return false;
+			}
+		}
+		return true;
 	}
 	
 

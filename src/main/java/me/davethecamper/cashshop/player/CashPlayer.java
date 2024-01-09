@@ -291,21 +291,6 @@ public class CashPlayer {
 		}
 	}
 
-
-	
-	private boolean isValidNick(String nick) {
-		char chars[] = nick.toCharArray();
-		if (chars.length >= 16 || chars.length == 0) return false;
-		
-		for (int i = 0; i < chars.length; i++) {
-			if (!Character.isDigit(chars[i]) && !Character.isLetter(chars[i]) && chars[i] != '_') {
-				return false;
-			}
-		}
-		return true;
-	}
-
-
 	public void updateCurrentProduct() {
 		if (this.currentProduct != null) {
 			updateCurrentProduct(this.currentProduct, this.productAmount, false);
