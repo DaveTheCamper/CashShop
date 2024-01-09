@@ -2,16 +2,19 @@ package me.davethecamper.cashshop.api.info;
 
 public class ProductInfo {
 	
-	public ProductInfo(double amount, String product_name, String currency) {
+	public ProductInfo(int totalCash, double amount, String product_name, String currency) {
 		this.amount = amount;
 		this.product_name = product_name;
 		this.currency = currency;
+		this.totalCash = totalCash;
 	}
 
 	
 	private String product_name, currency;
 	
 	private double amount;
+
+	private int totalCash;
 
 	
 	

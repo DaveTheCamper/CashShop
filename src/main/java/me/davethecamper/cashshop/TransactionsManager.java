@@ -142,9 +142,10 @@ public class TransactionsManager {
 	public void createPlayerTransaction(String identifier, CashPlayer player) {
 		double amount = player.getProductAmount();;
 		double total_in_money = amount - (amount * (CashShop.getInstance().getCupomManager().getDiscount(player.getCupom()) / 100));
+		int cashMultiply = CashShop.getInstance().getMainConfig().getInt("coin.value") * (int) amount;
 
 		CashShopGateway csg = CashShop.getInstance().getGateway(identifier);
-		ProductInfo pi = new ProductInfo(total_in_money, "Cash", CashShop.getInstance().getMainConfig().getString("currency.code"));
+		ProductInfo pi = new ProductInfo(cashMultiply, total_in_money, "Cash", CashShop.getInstance().getMainConfig().getString("currency.code"));
 
 		Bukkit.getScheduler().runTaskAsynchronously(Bukkit.getPluginManager().getPlugin("CashShop"), () -> {
 			TransactionInfo ti = csg.generateTransaction(pi, null);
