@@ -43,8 +43,11 @@ public class CashPlayer {
 	private HashMap<String, Long> lastBuyTime = new HashMap<>();
 	
 	private UUID uniqueId;
-	
+
 	private int cash = 0;
+
+	private int cashBonus = 0;
+
 	private int productAmount = 1;
 	
 	private boolean isCashTransaction = false;
@@ -52,6 +55,9 @@ public class CashPlayer {
 	private boolean updating = false;
 	private boolean runningUpdater = false;
 	private boolean usingMenus;
+	private boolean cancelUpdater;
+
+	private boolean keepBackHistory;
 	
 	private String cupom = "...", giftFor = "...";
 	
@@ -68,7 +74,6 @@ public class CashPlayer {
 	private Inventory currentInventory;
 
 	
-	
 	public EditionComponent getCurrentComponent(int slot) {return this.currentMenu.getVisualizableItems().get(slot);}
 	
 	public ConfigInteractiveMenu getCurrentInteractiveMenu() {return this.currentMenu;}
@@ -84,9 +89,10 @@ public class CashPlayer {
 	public boolean haveAnyCurrentInventory() {return this.currentMenu != null;}
 	
 	public boolean haveCurrentInventoryFromMain() {return this.currentMenu != null && previusMenus.size() > 0 && previusMenus.get(0).getId().equals("main");}
-	
+
 
 	public void setCash(int cash) {changes = true; this.cash = cash;}
+	public void setCashBonus(int cash) {changes = true; this.cashBonus = cash;}
 	
 	public void setProductAmount(int amount) {this.productAmount = amount;}
 
@@ -107,15 +113,43 @@ public class CashPlayer {
 		transactionsPending.remove(ti.getTransactionToken());
 		this.changes = true;
 	}
-	
+
+	public int getCash() {
+		return getCash(false);
+	}
+
+	public int getCash(boolean bonus) {
+		return cash + (bonus ? cashBonus : 0);
+	}
 
 	public void addCash(long amount) {
-		this.cash += amount;
+		addCash(amount, false);
+	}
+
+	public void addCash(long amount, boolean bonus) {
+		if (bonus) {
+			this.cashBonus += amount;
+		} else {
+			this.cash += amount;
+		}
+
 		this.changes = true;
 	}
-	
+
 	public void removeCash(long amount) {
-		addCash(-amount);
+		removeCash(amount, false);
+	}
+
+	public void removeCash(long amount, boolean bonus) {
+		long total = amount;
+		if (bonus) {
+			long removeBonus = Math.min(total, cashBonus);
+
+			addCash(-removeBonus, true);
+			total -= removeBonus;
+		}
+
+		addCash(-total);
 	}
 			
 	
@@ -133,10 +167,11 @@ public class CashPlayer {
 	
 	public void reloadCurrentMenu() {
 		if (this.isUsingMenus()) {
-
 			new BukkitRunnable() {
 				@Override
 				public void run() {
+					if (!isUsingMenus()) return;
+
 					ConfigInteractiveMenu cat = CashShop.getInstance().getCategoriesManager().getCategorie(currentMenu.getId());
 					Player p = Bukkit.getPlayer(uniqueId);
 					PreOpenCashInventoryEvent pre = new PreOpenCashInventoryEvent(uniqueId, cat);
@@ -164,10 +199,15 @@ public class CashPlayer {
 	}
 	
 	public void updateCurrentInventory(ConfigInteractiveMenu new_menu, boolean add_list, boolean open_inventory) {
-		if (currentMenu != null && add_list && add_list) {
+		if (currentMenu != null && new_menu != null && !currentMenu.getId().equals(new_menu.getId())) {
+			if (isRunningUpdater()) this.setCancelUpdater(true);
+		}
+
+		if (currentMenu != null && add_list) {
 			previusMenus.add(currentMenu);
-		} else {
+		} else if (!keepBackHistory) {
 			previusMenus.clear();
+			setKeepBackHistory(false);
 		}
 		
 		this.currentMenu = new_menu;
@@ -245,12 +285,10 @@ public class CashPlayer {
 		ConfigInteractiveMenu cim = (ConfigInteractiveMenu) CashShop.getInstance().getStaticItem(CashShop.CHECKOUT_MENU);
 		cim.updateSomething(CashShop.CONFIRM_BUY_BUTTON, new EditionComponent(EditionComponentType.STATIC, CashShop.GATEWAYS_MENU));
 		this.currentCheckout = cim;
-		
-		updateCurrentInventory(cim);
-		
+
 		SellProductMenu spm = (SellProductMenu) CashShop.getInstance().getStaticItem(CashShop.CHECKOUT_CASH_BUTTON);
 		
-		updateCurrentProduct(spm, 1, false);
+		updateCurrentProduct(spm, 1, true);
 	}
 	
 	public void openCurrentInventory() {
@@ -370,7 +408,7 @@ public class CashPlayer {
 			return;
 		}
 		
-		this.removeCash(value);
+		this.removeCash(value, true);
 	}
 	
 	private boolean verifyCurrency(SellProductMenu menu, long value) {
@@ -378,7 +416,7 @@ public class CashPlayer {
 			return CashShop.getInstance().getEconomy().getBalance(Bukkit.getOfflinePlayer(this.getUniqueId())) >= value;
 		}
 		
-		return this.getCash() >= value;
+		return this.getCash(true) >= value;
 	}
 	
 	public boolean canBuyThisItem(SellProductMenu product) {
@@ -452,6 +490,8 @@ public class CashPlayer {
 	}
 	
 	public void backInventory() {
+		if (isRunningUpdater()) this.setCancelUpdater(true);
+
 		if (previusMenus.size() > 0) {
 			this.currentMenu = previusMenus.get(previusMenus.size()-1);
 			previusMenus.remove(previusMenus.size()-1);
@@ -540,7 +580,7 @@ public class CashPlayer {
 		updaterRunnable = new BukkitRunnable() {
 			@Override
 			public void run() {
-				if (!cp.isUsingMenus()) {
+				if (!cp.isUsingMenus() || cancelUpdater) {
 					this.cancel();
 					return;
 				}
@@ -563,6 +603,7 @@ public class CashPlayer {
 			public void cancel() throws IllegalStateException {
 				updating = false;
 				runningUpdater = false;
+				cancelUpdater = false;
 				super.cancel();
 			}
 		};
@@ -581,6 +622,7 @@ public class CashPlayer {
 		FileConfiguration fc = YamlConfiguration.loadConfiguration(f);
 		
 		fc.set("cash", this.cash);
+		fc.set("cashBonus", this.cashBonus);
 		
 		fc.set("transactions.pending", null);
 		fc.set("transactions.approved", null);
@@ -613,6 +655,7 @@ public class CashPlayer {
 		if (f.exists()) {
 			FileConfiguration fc = YamlConfiguration.loadConfiguration(f);
 			this.cash = fc.getInt("cash");
+			this.cashBonus = fc.getInt("cashBonus", 0);
 			
 			if (fc.get("transactions.pending") != null) {
 				for (String token : fc.getConfigurationSection("transactions.pending").getKeys(false)) {

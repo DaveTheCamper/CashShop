@@ -73,6 +73,10 @@ public interface CashShopGateway {
 	 */
 	TransactionResponse verifyTransaction(String token);
 
+	default int getGracePeriodDays() {
+		return 0;
+	}
+
 	default void sendLink(CashPlayer player, TransactionInfo transactionInfo) {
 		Player p = Bukkit.getPlayer(player.getUniqueId());
 		ConfigManager messages = CashShop.getInstance().getMessagesConfig();

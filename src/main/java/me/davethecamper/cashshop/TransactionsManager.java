@@ -1,24 +1,18 @@
 package me.davethecamper.cashshop;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.UUID;
-
-import me.davethecamper.cashshop.api.info.ProductInfo;
-import me.davethecamper.cashshop.inventory.configs.ConfigInteractiveMenu;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.scheduler.BukkitRunnable;
-
 import com.cryptomorin.xseries.XSound;
-
 import me.davethecamper.cashshop.api.CashShopGateway;
+import me.davethecamper.cashshop.api.info.PlayerInfo;
+import me.davethecamper.cashshop.api.info.ProductInfo;
 import me.davethecamper.cashshop.api.info.TransactionInfo;
 import me.davethecamper.cashshop.api.info.TransactionResponse;
 import me.davethecamper.cashshop.events.TransactionCompleteEvent;
 import me.davethecamper.cashshop.player.CashPlayer;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.*;
 
 public class TransactionsManager {
 	
@@ -32,7 +26,7 @@ public class TransactionsManager {
 	
 	private Thread thread;
 	
-	private volatile HashMap<CashPlayer, ArrayList<TransactionInfo>> to_approve = new HashMap<>();
+	private final HashMap<CashPlayer, ArrayList<TransactionInfo>> to_approve = new HashMap<>();
 	private volatile HashMap<CashPlayer, ArrayList<TransactionInfo>> to_cancel = new HashMap<>();
 	
 
@@ -51,9 +45,12 @@ public class TransactionsManager {
 										TransactionInfo ti = cp.getPendingTransactions().get(token);
 										
 										CashShopGateway csg = main.getGateway(ti.getGatewayCaller());
+
+										if (Objects.isNull(csg)) continue;
+
 										TransactionResponse tr = csg.verifyTransaction(ti.getTransactionToken());
-										
-										System.out.println(uuid + " " + token + " §a" + tr);
+
+										Bukkit.getLogger().info("§eValidating transaction uuid=" + uuid + " token=" + token + " tr=" + tr);
 									
 										if (tr != null) {
 											switch (tr) {
@@ -90,12 +87,17 @@ public class TransactionsManager {
 	}
 	
 	public void addToApprove(CashPlayer player, TransactionInfo ti) {
-		ArrayList<TransactionInfo> list = new ArrayList<>();
-		if (to_approve.containsKey(player)) {
-			list.addAll(to_approve.get(player));
+		synchronized (to_approve) {
+			ArrayList<TransactionInfo> list = new ArrayList<>();
+			if (to_approve.containsKey(player)) {
+				list.addAll(to_approve.get(player));
+			}
+
+			ti.setGracePeriodDays(CashShop.getInstance().getGateway(ti.getGatewayCaller()).getGracePeriodDays());
+
+			list.add(ti);
+			to_approve.put(player, list);
 		}
-		list.add(ti);
-		to_approve.put(player, list);
 	}
 
 	private void addToCancel(CashPlayer player, TransactionInfo ti) {
@@ -111,21 +113,50 @@ public class TransactionsManager {
 	@SuppressWarnings("deprecation")
 	private void verifyTransactions() {
 		new BukkitRunnable() {
+			volatile boolean running = false;
+
 			@Override
 			public void run() {
-				for (CashPlayer cp : new ArrayList<>(to_approve.keySet())) {
-					for (TransactionInfo ti : new ArrayList<>(to_approve.get(cp))) {
-						OfflinePlayer of = Bukkit.getOfflinePlayer(ti.getPlayer());
-						CashPlayer other = CashShop.getInstance().getCashPlayer(of.getUniqueId());
-						
-						other.addCash(ti.getCash());
-						cp.setTransactionAsAproved(ti);
-						
-						to_approve.get(cp).remove(ti);
-						Bukkit.getPluginManager().callEvent(new TransactionCompleteEvent(of.getUniqueId(), ti));
-						if (Bukkit.getPlayer(cp.getUniqueId()) != null && Bukkit.getPlayer(cp.getUniqueId()).isOnline()) {
-							Bukkit.getPlayer(cp.getUniqueId()).sendMessage("§aTransação liberada, adicionado " + ti.getCash() + " cash's");
-							Bukkit.getPlayer(cp.getUniqueId()).playSound(Bukkit.getPlayer(cp.getUniqueId()).getLocation(), XSound.ENTITY_CAT_PURREOW.parseSound(), 1f, 1.3f);
+
+				if (running) return;
+
+				running = true;
+
+				try {
+					runProcess();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+				running = false;
+			}
+
+			private void runProcess() {
+				synchronized (to_approve) {
+					for (CashPlayer cp : new ArrayList<>(to_approve.keySet())) {
+						if (Objects.isNull(to_approve.get(cp))) {
+							to_approve.remove(cp);
+							continue;
+						}
+
+						for (TransactionInfo ti : new ArrayList<>(to_approve.get(cp))) {
+							OfflinePlayer of = Bukkit.getOfflinePlayer(ti.getPlayer());
+							CashPlayer other = CashShop.getInstance().getCashPlayer(of.getUniqueId());
+
+							other.addCash(ti.getCash());
+							cp.setTransactionAsAproved(ti);
+
+							if (to_approve.get(cp) != null) {
+								to_approve.get(cp).remove(ti);
+							} else {
+								to_approve.remove(cp);
+							}
+
+							Bukkit.getPluginManager().callEvent(new TransactionCompleteEvent(of.getUniqueId(), ti));
+							if (Bukkit.getPlayer(cp.getUniqueId()) != null && Bukkit.getPlayer(cp.getUniqueId()).isOnline()) {
+								Bukkit.getPlayer(cp.getUniqueId()).sendMessage("§7Transação liberada, adicionado §a" + ti.getCash() + " cash's");
+								Bukkit.getPlayer(cp.getUniqueId()).playSound(Bukkit.getPlayer(cp.getUniqueId()).getLocation(), XSound.ENTITY_CAT_PURREOW.parseSound(), 1f, 1.3f);
+							}
 						}
 					}
 				}
@@ -143,12 +174,14 @@ public class TransactionsManager {
 		double amount = player.getProductAmount();;
 		double total_in_money = amount - (amount * (CashShop.getInstance().getCupomManager().getDiscount(player.getCupom()) / 100));
 		int cashMultiply = CashShop.getInstance().getMainConfig().getInt("coin.value") * (int) amount;
+		String playerName = Bukkit.getPlayer(player.getUniqueId()).getName();
 
 		CashShopGateway csg = CashShop.getInstance().getGateway(identifier);
 		ProductInfo pi = new ProductInfo(cashMultiply, total_in_money, "Cash", CashShop.getInstance().getMainConfig().getString("currency.code"));
+		PlayerInfo playerInfo = new PlayerInfo(playerName, "", "");
 
 		Bukkit.getScheduler().runTaskAsynchronously(Bukkit.getPluginManager().getPlugin("CashShop"), () -> {
-			TransactionInfo ti = csg.generateTransaction(pi, null);
+			TransactionInfo ti = csg.generateTransaction(pi, playerInfo);
 
 			ti = new TransactionInfo(isValidNick(player.getGiftFor()) ? player.getGiftFor() : Bukkit.getOfflinePlayer(player.getUniqueId()).getName(), csg, player.getCupom(), (int) Math.round(amount * CashShop.getInstance().getMainConfig().getInt("coin.value")), total_in_money, System.currentTimeMillis(), ti.getLink(), ti.getTransactionToken());
 

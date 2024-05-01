@@ -11,6 +11,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.text.DecimalFormat;
+
 public class CashCommands implements CommandExecutor {
 	
 	public CashCommands(CashShop main) {
@@ -38,7 +40,7 @@ public class CashCommands implements CommandExecutor {
 				
 			case "shop":
 				if (sender instanceof Player) {
-					playerShopCommands(sender, cmd, args);
+					playerShopCommands(sender);
 				}
 				break;
 		}
@@ -59,7 +61,7 @@ public class CashCommands implements CommandExecutor {
 					if (args.length >= 3) {
 						OfflinePlayer of = Bukkit.getOfflinePlayer(args[1]);
 						int amount = Integer.valueOf(args[2]);
-						if (amount >= 0 && cp.getCash() >= amount) {
+						if (amount >= 0 && cp.getCash(false) >= amount) {
 							if (of != null && of.hasPlayedBefore()) {
 								CashPlayer other = CashShop.getInstance().getCashPlayer(of.getUniqueId());
 								other.addCash(amount);
@@ -73,14 +75,14 @@ public class CashCommands implements CommandExecutor {
 								p.sendMessage(CashShop.getInstance().getMessagesConfig().getString("tag") + " §cPlayer não encontrado");
 							}
 						} else {
-							p.sendMessage(CashShop.getInstance().getMessagesConfig().getString("tag") + " §c/cash enviar [nick] [quantia]");
+							p.sendMessage(CashShop.getInstance().getMessagesConfig().getString("tag") + " §7Cash insuficiente, use §a/cash ver");
 						}
 					}
-					break;
+					return true;
 					
 				case "ver":
-					p.sendMessage(CashShop.getInstance().getMessagesConfig().getString("tag") + " §eVocê tem §6" + cp.getCash() + " §ecash's");
-					break;
+					seeSubCommand(p, cp);
+					return true;
 					
 				case "editor":
 					if (p.hasPermission(ADMIN_PERMISSION)) {
@@ -90,14 +92,14 @@ public class CashCommands implements CommandExecutor {
 							p.openInventory(main.getPlayerEditorCurrentInventory(p.getUniqueId()).getInventory());
 						}
 					}
-					break;
+					return true;
 					
 			}
 		} else if (!p.hasPermission(ADMIN_PERMISSION)) {
-			p.sendMessage(CashShop.getInstance().getMessagesConfig().getString("tag") + " §eVocê tem §6" + cp.getCash() + " §ecash's");
+			seeSubCommand(p, cp);
 		}
 
-		return p.hasPermission(ADMIN_PERMISSION);
+		return !p.hasPermission(ADMIN_PERMISSION);
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -138,8 +140,11 @@ public class CashCommands implements CommandExecutor {
 					OfflinePlayer of = Bukkit.getOfflinePlayer(args[1]);
 					CashPlayer cp = main.getNormalPlayerInventory(of.getUniqueId());
 					int amount = Integer.parseInt(args[2]);
+					boolean bonus = args.length >= 4 && Boolean.parseBoolean(args[3]);
 
-					cp.addCash(amount);
+					cp.addCash(amount, bonus);
+
+					if (bonus) sender.sendMessage("§4§lO cash abaixo é bonus.");
 					sender.sendMessage(main.messages.getString("commands.cash.give").replaceAll("@amount", amount + "").replaceAll("@player", of.getName()));
 				}
 				break;
@@ -164,8 +169,13 @@ public class CashCommands implements CommandExecutor {
 					OfflinePlayer of = Bukkit.getOfflinePlayer(args[1]);
 					CashPlayer cp = main.getNormalPlayerInventory(of.getUniqueId());
 					int amount = Integer.parseInt(args[2]);
+					boolean bonus = args.length >= 4 && Boolean.parseBoolean(args[3]);
 
-					cp.setCash(amount);
+					if (bonus) {
+						cp.setCashBonus(amount);
+					} else {
+						cp.setCash(amount);
+					}
 					sender.sendMessage(main.messages.getString("commands.cash.set").replaceAll("@amount", amount + "").replaceAll("@player", of.getName()));
 				}
 				break;
@@ -184,12 +194,7 @@ public class CashCommands implements CommandExecutor {
 			case "see":
 			case "ver":
 			case "show":
-				if (sender.hasPermission(ADMIN_PERMISSION)) {
-					OfflinePlayer of = Bukkit.getOfflinePlayer(args[1]);
-					CashPlayer cp = main.getNormalPlayerInventory(of.getUniqueId());
-					
-					sender.sendMessage(main.messages.getString("commands.cash.show").replaceAll("@amount", cp.getCash() + "").replaceAll("@player", of.getName()));
-				}
+				seeSubCommand(sender, args);
 				break;
 				
 			case "cupom":
@@ -228,15 +233,35 @@ public class CashCommands implements CommandExecutor {
 				break;
 		}
 	}
-	
-	private void playerShopCommands(CommandSender sender, Command cmd, String[] args) {
-		Player p = (Player) sender;
 
-		if (main.getNormalPlayerInventory(p.getUniqueId()).haveCurrentInventoryFromMain()) {
-			main.getNormalPlayerInventory(p.getUniqueId()).openCurrentInventory();
-		} else {
-			main.getNormalPlayerInventory(p.getUniqueId()).updateCurrentInventory((ConfigInteractiveMenu) CashShop.getInstance().getStaticItem("main"));
+	private void seeSubCommand(CommandSender sender, String args[]) {
+		if (sender.hasPermission(ADMIN_PERMISSION)) {
+			OfflinePlayer of = Bukkit.getOfflinePlayer(args[1]);
+			CashPlayer cp = main.getNormalPlayerInventory(of.getUniqueId());
+
+			seeSubCommand(sender, cp);
 		}
+	}
+
+	private void seeSubCommand(CommandSender p, CashPlayer cp) {
+		DecimalFormat f = new DecimalFormat("#,##0");
+
+		p.sendMessage(" " + CashShop.getInstance().getMessagesConfig().getString("tag") + " §7Seu cash");
+		p.sendMessage("");
+		p.sendMessage(" §eNormal: §6" + f.format(cp.getCash()));
+		p.sendMessage(" §eBonus: §6" + f.format(cp.getCashBonus()));
+		p.sendMessage("");
+		p.sendMessage(" §7§oCash bonus não pode ser enviado.");
+	}
+	
+	private void playerShopCommands(CommandSender sender) {
+		Player p = (Player) sender;
+		CashPlayer cp = CashShop.getInstance().getCashPlayer(p.getUniqueId());
+
+		cp.getPreviusMenus().clear();
+		cp.setCashTransaction(false);
+
+		main.getNormalPlayerInventory(p.getUniqueId()).updateCurrentInventory((ConfigInteractiveMenu) CashShop.getInstance().getStaticItem("main"));
 	}
 
 }

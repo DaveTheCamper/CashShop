@@ -1,11 +1,6 @@
 package me.davethecamper.cashshop;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import me.davethecamper.cashshop.utils.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
@@ -13,6 +8,13 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class ConfigManager {
 
@@ -30,7 +32,8 @@ public class ConfigManager {
 		this.plugin = plugin;
 		
 		if (!file.exists()) {
-			plugin.saveResource(getFilePathFromPlugin(file, plugin), true);
+			FileUtils.saveFileFromResources(plugin, file, getFilePathFromPlugin(file, plugin));
+			//plugin.saveResource(getFilePathFromPlugin(file, plugin), true);
 		}
 		
 		loadMessages(YamlConfiguration.loadConfiguration(file), "");
@@ -62,7 +65,7 @@ public class ConfigManager {
 			String pluginAbsolutePath = plugin.getDataFolder().getAbsolutePath();
 			String path = f.getAbsolutePath();
 			
-			return path.substring(pluginAbsolutePath.length()+1, path.length());
+			return path.substring(pluginAbsolutePath.length()+1);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

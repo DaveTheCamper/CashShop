@@ -1,16 +1,5 @@
 package me.davethecamper.cashshop;
 
-import java.util.HashMap;
-import java.util.UUID;
-
-import org.bukkit.Bukkit;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
-
 import me.davethecamper.cashshop.events.CashMenuInventoryClickEvent;
 import me.davethecamper.cashshop.events.CashPlayerInventoryClickEvent;
 import me.davethecamper.cashshop.events.ChangeEditorInventoryEvent;
@@ -23,6 +12,16 @@ import me.davethecamper.cashshop.inventory.configs.SellProductMenu;
 import me.davethecamper.cashshop.inventory.configs.ValuebleItemMenu;
 import me.davethecamper.cashshop.inventory.edition.EditionComponent;
 import me.davethecamper.cashshop.player.CashPlayer;
+import org.bukkit.Bukkit;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
+
+import java.util.HashMap;
+import java.util.UUID;
 
 
 public class EventsCatcher implements Listener {
@@ -237,6 +236,7 @@ public class EventsCatcher implements Listener {
 		CashPlayer cp = main.getNormalPlayerInventory(e.getWaitingForChat().getPlayer());
 		switch (e.getWaitingForChat().getVarName()) {
 			case "set_gift":
+				cp.setKeepBackHistory(true);
 				if (Bukkit.getPlayer((String) e.getWaitingForChat().getResult()) != null) {
 					cp.setGiftFor(Bukkit.getPlayer((String) e.getWaitingForChat().getResult()).getName());
 				} else {
@@ -245,6 +245,7 @@ public class EventsCatcher implements Listener {
 				break;
 				
 			case "set_discount":
+				cp.setKeepBackHistory(true);
 				String cupom = ((String) e.getWaitingForChat().getResult()).toLowerCase();
 				if (main.getCupomManager().isValid(cupom)) {
 					cp.setCupom(cupom);
@@ -256,6 +257,7 @@ public class EventsCatcher implements Listener {
 				break;
 				
 			case "set_amount":
+				cp.setKeepBackHistory(true);
 				Integer amount = (Integer) e.getWaitingForChat().getResult();
 				if (amount > 0) {
 					cp.setProductAmount(amount);

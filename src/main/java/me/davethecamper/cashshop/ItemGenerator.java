@@ -1,20 +1,14 @@
 package me.davethecamper.cashshop;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-
+import com.cryptomorin.xseries.XMaterial;
+import me.davethecamper.cashshop.player.CashPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.cryptomorin.xseries.XMaterial;
-
-import me.davethecamper.cashshop.player.CashPlayer;
+import java.util.*;
 
 public class ItemGenerator {
 	
@@ -204,7 +198,7 @@ public class ItemGenerator {
 				replace_something = true;
 				switch (s) {
 					case "@cash":
-						current = current.replaceAll(s, player.getCash() + "");
+						current = current.replaceAll(s, player.getCash() + " (" + player.getCashBonus() + " bonus)");
 						break;
 						
 					case "@cupom":

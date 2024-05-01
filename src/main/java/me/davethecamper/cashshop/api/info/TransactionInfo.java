@@ -1,7 +1,15 @@
 package me.davethecamper.cashshop.api.info;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import me.davethecamper.cashshop.api.CashShopGateway;
 
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class TransactionInfo {
 	
 	public TransactionInfo(String link, String transaction_token) {
@@ -28,6 +36,8 @@ public class TransactionInfo {
 	private String link, transaction_token, api_caller, player, cupom;
 	
 	private int cash;
+
+	private int gracePeriodDays;
 	
 	private double real_money;
 	

@@ -1,13 +1,13 @@
 package me.davethecamper.cashshop.inventory.choosers;
 
-import java.util.ArrayList;
-import java.util.UUID;
-
 import me.davethecamper.cashshop.CashShop;
 import me.davethecamper.cashshop.ConfigManager;
 import me.davethecamper.cashshop.ItemGenerator;
 import me.davethecamper.cashshop.inventory.ReciclableMenu;
 import me.davethecamper.cashshop.inventory.configs.ConfigItemMenu;
+
+import java.util.ArrayList;
+import java.util.UUID;
 
 public class ChooseEditionMenu extends ChoosableMenu {
 	
@@ -119,7 +119,7 @@ public class ChooseEditionMenu extends ChoosableMenu {
 
 	@Override
 	public boolean isLastChoose(int choose) {
-		return choose < (categories.size() - ((page-1)*45));
+		return this.getInventorySize()-9 >= choose && choose < (categories.size() - ((page-1)*45));
 	}
 
 	@Override
