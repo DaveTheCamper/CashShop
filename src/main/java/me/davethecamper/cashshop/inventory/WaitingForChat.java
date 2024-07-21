@@ -53,6 +53,8 @@ public class WaitingForChat implements Listener {
 	private String var_name;
 
 	private String message;
+
+	private String errorMessage;
 	
 	private Object result;
 	
@@ -113,7 +115,7 @@ public class WaitingForChat implements Listener {
 				
 				finish(o);
 			} else {
-				e.getPlayer().sendMessage(CashShop.getInstance().getMessagesConfig().getString("chat.generic_error." + type.toString()));
+				e.getPlayer().sendMessage(getErrorMessage());
 			}
 		}
 	}
@@ -159,6 +161,13 @@ public class WaitingForChat implements Listener {
 			return false;
 		}
 		return true;
+	}
+
+	private String getErrorMessage() {
+		if (Objects.nonNull(this.errorMessage))
+			return this.errorMessage;
+
+		return CashShop.getInstance().getMessagesConfig().getString("chat.generic_error." + type.toString());
 	}
 	
 	private void finish(Object obj) {
