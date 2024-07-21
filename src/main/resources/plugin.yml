@@ -10,4 +10,4 @@ commands:
     description: Player shop acess command.
     aliases: [loja]
 
-depend: [Vault]
+softdepend: [Vault]

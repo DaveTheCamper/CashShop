@@ -1,13 +1,14 @@
 package me.davethecamper.cashshop.objects;
- 
+
+import me.davethecamper.cashshop.api.CashShopGateway;
+
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-
-import me.davethecamper.cashshop.api.CashShopGateway;
 
 public final class CashShopClassLoader extends URLClassLoader {
 
@@ -39,10 +40,21 @@ public final class CashShopClassLoader extends URLClassLoader {
     		 Constructor<? extends CashShopGateway> constructor = gateway_class.getDeclaredConstructor();
 			  
     		 this.gateway = constructor.newInstance();
-		} catch (Exception e) {
-			e.printStackTrace();
-		};
+		} catch (ClassNotFoundException exception)  {
+		     throw new RuntimeException("A main class não existe " + main_class_name, exception);
+		} catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
+		     throw new RuntimeException(e);
+	     }
     }
+
+	private boolean isClassExistent() {
+		try {
+			Class.forName(main_class_name);
+			return true;
+		} catch (ClassNotFoundException exception) {
+			return false;
+		}
+	}
     
     public void loadAllClasses(JarFile jf) {
     	Enumeration<JarEntry> e = jf.entries();
@@ -57,7 +69,8 @@ public final class CashShopClassLoader extends URLClassLoader {
     	    className = className.replace('/', '.');
     	    
     	    try {
-				this.loadClass(className);
+				System.out.println("Loading class " + className);
+				this.loadClass(className, true);
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				//e1.printStackTrace();

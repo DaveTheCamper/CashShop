@@ -50,17 +50,18 @@ public class TransactionsManager {
 
 										TransactionResponse tr = csg.verifyTransaction(ti.getTransactionToken());
 
-										Bukkit.getLogger().info("§eValidating transaction uuid=" + uuid + " token=" + token + " tr=" + tr);
+										//Bukkit.getLogger().info("§eValidating transaction uuid=" + uuid + " token=" + token + " tr=" + tr);
 									
 										if (tr != null) {
 											switch (tr) {
 												case APPROVED:
 													addToApprove(cp, ti);
-													System.out.println("§aEnviado comando para liberar cash ao jogador " + Bukkit.getOfflinePlayer(uuid).getName());
+													Bukkit.getConsoleSender().sendMessage("§aEnviado comando para liberar cash ao jogador " + Bukkit.getOfflinePlayer(uuid).getName());
 													break;
 												
 												case CANCELLED:
 													addToCancel(cp, ti);
+													Bukkit.getConsoleSender().sendMessage("§cTransação cancelada " + ti.getPlayer() + " " + ti.getTransactionToken());
 													break;
 													
 												default:
@@ -76,7 +77,7 @@ public class TransactionsManager {
 						}
 						
 					}
-				}, 0, main.configuration.getInt("delay_verify")*1000);;
+				}, 0, main.configuration.getInt("delay_verify")*1000L);;
 			}
 		};
 		thread.start();

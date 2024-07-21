@@ -200,7 +200,7 @@ public class CashPlayer {
 	
 	public void updateCurrentInventory(ConfigInteractiveMenu new_menu, boolean add_list, boolean open_inventory) {
 		if (currentMenu != null && new_menu != null && !currentMenu.getId().equals(new_menu.getId())) {
-			if (isRunningUpdater()) this.setCancelUpdater(true);
+			if (isRunningUpdater()) updaterRunnable.cancel();
 		}
 
 		if (currentMenu != null && add_list) {

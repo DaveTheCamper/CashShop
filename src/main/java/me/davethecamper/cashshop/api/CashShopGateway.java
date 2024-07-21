@@ -77,6 +77,8 @@ public interface CashShopGateway {
 		return 0;
 	}
 
+	default long getMaxTransactionWaiting() {return 3600L*24L;}
+
 	default void sendLink(CashPlayer player, TransactionInfo transactionInfo) {
 		Player p = Bukkit.getPlayer(player.getUniqueId());
 		ConfigManager messages = CashShop.getInstance().getMessagesConfig();

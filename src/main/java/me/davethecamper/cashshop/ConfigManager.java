@@ -32,7 +32,7 @@ public class ConfigManager {
 		this.plugin = plugin;
 		
 		if (!file.exists()) {
-			FileUtils.saveFileFromResources(plugin, file, getFilePathFromPlugin(file, plugin));
+			FileUtils.saveFileFromResources(plugin, file, getFilePathFromPlugin(file, plugin).replace('\\', '/'));
 			//plugin.saveResource(getFilePathFromPlugin(file, plugin), true);
 		}
 		

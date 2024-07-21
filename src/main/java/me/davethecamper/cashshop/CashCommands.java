@@ -11,7 +11,9 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.io.File;
 import java.text.DecimalFormat;
+import java.util.UUID;
 
 public class CashCommands implements CommandExecutor {
 	
@@ -91,6 +93,12 @@ public class CashCommands implements CommandExecutor {
 						} else {
 							p.openInventory(main.getPlayerEditorCurrentInventory(p.getUniqueId()).getInventory());
 						}
+					}
+					return true;
+
+				case "reset_bonus":
+					if (p.hasPermission(ADMIN_PERMISSION)) {
+						executeCashBonusReset(sender);
 					}
 					return true;
 					
@@ -264,4 +272,21 @@ public class CashCommands implements CommandExecutor {
 		main.getNormalPlayerInventory(p.getUniqueId()).updateCurrentInventory((ConfigInteractiveMenu) CashShop.getInstance().getStaticItem("main"));
 	}
 
+	private void executeCashBonusReset(CommandSender sender) {
+		File folder = new File(Bukkit.getPluginManager().getPlugin("CashShop").getDataFolder().getAbsolutePath() + "/players");
+
+		for (File file : folder.listFiles()) {
+			String fileName = file.getName().replace(".yml", "");
+			UUID uuid = UUID.fromString(fileName);
+
+			CashPlayer cashPlayer = CashShop.getInstance().getCashPlayer(uuid);
+
+			int before = cashPlayer.getCashBonus();
+
+			if (before == 0) continue;
+
+			cashPlayer.setCashBonus(0);
+			Bukkit.getConsoleSender().sendMessage("§7O cash bonus do jogador " + uuid + " foi removido §c-" + before);
+		}
+	}
 }

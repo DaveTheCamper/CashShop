@@ -1,7 +1,11 @@
 package me.davethecamper.cashshop.inventory;
 
-import java.util.UUID;
-
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+import me.davethecamper.cashshop.CashShop;
+import me.davethecamper.cashshop.events.WaitingChatEvent;
+import me.davethecamper.cashshop.inventory.configs.IdentificableMenu;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -9,10 +13,13 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import me.davethecamper.cashshop.CashShop;
-import me.davethecamper.cashshop.events.WaitingChatEvent;
-import me.davethecamper.cashshop.inventory.configs.IdentificableMenu;
+import java.util.Objects;
+import java.util.UUID;
+import java.util.function.Predicate;
 
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class WaitingForChat implements Listener {
 
 	public WaitingForChat(final UUID player, final WaitingForChat.Primitives type, final String var_name, final String message) {
@@ -37,17 +44,15 @@ public class WaitingForChat implements Listener {
 		this.type = type;
 		this.caller = caller;
 		this.var_name = var_name;
-		
-		
-		Bukkit.getPluginManager().registerEvents(this, Bukkit.getPluginManager().getPlugin(CashShop.PLUGIN_NAME));
-		
-		Bukkit.getPlayer(player).sendMessage(message);
-		Bukkit.getPlayer(player).closeInventory();
+		this.message = message;
+
 	}
 	
 	private boolean block_negative = true;
 	
 	private String var_name;
+
+	private String message;
 	
 	private Object result;
 	
@@ -56,6 +61,8 @@ public class WaitingForChat implements Listener {
 	private WaitingForChat.Primitives type;
 	
 	private IdentificableMenu caller;
+
+	private Predicate<String> validator;
 	
 	
 	public String getVarName() {return var_name;}
@@ -63,6 +70,14 @@ public class WaitingForChat implements Listener {
 	public Object getResult() {return result;}
 
 	public UUID getPlayer() {return player;}
+
+
+	public void executeWaitingChat() {
+		Bukkit.getPluginManager().registerEvents(this, Bukkit.getPluginManager().getPlugin(CashShop.PLUGIN_NAME));
+
+		Bukkit.getPlayer(player).sendMessage(message);
+		Bukkit.getPlayer(player).closeInventory();
+	}
 	
 
 	@EventHandler(priority = EventPriority.LOWEST)
@@ -129,6 +144,14 @@ public class WaitingForChat implements Listener {
 						float val = Float.parseFloat(message);
 						return val > 0 || !block_negative;
 					}
+
+				case STRING: {
+					if (Bukkit.getPlayer(getPlayer()).isOp()) return true;
+
+					return Objects.isNull(validator) ?
+							isValidWord(message) :
+							validator.test(message);
+				}
 					
 				default: break;
 			}
@@ -148,6 +171,28 @@ public class WaitingForChat implements Listener {
 				caller.changerVar(var_name, obj);
 			}
 		});
+	}
+
+	private boolean isValidWord(String message) {
+		if (message.length() > 256) return false;
+
+		for (int i = 0; i < message.length(); i++) {
+			char c = message.charAt(i);
+
+			if (Character.isDigit(c)) continue;
+
+			if (c == ' ' || c == '&' || c == ',' || c == '.' || c == '_' || c == '-' || c == '#') continue;
+
+			if (c >= 'A' && c <= 'Z') continue;
+
+			if (c >= 'a' && c <= 'z') continue;
+
+			if (c >= 'À' && c <= 'ü') continue;
+
+			return false;
+		}
+
+		return true;
 	}
 	
 	public enum Primitives {

@@ -1,19 +1,5 @@
 package me.davethecamper.cashshop.inventory.configs;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
-import java.util.function.Consumer;
-
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryAction;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-
 import lombok.Getter;
 import me.davethecamper.cashshop.CashShop;
 import me.davethecamper.cashshop.ConfigManager;
@@ -26,6 +12,15 @@ import me.davethecamper.cashshop.inventory.edition.EditionComponent;
 import me.davethecamper.cashshop.inventory.edition.EditionComponentType;
 import me.davethecamper.cashshop.objects.ItemMenuProperties;
 import me.davethecamper.cashshop.player.CashPlayer;
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.*;
+import java.util.function.Consumer;
 
 public class ConfigInteractiveMenu extends ConfigItemMenu {
 
@@ -117,6 +112,18 @@ public class ConfigInteractiveMenu extends ConfigItemMenu {
 		
 		return total;
 	}
+
+	public List<Integer> getSlotsWithName(String name) {
+		ArrayList<Integer> slots = new ArrayList<>();
+
+		for (Integer slot : new ArrayList<>(this.getVisualizableItems().keySet())) {
+			if (this.getVisualizableItems().get(slot).getName().equals(name)) {
+				slots.add(slot);
+			}
+		}
+
+		return slots;
+	}
 	
 	public List<Integer> replaceIndicators(String name, ItemStack item, String identifiers) {
 		ArrayList<Integer> slots = new ArrayList<>();
@@ -199,7 +206,7 @@ public class ConfigInteractiveMenu extends ConfigItemMenu {
 		}
 		
 		for (Integer i : replaces.keySet()) {
-			if (replaces.get(i).equals(name)) {
+			if (Objects.nonNull(replaces.get(i)) && replaces.get(i).equals(name)) {
 				this.getComponentBySlot(i).setConsumer(consumer);
 			}
 		}
