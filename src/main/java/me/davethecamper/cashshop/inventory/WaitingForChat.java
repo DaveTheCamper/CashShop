@@ -46,6 +46,7 @@ public class WaitingForChat implements Listener {
 		this.var_name = var_name;
 		this.message = message;
 
+		executeWaitingChat();
 	}
 	
 	private boolean block_negative = true;

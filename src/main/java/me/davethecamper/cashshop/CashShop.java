@@ -327,16 +327,18 @@ public class CashShop extends JavaPlugin {
 
 		if (!f.exists()) {
 			f.mkdirs();
-		} else {
-			for (File gateway : f.listFiles()) {
-				try {
-					loadApiFromFile(f, gateway);
-				} catch (Exception e) {
-					System.out.println("Ocorreu um erro durante a inicialização do arquivo " + gateway.getName());
-					e.printStackTrace();
-				}
+			return;
+		}
+
+		for (File gateway : f.listFiles()) {
+			try {
+				loadApiFromFile(f, gateway);
+			} catch (Exception e) {
+				System.out.println("Ocorreu um erro durante a inicialização do arquivo " + gateway.getName());
+				e.printStackTrace();
 			}
 		}
+
 	}
 
 	private void loadApiFromFile(File f, File gateway) {
