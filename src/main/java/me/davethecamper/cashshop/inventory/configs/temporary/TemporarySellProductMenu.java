@@ -1,21 +1,24 @@
 package me.davethecamper.cashshop.inventory.configs.temporary;
 
-import java.util.UUID;
-import java.util.function.Consumer;
-
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
-
 import me.davethecamper.cashshop.CashShop;
 import me.davethecamper.cashshop.inventory.ReciclableMenu;
 import me.davethecamper.cashshop.inventory.configs.SellProductMenu;
 import me.davethecamper.cashshop.objects.ItemMenuProperties;
 import me.davethecamper.cashshop.objects.ProductConfig;
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
+
+import java.util.UUID;
+import java.util.function.Consumer;
 
 public class TemporarySellProductMenu extends SellProductMenu {
 	
 	private static final long serialVersionUID = -3241739116571529794L;
-	
+
+
+	public TemporarySellProductMenu(ItemMenuProperties item_properties, ProductConfig product, double updated_value) {
+		this(item_properties, product, updated_value, null);
+	}
 
 	public TemporarySellProductMenu(ItemMenuProperties item_properties, ProductConfig product, double updated_value, Consumer<TemporarySellProductMenu> callback) {
 		this(item_properties, product, updated_value, 0, callback);

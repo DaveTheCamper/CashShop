@@ -1,21 +1,24 @@
 package me.davethecamper.cashshop.inventory.configs;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.UUID;
-
+import lombok.Getter;
+import me.davethecamper.cashshop.CashShop;
+import me.davethecamper.cashshop.ConfigManager;
+import me.davethecamper.cashshop.ItemGenerator;
+import me.davethecamper.cashshop.inventory.configs.temporary.TemporarySellProductMenu;
+import me.davethecamper.cashshop.inventory.edition.EditionComponent;
+import me.davethecamper.cashshop.inventory.edition.EditionComponentType;
+import me.davethecamper.cashshop.objects.ItemMenuProperties;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.inventory.ItemStack;
 
-import me.davethecamper.cashshop.CashShop;
-import me.davethecamper.cashshop.ConfigManager;
-import me.davethecamper.cashshop.ItemGenerator;
-import me.davethecamper.cashshop.inventory.edition.EditionComponent;
-import me.davethecamper.cashshop.inventory.edition.EditionComponentType;
-import me.davethecamper.cashshop.objects.ItemMenuProperties;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Objects;
+import java.util.UUID;
+import java.util.function.Consumer;
 
 public class ProductItemsMenu extends SavableMenu {
 
@@ -26,10 +29,15 @@ public class ProductItemsMenu extends SavableMenu {
 
 
 	public ProductItemsMenu(String identificador, ConfigManager item_config, SellProductMenu dad) {
+		this(identificador, item_config, dad, null);
+	}
+
+	public ProductItemsMenu(String identificador, ConfigManager item_config, SellProductMenu dad, Consumer<ProductItemsMenu> consumer) {
 		super(identificador, item_config, dad);
 		
 		this.dad = dad;
 		this.items = new ArrayList<>(dad.getProduct().getItems());
+		this.consumer = consumer;
 		
 		load();
 	}
@@ -38,6 +46,11 @@ public class ProductItemsMenu extends SavableMenu {
 	private ArrayList<ItemStack> temp_items = new ArrayList<>();
 	
 	private SellProductMenu dad;
+
+	@Getter
+	private boolean intentionToSave;
+
+	private Consumer<ProductItemsMenu> consumer;
 
 	
 	private void load() {
@@ -98,7 +111,7 @@ public class ProductItemsMenu extends SavableMenu {
 		
 		return map;
 	}
-	
+
 	@Override
 	public void saveHandler() {
 		dad.updateItems(this);
@@ -126,11 +139,12 @@ public class ProductItemsMenu extends SavableMenu {
 		} else {
 			switch (slots.get(clicked_slot)) {
 				case SAVE_BUTTON:
-					saveHandler();
+					finishEditing(true);
 					super.backOneInventory(uuid, dad);
 					return true;
 					
 				case CANCEL_BUTTON:
+					finishEditing(false);
 					for (ItemStack item : temp_items) {
 						Bukkit.getPlayer(uuid).getInventory().addItem(item);
 					}
@@ -141,6 +155,17 @@ public class ProductItemsMenu extends SavableMenu {
 					return super.inventoryClickHandler(uuid, clicked_slot, slot_button, type);
 			}
 		}
+	}
+
+	protected void finishEditing(boolean save) {
+		this.intentionToSave = save;
+
+		if (Objects.nonNull(consumer)) {
+			consumer.accept(this);
+			return;
+		}
+
+		if (save) saveHandler();
 	}
 	
 	@Override
@@ -156,5 +181,10 @@ public class ProductItemsMenu extends SavableMenu {
 
 	@Override
 	protected FileConfiguration saveHandler(FileConfiguration fc) {return fc;}
+
+
+	public static ProductItemsMenu createTemporaryProductItems(TemporarySellProductMenu temporaryMenu, Consumer<ProductItemsMenu> consumer) {
+		return new ProductItemsMenu(UUID.randomUUID().toString(), CashShop.getInstance().getMessagesConfig(), temporaryMenu, consumer);
+	}
 
 }
