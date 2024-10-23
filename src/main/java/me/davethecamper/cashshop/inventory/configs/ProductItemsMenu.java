@@ -139,16 +139,11 @@ public class ProductItemsMenu extends SavableMenu {
 		} else {
 			switch (slots.get(clicked_slot)) {
 				case SAVE_BUTTON:
-					finishEditing(true);
-					super.backOneInventory(uuid, dad);
+					finishEditing(uuid, true);
 					return true;
 					
 				case CANCEL_BUTTON:
-					finishEditing(false);
-					for (ItemStack item : temp_items) {
-						Bukkit.getPlayer(uuid).getInventory().addItem(item);
-					}
-					super.backOneInventory(uuid, dad);
+					finishEditing(uuid, false);
 					return true;
 					
 				default:
@@ -157,7 +152,7 @@ public class ProductItemsMenu extends SavableMenu {
 		}
 	}
 
-	protected void finishEditing(boolean save) {
+	protected void finishEditing(UUID uuid, boolean save) {
 		this.intentionToSave = save;
 
 		if (Objects.nonNull(consumer)) {
@@ -165,7 +160,16 @@ public class ProductItemsMenu extends SavableMenu {
 			return;
 		}
 
-		if (save) saveHandler();
+		if (save) {
+			saveHandler();
+			super.backOneInventory(uuid, dad);
+			return;
+		}
+
+		for (ItemStack item : temp_items) {
+			Bukkit.getPlayer(uuid).getInventory().addItem(item);
+		}
+		super.backOneInventory(uuid, dad);
 	}
 	
 	@Override
