@@ -20,7 +20,7 @@ public class LoreEditorMenu extends SavableMenu {
 
 
 	public LoreEditorMenu(String id, ConfigManager messagesConfig, TemporarySellProductMenu temporaryMenu, Consumer<LoreEditorMenu> consumer) {
-		this(id, null, messagesConfig, temporaryMenu);
+		this(id, null, messagesConfig, temporaryMenu, temporaryMenu.getProduct().getCommands());
 
 		this.consumer = consumer;
 	}
@@ -57,7 +57,7 @@ public class LoreEditorMenu extends SavableMenu {
 		int i = 0;
 		for (; i < lore.size(); i++) {
 			String s = item_config.getStringAsItemLore("items.lore.hint");
-			this.registerItem("lore" + i, ItemGenerator.getItemStack("PAPER", "Line " + i, "§f" + lore.get(i) + ";=;;=;" + s), i);
+			this.registerItem("lore" + i, ItemGenerator.getItemStack("PAPER", "Line " + i, " §7» §f" + lore.get(i) + ";=;;=;" + s), i);
 		}
 		
 		if (++i < 27) this.registerItem("ADD_NEW", item_config.getItemFromConfig("items.lore.new"), i-1);

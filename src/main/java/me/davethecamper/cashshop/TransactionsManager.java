@@ -1,6 +1,7 @@
 package me.davethecamper.cashshop;
 
 import com.cryptomorin.xseries.XSound;
+import lombok.extern.slf4j.Slf4j;
 import me.davethecamper.cashshop.api.CashShopGateway;
 import me.davethecamper.cashshop.api.info.PlayerInfo;
 import me.davethecamper.cashshop.api.info.ProductInfo;
@@ -10,7 +11,6 @@ import me.davethecamper.cashshop.events.TransactionCompleteEvent;
 import me.davethecamper.cashshop.player.CashPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 
@@ -19,86 +19,67 @@ public class TransactionsManager {
 	public TransactionsManager(CashShop main) {
 		this.main = main;
 		threadVerifier();
-		verifyTransactions();
 	}
 	
 	private CashShop main;
 	
 	private Thread thread;
 	
-	private final HashMap<CashPlayer, ArrayList<TransactionInfo>> to_approve = new HashMap<>();
 	private volatile HashMap<CashPlayer, ArrayList<TransactionInfo>> to_cancel = new HashMap<>();
 	
 
 	private void threadVerifier() {
-		this.thread = new Thread() {
-			@Override
-			public void run() {
-				new Timer().schedule(new TimerTask() {
-					@Override
-					public void run() {
-						for (UUID uuid : new ArrayList<>(main.players.keySet())) {
-							CashPlayer cp = main.players.get(uuid);
-							if (cp.isOnline()) {
-								for (String token : new ArrayList<>(cp.getPendingTransactions().keySet())) {
-									try {
-										TransactionInfo ti = cp.getPendingTransactions().get(token);
-										
-										CashShopGateway csg = main.getGateway(ti.getGatewayCaller());
+		this.thread = new Thread(() -> {
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    for (UUID uuid : new ArrayList<>(main.players.keySet())) {
+                        CashPlayer cp = main.players.get(uuid);
+                        if (cp.isOnline()) {
+                            for (String token : new ArrayList<>(cp.getPendingTransactions().keySet())) {
+                                try {
+                                    TransactionInfo ti = cp.getPendingTransactions().get(token);
 
-										if (Objects.isNull(csg)) continue;
+                                    CashShopGateway csg = main.getGateway(ti.getGatewayCaller());
 
-										TransactionResponse tr = csg.verifyTransaction(ti.getTransactionToken());
+                                    if (Objects.isNull(csg)) continue;
 
-										//Bukkit.getLogger().info("§eValidating transaction uuid=" + uuid + " token=" + token + " tr=" + tr);
-									
-										if (tr != null) {
-											switch (tr) {
-												case APPROVED:
-													addToApprove(cp, ti);
-													Bukkit.getConsoleSender().sendMessage("§aEnviado comando para liberar cash ao jogador " + Bukkit.getOfflinePlayer(uuid).getName());
-													break;
-												
-												case CANCELLED:
-													addToCancel(cp, ti);
-													Bukkit.getConsoleSender().sendMessage("§cTransação cancelada " + ti.getPlayer() + " " + ti.getTransactionToken());
-													break;
-													
-												default:
-													break;
-												
-											}
-										}
-									} catch (Exception e) {
-										e.printStackTrace();
-									}
-								}
-							}
-						}
-						
-					}
-				}, 0, main.configuration.getInt("delay_verify")*1000L);;
-			}
-		};
+                                    TransactionResponse tr = csg.verifyTransaction(ti.getTransactionToken());
+
+                                    //Bukkit.getLogger().info("§eValidating transaction uuid=" + uuid + " token=" + token + " tr=" + tr);
+
+                                    if (tr != null) {
+                                        switch (tr) {
+                                            case APPROVED:
+                                                approveTransaction(cp, ti);
+                                                Bukkit.getConsoleSender().sendMessage("§aEnviado comando para liberar cash ao jogador " + Bukkit.getOfflinePlayer(uuid).getName());
+                                                break;
+
+                                            case CANCELLED:
+                                                addToCancel(cp, ti);
+                                                Bukkit.getConsoleSender().sendMessage("§cTransação cancelada " + ti.getPlayer() + " " + ti.getTransactionToken());
+                                                break;
+
+                                            default:
+                                                break;
+
+                                        }
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }, 0, main.configuration.getInt("delay_verify")*1000L);;
+        });
 		thread.start();
 	}
 	
 	public void stop() {
 		thread.interrupt();
-	}
-	
-	public void addToApprove(CashPlayer player, TransactionInfo ti) {
-		synchronized (to_approve) {
-			ArrayList<TransactionInfo> list = new ArrayList<>();
-			if (to_approve.containsKey(player)) {
-				list.addAll(to_approve.get(player));
-			}
-
-			ti.setGracePeriodDays(CashShop.getInstance().getGateway(ti.getGatewayCaller()).getGracePeriodDays());
-
-			list.add(ti);
-			to_approve.put(player, list);
-		}
 	}
 
 	private void addToCancel(CashPlayer player, TransactionInfo ti) {
@@ -108,67 +89,31 @@ public class TransactionsManager {
 		}
 		list.add(ti);
 		to_cancel.put(player, list);
+
+		Bukkit.getScheduler().runTask(main, () -> player.cancelTransaction(ti));
 	}
-	
 
-	@SuppressWarnings("deprecation")
-	private void verifyTransactions() {
-		new BukkitRunnable() {
-			volatile boolean running = false;
+	public void approveTransaction(CashPlayer player, TransactionInfo ti) {
+		ti.setGracePeriodDays(CashShop.getInstance().getGateway(ti.getGatewayCaller()).getGracePeriodDays());
 
-			@Override
-			public void run() {
+		Bukkit.getScheduler().runTask(main, () -> finishApproveTransaction(player, ti));
+	}
 
-				if (running) return;
+	private void finishApproveTransaction(CashPlayer cp, TransactionInfo ti) {
+		Bukkit.getConsoleSender().sendMessage("§aTransação liberada " + ti.toString());
 
-				running = true;
+		OfflinePlayer of = Bukkit.getOfflinePlayer(ti.getPlayer());
+		CashPlayer other = CashShop.getInstance().getCashPlayer(of.getUniqueId());
 
-				try {
-					runProcess();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+		other.addCash(ti.getCash());
+		cp.setTransactionAsAproved(ti);
 
-				running = false;
-			}
+		Bukkit.getPluginManager().callEvent(new TransactionCompleteEvent(of.getUniqueId(), ti));
 
-			private void runProcess() {
-				synchronized (to_approve) {
-					for (CashPlayer cp : new ArrayList<>(to_approve.keySet())) {
-						if (Objects.isNull(to_approve.get(cp))) {
-							to_approve.remove(cp);
-							continue;
-						}
-
-						for (TransactionInfo ti : new ArrayList<>(to_approve.get(cp))) {
-							OfflinePlayer of = Bukkit.getOfflinePlayer(ti.getPlayer());
-							CashPlayer other = CashShop.getInstance().getCashPlayer(of.getUniqueId());
-
-							other.addCash(ti.getCash());
-							cp.setTransactionAsAproved(ti);
-
-							if (to_approve.get(cp) != null) {
-								to_approve.get(cp).remove(ti);
-							} else {
-								to_approve.remove(cp);
-							}
-
-							Bukkit.getPluginManager().callEvent(new TransactionCompleteEvent(of.getUniqueId(), ti));
-							if (Bukkit.getPlayer(cp.getUniqueId()) != null && Bukkit.getPlayer(cp.getUniqueId()).isOnline()) {
-								Bukkit.getPlayer(cp.getUniqueId()).sendMessage("§7Transação liberada, adicionado §a" + ti.getCash() + " cash's");
-								Bukkit.getPlayer(cp.getUniqueId()).playSound(Bukkit.getPlayer(cp.getUniqueId()).getLocation(), XSound.ENTITY_CAT_PURREOW.parseSound(), 1f, 1.3f);
-							}
-						}
-					}
-				}
-
-				for (CashPlayer cp : to_cancel.keySet()) {
-					for (TransactionInfo ti : new ArrayList<>(to_cancel.get(cp))) {
-						cp.cancelTransaction(ti);
-					}
-				}
-			}
-		}.runTaskTimer(main, 0, main.configuration.getInt("delay_verify")* 3L);
+		if (of.isOnline()) {
+			of.getPlayer().sendMessage("§7Transação liberada, adicionado §a" + ti.getCash() + " cash's");
+			of.getPlayer().playSound(Bukkit.getPlayer(cp.getUniqueId()).getLocation(), XSound.ENTITY_CAT_PURREOW.parseSound(), 1f, 1.3f);
+		}
 	}
 
 	public void createPlayerTransaction(String identifier, CashPlayer player) {
@@ -200,7 +145,7 @@ public class TransactionsManager {
 	}
 
 	private boolean isValidNick(String nick) {
-		char chars[] = nick.toCharArray();
+		char[] chars = nick.toCharArray();
 		if (chars.length >= 16 || chars.length == 0) return false;
 
 		for (int i = 0; i < chars.length; i++) {

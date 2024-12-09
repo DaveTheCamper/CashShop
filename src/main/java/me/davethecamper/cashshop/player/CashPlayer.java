@@ -1,6 +1,7 @@
 package me.davethecamper.cashshop.player;
 
 import lombok.Data;
+import lombok.Setter;
 import me.davethecamper.cashshop.CashShop;
 import me.davethecamper.cashshop.ItemGenerator;
 import me.davethecamper.cashshop.api.info.TransactionInfo;
@@ -48,7 +49,8 @@ public class CashPlayer {
 
 	private int cashBonus = 0;
 
-	private int productAmount = 1;
+	@Setter
+    private int productAmount = 1;
 	
 	private boolean isCashTransaction = false;
 	private boolean changes = false;
@@ -59,7 +61,11 @@ public class CashPlayer {
 
 	private boolean keepBackHistory;
 	
-	private String cupom = "...", giftFor = "...";
+	@Setter
+    private String cupom = "...";
+
+	@Setter
+	private String giftFor = "...";
 	
 	
 	private BukkitRunnable updaterRunnable;
@@ -88,19 +94,13 @@ public class CashPlayer {
 	
 	public boolean haveAnyCurrentInventory() {return this.currentMenu != null;}
 	
-	public boolean haveCurrentInventoryFromMain() {return this.currentMenu != null && previusMenus.size() > 0 && previusMenus.get(0).getId().equals("main");}
+	public boolean haveCurrentInventoryFromMain() {return this.currentMenu != null && !previusMenus.isEmpty() && previusMenus.get(0).getId().equals("main");}
 
 
 	public void setCash(int cash) {changes = true; this.cash = cash;}
 	public void setCashBonus(int cash) {changes = true; this.cashBonus = cash;}
-	
-	public void setProductAmount(int amount) {this.productAmount = amount;}
 
-	public void setCupom(String cupom) {this.cupom = cupom;}
-
-	public void setGiftFor(String gift_for) {this.giftFor = gift_for;}
-	
-	public void setTransactionAsAproved(TransactionInfo ti) {
+    public void setTransactionAsAproved(TransactionInfo ti) {
 		ti.setApproved();
 		
 		transactionsPending.remove(ti.getTransactionToken());
@@ -128,9 +128,9 @@ public class CashPlayer {
 
 	public void addCash(long amount, boolean bonus) {
 		if (bonus) {
-			this.cashBonus += amount;
+			this.cashBonus += (int) amount;
 		} else {
-			this.cash += amount;
+			this.cash += (int) amount;
 		}
 
 		this.changes = true;
@@ -334,7 +334,7 @@ public class CashPlayer {
 			updateCurrentProduct(this.currentProduct, this.productAmount, false);
 		} else {
 			ConfigInteractiveMenu menu = this.getCurrentInteractiveMenu();
-			if (this.previusMenus.size() > 0) this.previusMenus.remove(this.previusMenus.size()-1);
+			if (!this.previusMenus.isEmpty()) this.previusMenus.remove(this.previusMenus.size()-1);
 			
 			this.updateCurrentInventory(CashShop.getInstance().getCategoriesManager().getCategorie(menu.getId()));
 		}
@@ -420,23 +420,26 @@ public class CashPlayer {
 	}
 	
 	public boolean canBuyThisItem(SellProductMenu product) {
-		if (product != null && product.getDelayToBuy() != 0) {
-			if (lastBuyTime.get(product.getId()) != null) {
-				if (product.getDelayToBuy() < 0) {
-					return false;
-				} else {
-					long tempo_armazenado = lastBuyTime.get(product.getId());
-					
-					return tempo_armazenado + (product.getDelayToBuy()*1000*3600) < System.currentTimeMillis();
-				}
-			}
-		}
-		return true;
+		if (Objects.isNull(product) || product.getDelayToBuy() == 0)
+			return true;
+
+		if (!lastBuyTime.containsKey(product.getId()))
+			return true;
+
+		if (product.getDelayToBuy() < 0)
+			return false;
+
+		if (Objects.isNull(CashShop.getInstance().getProduct(product.getId())))
+			return true;
+
+		long storedTime = lastBuyTime.get(product.getId());
+
+		return storedTime + (product.getDelayToBuy()*1000*3600) < System.currentTimeMillis();
 	}
 	
 	private void giveItem(ItemStack item) {
 		Player p = Bukkit.getPlayer(uniqueId);
-        if (espacoInv((Inventory)p.getInventory(), item) >= item.getAmount()) {
+        if (espacoInv(p.getInventory(), item) >= item.getAmount()) {
             p.getInventory().addItem(item.clone());
         } else {
             p.getWorld().dropItem(p.getLocation(), item.clone());
@@ -492,7 +495,7 @@ public class CashPlayer {
 	public void backInventory() {
 		if (isRunningUpdater()) this.setCancelUpdater(true);
 
-		if (previusMenus.size() > 0) {
+		if (!previusMenus.isEmpty()) {
 			this.currentMenu = previusMenus.get(previusMenus.size()-1);
 			previusMenus.remove(previusMenus.size()-1);
 			openCurrentInventory();

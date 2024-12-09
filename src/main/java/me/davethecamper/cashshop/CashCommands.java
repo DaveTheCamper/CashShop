@@ -164,7 +164,7 @@ public class CashCommands implements CommandExecutor {
 					TransactionInfo ti = cp.getPendingTransactions().get(args[2]);
 					
 					if (ti != null) {
-						CashShop.getInstance().getTransactionsManager().addToApprove(cp, ti);
+						CashShop.getInstance().getTransactionsManager().approveTransaction(cp, ti);
 						sender.sendMessage(main.messages.getString("commands.cash.allowed"));
 					} else {
 						sender.sendMessage(main.messages.getString("commands.cash.not_allowed"));
