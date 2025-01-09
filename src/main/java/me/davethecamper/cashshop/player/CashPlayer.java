@@ -6,6 +6,7 @@ import me.davethecamper.cashshop.CashShop;
 import me.davethecamper.cashshop.ItemGenerator;
 import me.davethecamper.cashshop.api.info.TransactionInfo;
 import me.davethecamper.cashshop.events.BuyCashItemEvent;
+import me.davethecamper.cashshop.events.CashPlayerProductUpdateEvent;
 import me.davethecamper.cashshop.events.PreOpenCashInventoryEvent;
 import me.davethecamper.cashshop.inventory.WaitingForChat;
 import me.davethecamper.cashshop.inventory.configs.ConfigInteractiveMenu;
@@ -348,11 +349,20 @@ public class CashPlayer {
 	}
 
 	private void updateCurrentProduct(SellProductMenu new_item, int amount, boolean add_list) {
+		CashPlayerProductUpdateEvent event = CashPlayerProductUpdateEvent.builder()
+				.cashPlayer(this)
+				.sellingProduct(new_item)
+				.addList(add_list)
+				.build();
+
+		Bukkit.getPluginManager().callEvent(event);
+
+		if (event.isCancelled()) return;
+
 		this.productAmount = amount;
 		this.currentProduct = new_item;
 		
 		ConfigInteractiveMenu buy_menu = this.currentCheckout;
-		
 		buy_menu.updateProduct(this.currentProduct.getSellingItem(this, this.productAmount));
 		
 		updateCurrentInventory(buy_menu, add_list);

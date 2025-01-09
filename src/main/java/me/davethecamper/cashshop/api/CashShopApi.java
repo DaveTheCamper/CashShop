@@ -1,31 +1,18 @@
 package me.davethecamper.cashshop.api;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.TreeMap;
-import java.util.UUID;
-
-import org.bukkit.configuration.file.YamlConfiguration;
-
+import lombok.Getter;
 import me.davethecamper.cashshop.CashShop;
 import me.davethecamper.cashshop.ConfigManager;
 import me.davethecamper.cashshop.CupomManager;
 import me.davethecamper.cashshop.TransactionsManager;
-import me.davethecamper.cashshop.inventory.configs.ComboItemMenu;
-import me.davethecamper.cashshop.inventory.configs.ConfigInteractiveMenu;
-import me.davethecamper.cashshop.inventory.configs.ConfigItemMenu;
-import me.davethecamper.cashshop.inventory.configs.SavableMenu;
-import me.davethecamper.cashshop.inventory.configs.SellProductMenu;
+import me.davethecamper.cashshop.inventory.configs.*;
 import me.davethecamper.cashshop.inventory.edition.EditionComponent;
 import me.davethecamper.cashshop.player.CashPlayer;
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.*;
+import java.util.*;
 
 public class CashShopApi {
 	
@@ -39,7 +26,8 @@ public class CashShopApi {
 	
 	private CashShop main;
 	
-	private CashShopLists lists;
+	@Getter
+    private CashShopLists lists;
 	
 	private CategoriesManager categories;
 	
@@ -51,10 +39,8 @@ public class CashShopApi {
 	public ConfigManager getMainConfig() {return this.main.configuration;}
 	
 	public ConfigManager getMessagesConfig() {return this.main.messages;}
-	
-	public CashShopLists getLists() {return this.lists;}
-	
-	public CategoriesManager getCategoriesManager() {return this.categories;}
+
+    public CategoriesManager getCategoriesManager() {return this.categories;}
 	
 	public CashShopStaticMenus getStaticObjects() {return this.static_menus;}
 	
@@ -63,6 +49,8 @@ public class CashShopApi {
 	public CashPlayer getCashPlayer(UUID uuid) {return main.getNormalPlayerInventory(uuid);}
 	
 	public Economy getEconomy() {return main.getEconomy();}
+
+	public int getCurrencyCashValue() {return CashShop.getInstance().getMainConfig().getInt("coin.value");}
 	
 	
 	public CashShopGateway getGateway(String name) {return main.getGateway(name);}
