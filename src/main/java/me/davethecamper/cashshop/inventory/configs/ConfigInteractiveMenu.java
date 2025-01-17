@@ -1,6 +1,7 @@
 package me.davethecamper.cashshop.inventory.configs;
 
 import lombok.Getter;
+import lombok.Setter;
 import me.davethecamper.cashshop.CashShop;
 import me.davethecamper.cashshop.ConfigManager;
 import me.davethecamper.cashshop.ItemGenerator;
@@ -62,9 +63,13 @@ public class ConfigInteractiveMenu extends ConfigItemMenu {
 	
 	private EditInteractiveMenu edition;
 	
-	private int size;
+	@Setter
+    @Getter
+    private int size;
 	
-	private String name;
+	@Setter
+    @Getter
+    private String name;
 	
 	private Inventory inventory_log;
 	
@@ -240,13 +245,9 @@ public class ConfigInteractiveMenu extends ConfigItemMenu {
 
 	
 	public void updateEditor(EditInteractiveMenu edition) { this.edition = edition;}
-	
 
-	public int getSize() {return size;}
-	
-	public String getName() {return name;}
-	
-	public HashMap<Integer, EditionComponent> getVisualizableItems() {return edition.getItems();}
+
+    public HashMap<Integer, EditionComponent> getVisualizableItems() {return edition.getItems();}
 	
 	public Inventory getLogInventory() {
 		if (this.inventory_log == null) {
@@ -256,11 +257,7 @@ public class ConfigInteractiveMenu extends ConfigItemMenu {
 	}
 
 
-	public void setSize(int size) {this.size = size;}
-
-	public void setName(String name) {this.name = name;}
-	
-	public void setLogInventory(Inventory inv) {this.inventory_log = inv;}
+    public void setLogInventory(Inventory inv) {this.inventory_log = inv;}
 	
 	
 	public void openLogInventory(Player p) {

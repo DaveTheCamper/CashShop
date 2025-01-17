@@ -21,8 +21,8 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
-
 
 public class EventsCatcher implements Listener {
 
@@ -30,11 +30,13 @@ public class EventsCatcher implements Listener {
 		this.main = main;
 	}
 	
-	private CashShop main;
+	private final CashShop main;
 	
-	private HashMap<UUID, Boolean> is_editing_editor = new HashMap<>();
+	private final HashMap<UUID, Boolean> isUsingEditor = new HashMap<>();
 	
-	private HashMap<UUID, Boolean> is_using_menus = new HashMap<>();
+	private final HashMap<UUID, Boolean> isUsingMenus = new HashMap<>();
+
+	private final Map<UUID, Long> lastAccessTime = new HashMap<>();
 	
 	
 	
@@ -45,45 +47,18 @@ public class EventsCatcher implements Listener {
 		if (e.getClickedInventory() == null) return;
 
 		if (main.haveEditorInventoryOpen(uuid) && isEditingEditor(uuid)) {
-			if (e.getClickedInventory() == null) return;
-			e.setCancelled(true);
-			
-			ReciclableMenu rm = main.getPlayerEditorCurrentInventory(uuid);
-			
-			if (e.getClickedInventory().equals(e.getView().getTopInventory())) {
-				rm.inventoryClick(uuid, e.getSlot(), e.getHotbarButton(), e.getAction());
-			} else {
-				rm.inventoryPlayerClickHandler(e.getSlot(), e.getCurrentItem());
-			}
-
-			if (rm instanceof ChoosableMenu) {
-				ChoosableMenu cm = (ChoosableMenu) rm;
-				ReciclableMenu next = null;
-				
-				if (cm.isLastChoose(e.getSlot())) {
-					next = cm.getFinalStep(e.getSlot());
-					
-				} else {
-					next = cm.getNextChoosable(e.getSlot());
-				}
-				
-				if (next == null) {return;}
-				
-
-				main.changePlayerEditorInventory(uuid, next);
-				next.setPlayer(uuid);
-				
-				e.getWhoClicked().openInventory(next.getInventory());
-				
-			}
+			executeEditorMenuClick(e, uuid);
 		} else if (main.getNormalPlayerInventory(uuid).haveAnyCurrentInventory() && isUsingMenus(uuid)) {
-			if (e.getClickedInventory() == null) return;
 			e.setCancelled(true);
 			
 			CashPlayer cp = main.getNormalPlayerInventory(uuid);
 			if (e.getClickedInventory().equals(e.getView().getTopInventory())) {
+				if (lastAccessTime.getOrDefault(uuid, 0L) > System.currentTimeMillis()) return;
+
+				lastAccessTime.put(uuid, System.currentTimeMillis() + 100);
+
 				CashMenuInventoryClickEvent event = new CashMenuInventoryClickEvent(uuid, cp.getCurrentInteractiveMenu(), e);
-				
+
 				if (cp.getCurrentInteractiveMenu().getComponentBySlot(e.getSlot()) != null) {
 					if (cp.getCurrentInteractiveMenu().getComponentBySlot(e.getSlot()).getConsumer() != null) {
 						ConfigInteractiveMenu curr = cp.getCurrentInteractiveMenu();
@@ -129,11 +104,8 @@ public class EventsCatcher implements Listener {
 							ConfigInteractiveMenu cim = CashShop.getInstance().getCategoriesManager().getCategorie(cc.getName());
 							cp.updateCurrentInventory(cim);
 							break;
-							
-						case COMBO:
-							break;
-							
-						case STATIC:
+
+                        case STATIC:
 							switch (cc.getName()) {
 								case CashShop.BACK_BUTTON:
 									cp.backInventory();
@@ -212,7 +184,41 @@ public class EventsCatcher implements Listener {
 			
 		}
 	}
-	
+
+	private void executeEditorMenuClick(InventoryClickEvent e, UUID uuid) {
+		e.setCancelled(true);
+
+		ReciclableMenu rm = main.getPlayerEditorCurrentInventory(uuid);
+
+		if (e.getClickedInventory().equals(e.getView().getTopInventory())) {
+			rm.inventoryClick(uuid, e.getSlot(), e.getHotbarButton(), e.getAction());
+		} else {
+			rm.inventoryPlayerClickHandler(e.getSlot(), e.getCurrentItem());
+		}
+
+		if (rm instanceof ChoosableMenu) {
+			ChoosableMenu cm = (ChoosableMenu) rm;
+			ReciclableMenu next;
+
+			if (cm.isLastChoose(e.getSlot())) {
+				next = cm.getFinalStep(e.getSlot());
+
+			} else {
+				next = cm.getNextChoosable(e.getSlot());
+			}
+
+			if (next == null) {
+				return;
+			}
+
+
+			main.changePlayerEditorInventory(uuid, next);
+			next.setPlayer(uuid);
+
+			e.getWhoClicked().openInventory(next.getInventory());
+		}
+	}
+
 	@EventHandler
 	public void onChangeInventoryEvent(ChangeEditorInventoryEvent e) {
 		if (e.getReciclableMenu() == null) {
@@ -310,17 +316,17 @@ public class EventsCatcher implements Listener {
 	}
 	
 	
-	private boolean isEditingEditor(UUID uuid) {return is_editing_editor.containsKey(uuid) ? is_editing_editor.get(uuid) : false;}
+	private boolean isEditingEditor(UUID uuid) {return isUsingEditor.getOrDefault(uuid, false);}
 	
-	private void setEditingEditor(UUID uuid, Boolean arg) { is_editing_editor.put(uuid, arg);}
+	private void setEditingEditor(UUID uuid, Boolean arg) { isUsingEditor.put(uuid, arg);}
 	
 
-	private boolean isUsingMenus(UUID uuid) {return is_using_menus.containsKey(uuid) ? is_using_menus.get(uuid) : false;}
+	private boolean isUsingMenus(UUID uuid) {return isUsingMenus.getOrDefault(uuid, false);}
 	
 	private void setUsingMenus(UUID uuid, Boolean arg) { 
 		CashPlayer cp = CashShop.getInstance().getCashPlayer(uuid);
 		
-		is_using_menus.put(uuid, arg);
+		isUsingMenus.put(uuid, arg);
 		cp.setUsingMenus(arg);
 		
 		if (!arg) {
