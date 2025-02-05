@@ -1,19 +1,18 @@
 package me.davethecamper.cashshop.inventory.configs;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.UUID;
-
-import org.bukkit.Bukkit;
-import org.bukkit.event.inventory.InventoryAction;
-import org.bukkit.inventory.ItemStack;
-
 import me.davethecamper.cashshop.CashShop;
 import me.davethecamper.cashshop.ConfigManager;
 import me.davethecamper.cashshop.ItemGenerator;
 import me.davethecamper.cashshop.events.ChangeEditorInventoryEvent;
 import me.davethecamper.cashshop.inventory.ReciclableMenu;
 import me.davethecamper.cashshop.inventory.WaitingForChat;
+import org.bukkit.Bukkit;
+import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.inventory.ItemStack;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.UUID;
 
 public abstract class IdentificableMenu extends ReciclableMenu {
 	
@@ -31,7 +30,7 @@ public abstract class IdentificableMenu extends ReciclableMenu {
 	
 	protected ConfigManager item_config;
 	
-	private String identifier;
+	protected String identifier;
 	private String type = "do-nothing";
 	
 	private boolean unsafe = false;

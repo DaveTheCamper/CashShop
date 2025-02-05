@@ -1,21 +1,20 @@
 package me.davethecamper.cashshop.inventory.configs;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.UUID;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.event.inventory.InventoryAction;
-import org.bukkit.inventory.ItemStack;
-
 import me.davethecamper.cashshop.CashShop;
 import me.davethecamper.cashshop.ConfigManager;
 import me.davethecamper.cashshop.ItemGenerator;
 import me.davethecamper.cashshop.inventory.ReciclableMenu;
 import me.davethecamper.cashshop.inventory.WaitingForChat;
 import me.davethecamper.cashshop.objects.ItemMenuProperties;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.inventory.ItemStack;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.UUID;
 
 public class ConfigItemMenu extends DeletebleMenu {
 
@@ -122,10 +121,10 @@ public class ConfigItemMenu extends DeletebleMenu {
 	@Override
 	public void delete() {
 	    String main_path = Bukkit.getPluginManager().getPlugin(CashShop.PLUGIN_NAME).getDataFolder().getAbsolutePath();
-	    File f = new File(String.valueOf(main_path) + "/objects/" + this.getDescriber() + "/" + getId() + ".yml");
-	    
+	    File f = new File(main_path + "/objects/" + this.getDescriber() + "/" + getId() + ".yml");
+
 	    f.delete();
-	    
+
 	    CashShop.getInstance().unregister(this.getDescriber(), getId());
 	    this.backOneInventory(getPlayer(), this.getPreviousMenu().getPreviousMenu());
 	}

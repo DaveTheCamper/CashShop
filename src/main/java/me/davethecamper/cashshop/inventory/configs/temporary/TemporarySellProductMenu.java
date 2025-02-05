@@ -25,15 +25,17 @@ public class TemporarySellProductMenu extends SellProductMenu {
 	}
 
 	public TemporarySellProductMenu(ItemMenuProperties item_properties, ProductConfig product, double updated_value, long delay, Consumer<TemporarySellProductMenu> callback) {
-		super("temporary_product", CashShop.getInstance().getMessagesConfig(), null, item_properties, product, updated_value, delay);
+		super(UUID.randomUUID().toString(), CashShop.getInstance().getMessagesConfig(), null, item_properties, product, updated_value, delay);
 		
 		this.callback = callback;
 	}
 	
 	
-	private Consumer<TemporarySellProductMenu> callback;
+	private final Consumer<TemporarySellProductMenu> callback;
 	
 	public boolean hasIntentionToSave = false;
+
+	public boolean hasIntentionToDelete = false;
 	
 	
 	@Override
@@ -50,7 +52,14 @@ public class TemporarySellProductMenu extends SellProductMenu {
 		
 		return fc;
 	}
-	
+
+	@Override
+	public void delete() {
+		hasIntentionToDelete = true;
+
+		super.delete();
+	}
+
 	@Override
 	protected void backOneInventory(UUID player, ReciclableMenu menu) {
 		super.backOneInventory(player, getPreviousMenu());

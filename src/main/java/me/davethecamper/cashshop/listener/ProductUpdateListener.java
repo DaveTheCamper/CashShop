@@ -26,7 +26,7 @@ public class ProductUpdateListener implements Listener {
 
             cashPlayer.openBuyCashMenu();
             cashPlayer.setProductAmount(0);
-            cashPlayer.addProductAmount((int) Math.ceil(Math.min(1, amount)));
+            cashPlayer.addProductAmount((int) Math.ceil(Math.max(1, amount)));
         }
     }
 
