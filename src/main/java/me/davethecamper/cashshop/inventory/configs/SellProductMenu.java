@@ -1,13 +1,5 @@
 package me.davethecamper.cashshop.inventory.configs;
 
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.UUID;
-
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.event.inventory.InventoryAction;
-import org.bukkit.inventory.ItemStack;
-
 import lombok.Getter;
 import lombok.Setter;
 import me.davethecamper.cashshop.CashShop;
@@ -18,6 +10,13 @@ import me.davethecamper.cashshop.inventory.WaitingForChat;
 import me.davethecamper.cashshop.objects.ItemMenuProperties;
 import me.davethecamper.cashshop.objects.ProductConfig;
 import me.davethecamper.cashshop.player.CashPlayer;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.inventory.ItemStack;
+
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.UUID;
 
 public class SellProductMenu extends ValuebleItemMenu {
 
@@ -37,7 +36,8 @@ public class SellProductMenu extends ValuebleItemMenu {
 	}
 	
 	
-	private ProductConfig product;
+	@Getter
+    private ProductConfig product;
 	
 	private long delay_buy_again;
 	
@@ -58,20 +58,20 @@ public class SellProductMenu extends ValuebleItemMenu {
 	
 	private void load() {
 		registerItem(ITEMS, ItemGenerator.getItemStack(
-				item_config.getString("items.items_give.material"), 
-				item_config.getString("items.items_give.name"), 
-				item_config.getStringAsItemLore("items.items_give.lore")), 23);
+				itemConfig.getString("items.items_give.material"),
+				itemConfig.getString("items.items_give.name"),
+				itemConfig.getStringAsItemLore("items.items_give.lore")), 23);
 		
 		registerItem(DELAY, ItemGenerator.getItemStack(
-				item_config.getString("items.delay.material"), 
-				item_config.getString("items.delay.name"), 
-				item_config.getStringAsItemLore("items.delay.lore").replaceAll("@delay", this.delay_buy_again + "")), 4);
+				itemConfig.getString("items.delay.material"),
+				itemConfig.getString("items.delay.name"),
+				itemConfig.getStringAsItemLore("items.delay.lore").replaceAll("@delay", this.delay_buy_again + "")), 4);
 		
 		registerItem(COMMANDS, 
 				ItemGenerator.getItemStack(
-						item_config.getString("items.commands.material"), 
-						item_config.getString("items.commands.name"), 
-						item_config.getStringAsItemLore("items.commands.hint"), new ArrayList<>(product.getCommands())), 25);
+						itemConfig.getString("items.commands.material"),
+						itemConfig.getString("items.commands.name"),
+						itemConfig.getStringAsItemLore("items.commands.hint"), new ArrayList<>(product.getCommands())), 25);
 	}
 	
 	private final DecimalFormat f = new DecimalFormat("#,###");
@@ -79,22 +79,23 @@ public class SellProductMenu extends ValuebleItemMenu {
 	
 	public ItemStack getSellingItem(CashPlayer player, int amount) {
 		double discount = player != null ? CashShop.getInstance().getCupomManager().getDiscount(player.getCupom()) : 0;
-		double value_cash = player != null && player.isCashTransaction() ? (((double) this.getValueInCash()*amount)) - (((double) this.getValueInCash()*amount)*(discount/100)) : this.getValueInCash()*amount;
-		double value_cash_money = CashShop.getInstance().getMainConfig().getInt("coin.value")*amount;
+		double valueCash = player != null && player.isCashTransaction() ? (this.getValueInCash() * amount) - ((this.getValueInCash() * amount) * (discount/100)) : this.getValueInCash()*amount;
+		double valueCashMoney = CashShop.getInstance().getMainConfig().getInt("coin.value") * amount;
+
+		String extraLabel = amount > 1 ? " §7(x" + amount + ")" : "";
+		String discountLabel = discount > 0 ? "§d" + f.format(discount) + "% OFF " : "";
+		String coinLabel = isMoney ? "" : " ¢";
+
 		ItemStack item = this.getItemProperties().getItem().clone();
 		item = player != null ? ItemGenerator.replaces(item, player) : item;
-		item = player == null || !player.isCashTransaction() ? 
-				ItemGenerator.addLoreAfter(item, ";=;" + item_config.getString("product.sell").replaceAll("@value", f.format(value_cash)) + (amount > 1 ? " §7(x" + amount + ")" : "") + ";=;§r", "") : 
-					ItemGenerator.addLoreAfter(ItemGenerator.tryReplace(ItemGenerator.tryReplace(item, "@curvalue", f.format(value_cash_money)), "@value", f2.format(value_cash)),  (discount > 0 ? "§d" + f.format(discount) + "% OFF " : "") + (amount > 1 ? "§7(x" + amount + ")" : ""), "");
+		item = player == null || !player.isCashTransaction() ?
+				ItemGenerator.addLoreAfter(item, ";=;" + itemConfig.getString("product.sell").replaceAll("@value", f.format(valueCash) + coinLabel) + extraLabel + ";=;§r", "") :
+					ItemGenerator.addLoreAfter(ItemGenerator.tryReplace(ItemGenerator.tryReplace(item, "@curvalue", f.format(valueCashMoney)), "@value", f2.format(valueCash)), discountLabel + extraLabel, "");
 		
 		return item;
 	}
-	
-	public ProductConfig getProduct() {
-		return this.product;
-	}
-	
-	public long getDelayToBuy() {
+
+    public long getDelayToBuy() {
 		return this.delay_buy_again;
 	}
 	
@@ -120,7 +121,7 @@ public class SellProductMenu extends ValuebleItemMenu {
 	
 	@Override
 	public SellProductMenu clone(String id) {
-		return new SellProductMenu(id, item_config, this.previous, item_properties.clone(), product.clone(), this.getValueInCash(), delay_buy_again);
+		return new SellProductMenu(id, itemConfig, this.previous, item_properties.clone(), product.clone(), this.getValueInCash(), delay_buy_again);
 	}
 	
 	@Override
@@ -158,11 +159,11 @@ public class SellProductMenu extends ValuebleItemMenu {
 				return true;
 		
 			case ITEMS:
-				new ProductItemsMenu(this.getId(), item_config, this).startEditing(uuid);
+				new ProductItemsMenu(this.getId(), itemConfig, this).startEditing(uuid);
 				return true;
 				
 			case COMMANDS:
-				new LoreEditorMenu(this.getId(), COMMANDS, item_config, this, product.getCommands()).startEditing(uuid);
+				new LoreEditorMenu(this.getId(), COMMANDS, itemConfig, this, product.getCommands()).startEditing(uuid);
 				return true;
 				
 			default:

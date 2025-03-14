@@ -33,9 +33,9 @@ public abstract class DeletebleMenu extends SavableMenu {
 	private void load() {
 		this.registerItem(DELETE_BUTTON, 
 				ItemGenerator.getItemStack(
-						item_config.getString("items.delete.material"), 
-						item_config.getString("items.delete.name"), 
-						item_config.getStringAsItemLore("items.delete.lore")), this.getInventorySize()-1);
+						itemConfig.getString("items.delete.material"),
+						itemConfig.getString("items.delete.name"),
+						itemConfig.getStringAsItemLore("items.delete.lore")), this.getInventorySize()-1);
 		
 		if (CashShop.getInstance().getStaticObjects().isStaticObject(this.getId())) {
 			this.changeItemSlot(DELETE_BUTTON, -1);

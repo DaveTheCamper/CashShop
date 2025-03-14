@@ -19,7 +19,7 @@ public class ProductUpdateListener implements Listener {
 
         CashPlayer cashPlayer = e.getCashPlayer();
 
-        if (sellingProduct.getValueInCash() > cashPlayer.getCash()) {
+        if (sellingProduct.getValueInCash() > cashPlayer.getCash(true)) {
             e.setCancelled(true);
 
             double amount = (sellingProduct.getValueInCash() - cashPlayer.getCash()) / CashShop.getInstance().getCurrencyCashValue();

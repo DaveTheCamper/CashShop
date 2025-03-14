@@ -112,7 +112,7 @@ public class EditInteractiveMenu extends SavableMenu {
 		
 		slots.forEach((slot, value) -> components.put(slot, value.clone()));
 		
-		return new EditInteractiveMenu(this.getId(), item_config, dad, new HashMap<>(components));
+		return new EditInteractiveMenu(this.getId(), itemConfig, dad, new HashMap<>(components));
 	}
 	
 	@Override

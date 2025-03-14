@@ -120,7 +120,7 @@ public class ProductItemsMenu extends SavableMenu {
 	
 	@Override
 	public ProductItemsMenu clone() {
-		return new ProductItemsMenu(this.getId(), item_config, dad);
+		return new ProductItemsMenu(this.getId(), itemConfig, dad);
 	}
 
 

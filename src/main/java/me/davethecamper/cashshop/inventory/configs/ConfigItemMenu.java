@@ -60,33 +60,33 @@ public class ConfigItemMenu extends DeletebleMenu {
 	private void updateName() {
 		this.registerItem(CHANGE_NAME, 
 				ItemGenerator.getItemStack(
-						item_config.getString("items.item_properties.name.material"), 
-						item_config.getString("items.item_properties.name.name"), 
-						item_config.getStringAsItemLore("items.item_properties.name.lore").replace("@name", item_properties.getName() + "")), 19);
+						itemConfig.getString("items.item_properties.name.material"),
+						itemConfig.getString("items.item_properties.name.name"),
+						itemConfig.getStringAsItemLore("items.item_properties.name.lore").replace("@name", item_properties.getName() + "")), 19);
 	}
 	
 	private void updateGlow() {
 		this.registerItem(GLOW, 
 				ItemGenerator.getItemStack(
-						item_config.getString("items.item_properties.glow.material"), 
-						item_config.getString("items.item_properties.glow.name"), 
-						item_config.getStringAsItemLore("items.item_properties.glow.lore").replaceAll("@glow_status", item_properties.isGlow() + "")), 20);
+						itemConfig.getString("items.item_properties.glow.material"),
+						itemConfig.getString("items.item_properties.glow.name"),
+						itemConfig.getStringAsItemLore("items.item_properties.glow.lore").replaceAll("@glow_status", item_properties.isGlow() + "")), 20);
 	}
 	
 	private void updateLore() {
 		this.registerItem(ADD_LORE, 
 				ItemGenerator.getItemStack(
-						item_config.getString("items.item_properties.lore.material"), 
-						item_config.getString("items.item_properties.lore.name"), 
-						(item_properties.getLore() != null && item_properties.getLore().size() > 0 ? item_properties.getLoreAsString() : "") + (item_properties.getLore() != null && item_properties.getLore().size() > 0 ? ";=;" : "") + item_config.getStringAsItemLore("items.item_properties.lore.lore")), 21);
+						itemConfig.getString("items.item_properties.lore.material"),
+						itemConfig.getString("items.item_properties.lore.name"),
+						(item_properties.getLore() != null && item_properties.getLore().size() > 0 ? item_properties.getLoreAsString() : "") + (item_properties.getLore() != null && item_properties.getLore().size() > 0 ? ";=;" : "") + itemConfig.getStringAsItemLore("items.item_properties.lore.lore")), 21);
 	}
 	
 	private void updateFlags() {
 		this.registerItem(HIDE_FLAGS, 
 				ItemGenerator.getItemStack(
-						item_config.getString("items.item_properties.flags.material"), 
-						item_config.getString("items.item_properties.flags.name"), 
-						item_config.getStringAsItemLore("items.item_properties.flags.lore")), 18);
+						itemConfig.getString("items.item_properties.flags.material"),
+						itemConfig.getString("items.item_properties.flags.name"),
+						itemConfig.getStringAsItemLore("items.item_properties.flags.lore")), 18);
 	}
 	
 	public void changeLore(ArrayList<String> lore, String what) {
@@ -136,7 +136,7 @@ public class ConfigItemMenu extends DeletebleMenu {
 	}
 	
 	public ConfigItemMenu clone(String id) {
-		return new ConfigItemMenu(id, item_config, this.previous, item_properties.clone());
+		return new ConfigItemMenu(id, itemConfig, this.previous, item_properties.clone());
 	}
 
 	@Override
@@ -176,7 +176,7 @@ public class ConfigItemMenu extends DeletebleMenu {
 				return true;
 
 			case ADD_LORE:
-				new LoreEditorMenu(this.getId(), ADD_LORE, item_config, this).startEditing(uuid);
+				new LoreEditorMenu(this.getId(), ADD_LORE, itemConfig, this).startEditing(uuid);
 				return true;
 				
 			default:

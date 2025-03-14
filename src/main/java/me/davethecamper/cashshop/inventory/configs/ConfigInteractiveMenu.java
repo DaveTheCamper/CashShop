@@ -83,7 +83,7 @@ public class ConfigInteractiveMenu extends ConfigItemMenu {
 	private void load() {
 		this.changeIdentifierSlot(6);
 
-		this.registerItem(EDIT_BUTTON, item_config.getItemFromConfig("items.category.edit"), 23);
+		this.registerItem(EDIT_BUTTON, itemConfig.getItemFromConfig("items.category.edit"), 23);
 		
 		updateSizeButton();
 		updateTitleButton();
@@ -231,16 +231,16 @@ public class ConfigInteractiveMenu extends ConfigItemMenu {
 	
 	private void updateSizeButton() {
 		this.registerItem(INV_SIZE_BUTTON, ItemGenerator.getItemStack(
-				item_config.getString("items.category.size.material"), 
-				item_config.getString("items.category.size.name"), 
-				item_config.getStringAsItemLore("items.category.size.lore").replaceAll("@size", size + "")), 24);
+				itemConfig.getString("items.category.size.material"),
+				itemConfig.getString("items.category.size.name"),
+				itemConfig.getStringAsItemLore("items.category.size.lore").replaceAll("@size", size + "")), 24);
 	}
 	
 	private void updateTitleButton() {
 		this.registerItem(TITLE_BUTTON, ItemGenerator.getItemStack(
-				item_config.getString("items.category.title.material"), 
-				item_config.getString("items.category.title.name"), 
-				item_config.getStringAsItemLore("items.category.title.lore").replaceAll("@title", name)), 25);
+				itemConfig.getString("items.category.title.material"),
+				itemConfig.getString("items.category.title.name"),
+				itemConfig.getStringAsItemLore("items.category.title.lore").replaceAll("@title", name)), 25);
 	}
 
 	
@@ -352,7 +352,7 @@ public class ConfigInteractiveMenu extends ConfigItemMenu {
 
 	@Override
 	public ConfigInteractiveMenu clone(String id) {
-		ConfigInteractiveMenu cim = new ConfigInteractiveMenu(id, item_config, this.previous, item_properties.clone(), size, name, null, new HashMap<>(replaces));
+		ConfigInteractiveMenu cim = new ConfigInteractiveMenu(id, itemConfig, this.previous, item_properties.clone(), size, name, null, new HashMap<>(replaces));
 		cim.updateEditor(edition.clone(cim));
 		return cim;
 	}
@@ -379,7 +379,7 @@ public class ConfigInteractiveMenu extends ConfigItemMenu {
 	protected boolean inventoryClickHandler(UUID uuid, int clicked_slot, int slot_button, InventoryAction type) {
 		switch (slots.get(clicked_slot)) {
 				case EDIT_BUTTON:
-					new EditInteractiveMenu(name, item_config, this, edition != null ? new HashMap<>(edition.getItems()) : null).startEditing(uuid);
+					new EditInteractiveMenu(name, itemConfig, this, edition != null ? new HashMap<>(edition.getItems()) : null).startEditing(uuid);
 					return true;
 					
 				case INV_SIZE_BUTTON:

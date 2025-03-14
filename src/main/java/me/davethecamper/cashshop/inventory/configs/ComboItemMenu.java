@@ -49,9 +49,9 @@ public class ComboItemMenu extends ValuebleItemMenu {
 	private void updateCurrencyItem() {
 		this.registerItem(CURRENCY_TAG, 
 				ItemGenerator.getItemStack(
-						item_config.getString("items.currency.material"), 
-						item_config.getString("items.currency.name"), 
-						item_config.getStringAsItemLore("items.currency.lore").replaceAll("@currency_value", value_currency + "")), 25);
+						itemConfig.getString("items.currency.material"),
+						itemConfig.getString("items.currency.name"),
+						itemConfig.getStringAsItemLore("items.currency.lore").replaceAll("@currency_value", value_currency + "")), 25);
 	}
 	
 	public double getCurrencyValue() {
@@ -77,7 +77,7 @@ public class ComboItemMenu extends ValuebleItemMenu {
 
 	@Override
 	public ComboItemMenu clone(String id) {
-		return new ComboItemMenu(id, item_config, previous, item_properties.clone(), this.getValueInCash(), this.getCurrencyValue());
+		return new ComboItemMenu(id, itemConfig, previous, item_properties.clone(), this.getValueInCash(), this.getCurrencyValue());
 	}
 	
 	@Override

@@ -16,9 +16,9 @@ import java.util.UUID;
 
 public abstract class IdentificableMenu extends ReciclableMenu {
 	
-	public IdentificableMenu(String identifier, ConfigManager item_config) {
+	public IdentificableMenu(String identifier, ConfigManager itemConfig) {
 		this.identifier = identifier;
-		this.item_config = item_config;
+		this.itemConfig = itemConfig;
 		
 		this.inv_name = "Editor";
 		this.range_min = this.getInventorySize()-9;
@@ -28,7 +28,7 @@ public abstract class IdentificableMenu extends ReciclableMenu {
 		load();
 	}
 	
-	protected ConfigManager item_config;
+	protected ConfigManager itemConfig;
 	
 	protected String identifier;
 	private String type = "do-nothing";
@@ -46,9 +46,9 @@ public abstract class IdentificableMenu extends ReciclableMenu {
 	private void load() {
 		registerItem(IDENTIFIER, 
 				ItemGenerator.getItemStack(
-						item_config.getString("items.identifier.material"), 
-						item_config.getString("items.identifier.name"), 
-						item_config.getStringAsItemLore("items.identifier.lore").replaceAll("@id", this.getId())), 13);
+						itemConfig.getString("items.identifier.material"),
+						itemConfig.getString("items.identifier.name"),
+						itemConfig.getStringAsItemLore("items.identifier.lore").replaceAll("@id", this.getId())), 13);
 	}
 	
 	@Override
@@ -77,7 +77,7 @@ public abstract class IdentificableMenu extends ReciclableMenu {
 	
 	protected String getDescriber() {return this.type;}
 	
-	public ConfigManager getMessages() {return this.item_config;}
+	public ConfigManager getMessages() {return this.itemConfig;}
 	
 	public void setUnsafe(boolean arg) {this.unsafe = arg;}
 	
@@ -158,7 +158,7 @@ public abstract class IdentificableMenu extends ReciclableMenu {
 				File new_file = new File(Bukkit.getPluginManager().getPlugin(CashShop.PLUGIN_NAME).getDataFolder().getAbsolutePath() + "/objects/" + getDescriber() + "/" + new_name + ".yml");
 				
 				if (new_file.exists()) {
-					Bukkit.getPlayer(this.getPlayer()).sendMessage(item_config.getString("chat.error.existent"));
+					Bukkit.getPlayer(this.getPlayer()).sendMessage(itemConfig.getString("chat.error.existent"));
 					return;
 				}
 				

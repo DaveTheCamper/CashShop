@@ -56,9 +56,9 @@ public class ValuebleItemMenu extends ConfigItemMenu {
 	private void updateValueItem() {
 		registerItem(VALUE_TAG, 
 				ItemGenerator.getItemStack(
-						item_config.getString("items.valuable.material"), 
-						item_config.getString("items.valuable.name"), 
-						item_config.getStringAsItemLore("items.valuable.lore").replaceAll("@value_cash", value + "")), 24);
+						itemConfig.getString("items.valuable.material"),
+						itemConfig.getString("items.valuable.name"),
+						itemConfig.getStringAsItemLore("items.valuable.lore").replaceAll("@value_cash", value + "")), 24);
 	}
 	
 	protected void changeValueItemSlot(int slot) {

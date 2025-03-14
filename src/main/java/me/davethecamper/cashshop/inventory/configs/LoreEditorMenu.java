@@ -56,11 +56,11 @@ public class LoreEditorMenu extends SavableMenu {
 		
 		int i = 0;
 		for (; i < lore.size(); i++) {
-			String s = item_config.getStringAsItemLore("items.lore.hint");
+			String s = itemConfig.getStringAsItemLore("items.lore.hint");
 			this.registerItem("lore" + i, ItemGenerator.getItemStack("PAPER", "Line " + i, " §7» §f" + lore.get(i) + ";=;;=;" + s), i);
 		}
 		
-		if (++i < 27) this.registerItem("ADD_NEW", item_config.getItemFromConfig("items.lore.new"), i-1);
+		if (++i < 27) this.registerItem("ADD_NEW", itemConfig.getItemFromConfig("items.lore.new"), i-1);
 	}
 	
 	@Override

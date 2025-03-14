@@ -108,7 +108,12 @@ public class EventsCatcher implements Listener {
                         case STATIC:
 							switch (cc.getName()) {
 								case CashShop.BACK_BUTTON:
+									if (!cp.getPreviusMenus().isEmpty() && cp.getCurrentMenu().getId().equalsIgnoreCase(CashShop.CHECKOUT_MENU)) {
+										cp.setCashTransaction(false);
+									}
+
 									cp.backInventory();
+
 									break;
 									
 								case CashShop.ADD_AMOUNT_1_BUTTON:

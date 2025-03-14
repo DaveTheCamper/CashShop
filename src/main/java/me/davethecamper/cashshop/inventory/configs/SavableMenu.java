@@ -40,9 +40,9 @@ public abstract class SavableMenu extends IdentificableMenu implements Cloneable
 	}
 	
 	private void load() {
-		this.registerItem(SAVE_BUTTON, item_config.getItemFromConfig("items.save"), 29);
+		this.registerItem(SAVE_BUTTON, itemConfig.getItemFromConfig("items.save"), 29);
 		
-		this.registerItem(CANCEL_BUTTON, item_config.getItemFromConfig("items.cancel"), 33);
+		this.registerItem(CANCEL_BUTTON, itemConfig.getItemFromConfig("items.cancel"), 33);
 	}
 	
 	
