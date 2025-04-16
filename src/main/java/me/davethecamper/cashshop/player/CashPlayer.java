@@ -15,12 +15,13 @@ import me.davethecamper.cashshop.inventory.edition.EditionComponent;
 import me.davethecamper.cashshop.inventory.edition.EditionComponentType;
 import me.davethecamper.cashshop.objects.ProductConfig;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -387,7 +388,7 @@ public class CashPlayer {
 				
 				for (int i = 0; i < amount; i++) {
 					for (ItemStack item : pc.getItems()) {
-						this.giveItem(item.clone());
+						givePlayerItem(item.clone());
 					}
 					
 					for (String s : pc.getCommands()) {
@@ -446,33 +447,53 @@ public class CashPlayer {
 
 		return storedTime + (product.getDelayToBuy()*1000*3600) < System.currentTimeMillis();
 	}
-	
-	private void giveItem(ItemStack item) {
-		Player p = Bukkit.getPlayer(uniqueId);
-        if (espacoInv(p.getInventory(), item) >= item.getAmount()) {
-            p.getInventory().addItem(item.clone());
-        } else {
-            p.getWorld().dropItem(p.getLocation(), item.clone());
-        }
-    }
 
-	private int espacoInv(Inventory inv, ItemStack item) {
-        int quantia = 0;
-        int slots = 0;
-        slots = inv.getType().equals(InventoryType.PLAYER) ? 35 : inv.getSize() - 1;
-        for (int i = 0; i <= slots; ++i) {
-            int stack;
-            int max;
-            if (inv.getItem(i) == null) {
-                quantia += item.getMaxStackSize();
-                continue;
-            }
-            if (item == null || inv.getItem(i).getType() != item.getType() || (max = item.getMaxStackSize()) == (stack = inv.getItem(i).getAmount())) continue;
-            int adicionar = max - stack;
-            quantia += adicionar;
-        }
-        return quantia;
-    }
+	private void givePlayerItem(ItemStack item) {
+		Player player = Bukkit.getPlayer(uniqueId);
+		ItemStack itemStack = item.clone();
+
+		int space = getSpaceAvaibleInventory(itemStack, player.getInventory());
+
+		if (space > itemStack.getAmount()) {
+			player.getInventory().addItem(itemStack);
+			return;
+		}
+
+		if (space > 0) {
+			ItemStack clone = itemStack.clone();
+			clone.setAmount(space);
+			itemStack.setAmount(itemStack.getAmount() - space);
+
+			player.getInventory().addItem(clone);
+		}
+
+		player.getWorld().dropItem(player.getLocation(), itemStack);
+	}
+
+	private int getSpaceAvaibleInventory(ItemStack item, Inventory inv) {
+		int total = 0;
+		int ignoreSlots = 0;
+
+		if (inv instanceof PlayerInventory) {
+			ignoreSlots = inv.getSize() % 9;
+		}
+
+		for (int i = 0; i < inv.getSize() - ignoreSlots; i++) {
+			ItemStack itemAtual = inv.getItem(i);
+
+			if (Objects.isNull(itemAtual) || itemAtual.getType().equals(Material.AIR)) {
+				total += item.getMaxStackSize();
+				continue;
+			}
+
+			if (item != null && itemAtual.isSimilar(item)) {
+				int toAdd = item.getMaxStackSize() - itemAtual.getAmount();
+				total += Math.max(toAdd, 0);
+			}
+		}
+
+		return total;
+	}
 
 	public long getDelayToBuyAgain(SellProductMenu product) {
 		if (product.getDelayToBuy() != 0) {

@@ -49,8 +49,6 @@ public class CashCommands implements CommandExecutor {
 		return false;
 	}
 	
-
-	
 	@SuppressWarnings("deprecation")
 	private boolean playerCashCommands(CommandSender sender, Command cmd, String[] args) {
 		Player p = (Player) sender;

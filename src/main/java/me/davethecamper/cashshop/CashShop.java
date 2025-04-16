@@ -4,6 +4,7 @@ import lombok.Getter;
 import me.davethecamper.cashshop.api.CashShopApi;
 import me.davethecamper.cashshop.api.CashShopGateway;
 import me.davethecamper.cashshop.api.info.InitializationResult;
+import me.davethecamper.cashshop.events.LoadComponentItemStackEvent;
 import me.davethecamper.cashshop.exceptions.EconomyDisabledException;
 import me.davethecamper.cashshop.inventory.ReciclableMenu;
 import me.davethecamper.cashshop.inventory.choosers.MainChooseMenu;
@@ -201,7 +202,7 @@ public class CashShop extends JavaPlugin {
 
 	@SuppressWarnings("unchecked")
 	public <Z extends ConfigItemMenu> Z load(FileConfiguration fc, String filename, boolean isStatic) {
-		ItemMenuProperties imp = 
+		ItemMenuProperties properties =
 				fc.get("item.name") != null ? 
 						fc.get("item.item") != null ?
 								new ItemMenuProperties(fc.getItemStack("item.item"), fc.getString("item.name"), new ArrayList<>(fc.getStringList("item.lore")), fc.getBoolean("item.glow"))
@@ -225,8 +226,7 @@ public class CashShop extends JavaPlugin {
 			}
 		}
 		
-		ArrayList<ItemStack> items = fc.get("selling.items") != null ? new ArrayList<ItemStack>((Collection<? extends ItemStack>) fc.getList("selling.items")) : null;
-		
+		ArrayList<ItemStack> items = fc.get("selling.items") != null ? new ArrayList<>((Collection<? extends ItemStack>) fc.getList("selling.items")) : null;
 		ArrayList<String> commands = fc.get("selling.commands") != null ? new ArrayList<>(fc.getStringList("selling.commands")) : null;
 			
 		
@@ -238,29 +238,44 @@ public class CashShop extends JavaPlugin {
 		
 		switch (type) {
 			case "do-nothing":
-				addToMap(map, identificador, z = (Z) new ConfigItemMenu(identificador, this.messages, null, imp));
+				addToMap(map, identificador, z = (Z) new ConfigItemMenu(identificador, this.messages, null, properties));
 				break;
 				
 			case "category":
-				addToMap(map, identificador, z = (Z) new ConfigInteractiveMenu(identificador, this.messages, null, imp, component, size, name));
+				addToMap(map, identificador, z = (Z) new ConfigInteractiveMenu(identificador, this.messages, null, properties, component, size, name));
 				break;
 				
 			case "product":
-				addToMap(map, identificador, z = (Z) new SellProductMenu(identificador, this.messages, null, imp, new ProductConfig(items, commands), value, delay));
+				addToMap(map, identificador, z = (Z) new SellProductMenu(identificador, this.messages, null, properties, new ProductConfig(items, commands), value, delay));
 				break;
 				
 			case "combo-item":
-				addToMap(map, identificador, z = (Z) new ComboItemMenu(identificador, this.messages, null, imp, value, combo_value));
+				addToMap(map, identificador, z = (Z) new ComboItemMenu(identificador, this.messages, null, properties, value, combo_value));
 				break;
 				
 			case "valueable":
-				addToMap(map, identificador, z = (Z) new ValuebleItemMenu(identificador, this.messages, null, imp, value));
+				addToMap(map, identificador, z = (Z) new ValuebleItemMenu(identificador, this.messages, null, properties, value));
 				break;
 		}
-		
+
+		callLoadItemStackEvent(filename, isStatic, z, properties);
+
 		return z;
 	}
-	
+
+	private <Z extends ConfigItemMenu> void callLoadItemStackEvent(String filename, boolean isStatic, Z finalZ, ItemMenuProperties properties) {
+		Bukkit.getScheduler().runTaskLater(this, () -> {
+			LoadComponentItemStackEvent event = LoadComponentItemStackEvent.builder()
+					.configItemMenu(finalZ)
+					.fileName(filename)
+					.staticComponent(isStatic)
+					.itemMenuProperties(properties)
+					.build();
+
+			Bukkit.getPluginManager().callEvent(event);
+		}, 20);
+	}
+
 	private void verifyExitentStaticItems() {
 		for (String s : static_labels) {
 			File f = new File(this.getDataFolder().getAbsolutePath() + "/objects/static/" + s + ".yml");

@@ -1,11 +1,11 @@
 package me.davethecamper.cashshop.events;
 
-import java.util.UUID;
-
+import lombok.Getter;
+import me.davethecamper.cashshop.inventory.configs.SellProductMenu;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import me.davethecamper.cashshop.inventory.configs.SellProductMenu;
+import java.util.UUID;
 
 public class BuyCashItemEvent extends Event {
 
@@ -17,25 +17,19 @@ public class BuyCashItemEvent extends Event {
 	
 	private UUID uuid;
 	
-	private int amount;
+	@Getter
+    private int amount;
 	
-	private SellProductMenu product;
+	@Getter
+    private SellProductMenu product;
 	
 
 	public UUID getUniqueId() {
 		return uuid;
 	}
-	
-	public int getAmount() {
-		return this.amount;
-	}
 
-	public SellProductMenu getProduct() {
-		return product;
-	}
-	
 
-	private static final HandlerList HANDLERS = new HandlerList();
+    private static final HandlerList HANDLERS = new HandlerList();
 	
 	@Override
 	public HandlerList getHandlers() {

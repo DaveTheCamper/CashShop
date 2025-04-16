@@ -78,7 +78,7 @@ public class ConfigItemMenu extends DeletebleMenu {
 				ItemGenerator.getItemStack(
 						itemConfig.getString("items.item_properties.lore.material"),
 						itemConfig.getString("items.item_properties.lore.name"),
-						(item_properties.getLore() != null && item_properties.getLore().size() > 0 ? item_properties.getLoreAsString() : "") + (item_properties.getLore() != null && item_properties.getLore().size() > 0 ? ";=;" : "") + itemConfig.getStringAsItemLore("items.item_properties.lore.lore")), 21);
+						(item_properties.getLore() != null && !item_properties.getLore().isEmpty() ? item_properties.getLoreAsString() : "") + (item_properties.getLore() != null && item_properties.getLore().size() > 0 ? ";=;" : "") + itemConfig.getStringAsItemLore("items.item_properties.lore.lore")), 21);
 	}
 	
 	private void updateFlags() {
