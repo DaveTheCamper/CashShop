@@ -13,9 +13,11 @@ import java.util.*;
 public class ItemGenerator {
 	
 	
-	private static HashMap<ItemStack, Boolean> has_to_replace = new HashMap<>();
+	private static final HashMap<ItemStack, Boolean> has_to_replace = new HashMap<>();
 	
-	private static Set<String> replaces = new HashSet<>(Arrays.asList("@cash", "@cupom", "@other", "@currency"));
+	private static final Set<String> replaces = new HashSet<>(Arrays.asList("@cash", "@cupom", "@other", "@currency"));
+
+	private static final Map<Integer, ItemStack> cacheItems = new HashMap<>();
 	
 	
 	
@@ -139,14 +141,14 @@ public class ItemGenerator {
 		ArrayList<String> lore = has_meta && item.getItemMeta().hasLore() ? new ArrayList<>(item.getItemMeta().getLore()) : new ArrayList<>();
 		
 		String modified = tryReplace(display, player);
-		if (modified.length() > 0) {
+		if (!modified.isEmpty()) {
 			has_to_change = true;
 			im.setDisplayName(modified);
 		}
 		
 		for (int i = 0; i < lore.size(); i++) {
 			modified = tryReplace(lore.get(i), player);
-			if (modified.length() > 0) {
+			if (!modified.isEmpty()) {
 				has_to_change = true;
 				has_to_change_lore = true;
 				lore.set(i, modified);
@@ -175,11 +177,11 @@ public class ItemGenerator {
 		String display = has_meta && item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() : "";
 		ArrayList<String> lore = has_meta && item.getItemMeta().hasLore() ? new ArrayList<>(item.getItemMeta().getLore()) : new ArrayList<>();
 		
-		if (display.length() > 0) {
+		if (!display.isEmpty()) {
 			display = display.replaceAll(old_str, new_str);
 			im.setDisplayName(display);
 		}
-		
+
 		for (int i = 0; i < lore.size(); i++) {
 			lore.set(i, lore.get(i).replaceAll(old_str, new_str));
 		}
@@ -250,45 +252,49 @@ public class ItemGenerator {
 	public static ItemStack getItemStack(String material, String name, String lore_aux, ArrayList<String> lore) {
 		return getItemStack(material, name, lore_aux, "§f", lore, false);
 	}
-	
-	@SuppressWarnings("deprecation")
+
 	public static ItemStack getItemStack(String material, String name, String lore_aux, String color, ArrayList<String> lore, boolean glow) {
+		int hashCode = Objects.hash(material, name, lore_aux, color, lore);
+
+		return cacheItems.computeIfAbsent(hashCode, $ -> generateNewItemStack(material, name, lore_aux, color, lore, glow)).clone();
+	}
+
+	@SuppressWarnings("deprecation")
+	private static ItemStack generateNewItemStack(String material, String name, String lore_aux, String color, ArrayList<String> lore, boolean glow) {
 		ItemStack item = null;
 		try {
 			item = XMaterial.matchXMaterial(material).get().parseItem();
 		} catch (Exception e) {
 			try {
-				String partes[] = material.split(":");
+				String[] partes = material.split(":");
 				item = new ItemStack(Integer.valueOf(partes[0]), 1, partes.length > 1 ? Short.valueOf(partes[1]) : 0);
 			} catch (Exception e2) {
 				e2.printStackTrace();
 				Bukkit.getConsoleSender().sendMessage("§4[ERROR] §6CashShop -> §cunknown material §4" + material + " §cdid you download the currect version?");
 			}
 		}
-		
-		ItemMeta im = item.getItemMeta();
-		
-		if (name.length() > 0) im.setDisplayName(name.replaceAll("&", "§"));
 
-		if (lore_aux.length() > 0 && !lore_aux.equals("§f")) {
-			String split[] = lore_aux.split(";=;");
-			if (split.length > 0) {
-				for (int i = 0; i < split.length; i++) {
-					lore.add(color + split[i]);
-				}
-			}
-		}
-		
+		ItemMeta im = item.getItemMeta();
+
+		if (!name.isEmpty()) im.setDisplayName(name.replaceAll("&", "§"));
+
+		if (!lore_aux.isEmpty() && !lore_aux.equals("§f")) {
+			String[] split = lore_aux.split(";=;");
+            for (String s : split) {
+                lore.add(color + s);
+            }
+        }
+
 		if (glow) {
 			im.addEnchant(Enchantment.ARROW_DAMAGE, 1, true);
 			im.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 			im.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		}
 
-		if (lore.size() > 0) im.setLore(lore);
-		
+		if (!lore.isEmpty()) im.setLore(lore);
+
 		item.setItemMeta(im);
-		
+
 		return item;
 	}
 

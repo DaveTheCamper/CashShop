@@ -48,8 +48,7 @@ public class ConfigItemMenu extends DeletebleMenu {
 	
 	private void load() {
 		this.changeIdentifierSlot(15);
-		
-		
+
 		updateItem();
 		updateName();
 		updateGlow();
@@ -90,13 +89,11 @@ public class ConfigItemMenu extends DeletebleMenu {
 	}
 	
 	public void changeLore(ArrayList<String> lore, String what) {
-		switch (what) {
-			case ADD_LORE:
-				item_properties.setLore(lore);
-				updateLore();
-				updateItem();
-				break;
-		}
+        if (what.equals(ADD_LORE)) {
+            item_properties.setLore(lore);
+            updateLore();
+            updateItem();
+        }
 	}
 	
 	private void updateItem() {
