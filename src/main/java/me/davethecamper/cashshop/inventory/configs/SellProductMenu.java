@@ -43,8 +43,11 @@ public class SellProductMenu extends ValuebleItemMenu {
 	
 	@Getter
 	@Setter
-	private boolean isMoney;
-	
+	private boolean money;
+
+	@Setter
+	@Getter
+	private boolean allowBonus;
 	
 	protected final String COMMANDS = "comandos";
 	protected final String ITEMS = "items_give";
@@ -84,7 +87,7 @@ public class SellProductMenu extends ValuebleItemMenu {
 
 		String extraLabel = amount > 1 ? " §7(x" + amount + ")" : "";
 		String discountLabel = discount > 0 ? "§d" + f.format(discount) + "% OFF " : "";
-		String coinLabel = isMoney ? "" : " ¢";
+		String coinLabel = money ? "" : " ¢";
 
 		ItemStack item = this.getItemProperties().getItem().clone();
 		item = player != null ? ItemGenerator.replaces(item, player) : item;

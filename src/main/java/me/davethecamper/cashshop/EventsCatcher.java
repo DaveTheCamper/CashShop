@@ -156,8 +156,6 @@ public class EventsCatcher implements Listener {
 								case CashShop.CONFIRM_BUY_BUTTON:
 									cp.buyCurrentProduct();
 									break;
-									
-									
 							}
 							break;
 							

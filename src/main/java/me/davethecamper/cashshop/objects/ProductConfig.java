@@ -1,17 +1,17 @@
 package me.davethecamper.cashshop.objects;
 
-import java.util.ArrayList;
-
+import lombok.Builder;
+import lombok.Data;
 import lombok.ToString;
 import org.bukkit.inventory.ItemStack;
 
-import lombok.Builder;
+import java.util.ArrayList;
 
+@Data
 @Builder
 @ToString
 public class ProductConfig implements Cloneable {
-	
-	
+
 	public ProductConfig() {
 		this(new ArrayList<>(), new ArrayList<>());
 	}
@@ -20,21 +20,21 @@ public class ProductConfig implements Cloneable {
 		this.items = new ArrayList<>(items);
 		this.commands = new ArrayList<>(commands);
 	}
-	
-	private ArrayList<ItemStack> items;
-	
-	private ArrayList<String> commands;
 
-	
-	
-	public ArrayList<ItemStack> getItems() {return items;}
+	@Builder.Default
+	private ArrayList<ItemStack> items = new ArrayList<>();
 
-	public ArrayList<String> getCommands() {return commands;}
-	
+	@Builder.Default
+	private ArrayList<String> commands = new ArrayList<>();
 
-	public void setItems(ArrayList<ItemStack> items) {this.items = new ArrayList<>(items);}
 
-	public void setCommands(ArrayList<String> commands) {this.commands = new ArrayList<>(commands);}
+    public void setItems(ArrayList<ItemStack> items) {
+		this.items = new ArrayList<>(items);
+	}
+
+	public void setCommands(ArrayList<String> commands) {
+		this.commands = new ArrayList<>(commands);
+	}
 
 	
 	public void updateItems(ArrayList<ItemStack> new_items) {
@@ -44,7 +44,7 @@ public class ProductConfig implements Cloneable {
 	
 	@Override
 	public ProductConfig clone() {
-		return new ProductConfig(new ArrayList<ItemStack>(items), new ArrayList<String>(commands));
+		return new ProductConfig(new ArrayList<>(items), new ArrayList<>(commands));
 	}
 
 }

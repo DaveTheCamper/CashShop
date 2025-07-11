@@ -11,6 +11,7 @@ import me.davethecamper.cashshop.inventory.choosers.MainChooseMenu;
 import me.davethecamper.cashshop.inventory.configs.*;
 import me.davethecamper.cashshop.inventory.edition.EditionComponent;
 import me.davethecamper.cashshop.inventory.edition.EditionComponentType;
+import me.davethecamper.cashshop.listener.ConfirmBuyCustomizerListener;
 import me.davethecamper.cashshop.listener.ProductUpdateListener;
 import me.davethecamper.cashshop.objects.CashShopClassLoader;
 import me.davethecamper.cashshop.objects.ItemMenuProperties;
@@ -174,6 +175,7 @@ public class CashShop extends JavaPlugin {
 		
 		Bukkit.getPluginManager().registerEvents(new EventsCatcher(this), cs);
 		Bukkit.getPluginManager().registerEvents(new ProductUpdateListener(), this);
+		Bukkit.getPluginManager().registerEvents(new ConfirmBuyCustomizerListener(), this);
 		
 		loadCommands();
 		

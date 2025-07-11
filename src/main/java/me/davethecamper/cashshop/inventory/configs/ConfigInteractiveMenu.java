@@ -220,7 +220,20 @@ public class ConfigInteractiveMenu extends ConfigItemMenu {
 	public void updateProduct(ItemStack item) {
 		updateSomething(CashShop.REPLACE_ITEM_SELLING_BUTTON, new EditionComponent(EditionComponentType.DISPLAY_ITEM, CashShop.REPLACE_ITEM_SELLING_BUTTON, item));
 	}
-	
+
+	public void updateComponentDisplayItem(String name, ItemStack itemStack) {
+		for (Integer slot : new ArrayList<>(this.getVisualizableItems().keySet())) {
+			EditionComponent editionComponent = this.getVisualizableItems().get(slot);
+
+			if (editionComponent.getName().equals(name)) {
+				EditionComponent cloned = editionComponent.clone();
+
+				cloned.setItem(itemStack);
+				this.getVisualizableItems().put(slot, cloned);
+			}
+		}
+	}
+
 	public void updateSomething(String name, EditionComponent new_component) {
 		for (Integer slot : new ArrayList<>(this.getVisualizableItems().keySet())) {
 			if (this.getVisualizableItems().get(slot).getName().equals(name)) {
