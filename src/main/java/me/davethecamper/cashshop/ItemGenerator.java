@@ -265,13 +265,8 @@ public class ItemGenerator {
 		try {
 			item = XMaterial.matchXMaterial(material).get().parseItem();
 		} catch (Exception e) {
-			try {
-				String[] partes = material.split(":");
-				item = new ItemStack(Integer.valueOf(partes[0]), 1, partes.length > 1 ? Short.valueOf(partes[1]) : 0);
-			} catch (Exception e2) {
-				e2.printStackTrace();
-				Bukkit.getConsoleSender().sendMessage("§4[ERROR] §6CashShop -> §cunknown material §4" + material + " §cdid you download the currect version?");
-			}
+			e.printStackTrace();
+			Bukkit.getConsoleSender().sendMessage("§4[ERROR] §6CashShop -> §cunknown material §4" + material + " §cdid you download the currect version?");
 		}
 
 		ItemMeta im = item.getItemMeta();
@@ -286,7 +281,7 @@ public class ItemGenerator {
         }
 
 		if (glow) {
-			im.addEnchant(Enchantment.ARROW_DAMAGE, 1, true);
+			im.addEnchant(Enchantment.POWER, 1, true);
 			im.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 			im.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		}

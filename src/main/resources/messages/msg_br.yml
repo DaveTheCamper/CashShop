@@ -289,4 +289,5 @@ payment:
     seu cash!'
   click: '&9[Clique aqui]'
   error:
-    min_value: '&cO valor mínimo para gastar é @value'
+    min_value: '&cO valor mínimo para doações é @value'
+    max_value: '&cO valor máximo para doações é @value'

@@ -19,6 +19,7 @@ currency:
   # Here you can set how much is the minimum money spent in one transaction
   # Example: if this is set in 10, minimum buy will be 10 of your currency (10$, R$10, 10€)
   minimum_spent: 10
+  maximum_spent: 1000
 
 coin:
   # Dont use colors, this will be used in transaction info

@@ -47,7 +47,7 @@ public class SellProductMenu extends ValuebleItemMenu {
 
 	@Setter
 	@Getter
-	private boolean allowBonus;
+	private boolean allowBonus = true;
 	
 	protected final String COMMANDS = "comandos";
 	protected final String ITEMS = "items_give";

@@ -45,7 +45,7 @@ public class ConfirmBuyCustomizerListener implements Listener {
         ItemStack itemStack = staticItem.getItemProperties().getItem().clone();
         ItemMeta itemMeta = itemStack.getItemMeta();
 
-        int current = cashPlayer.getCash();
+        int current = cashPlayer.getCash(currentProduct.isAllowBonus());
         int price = (int) (currentProduct.getValueInCash() * cashPlayer.getProductAmount());
         int difference = current - price;
 

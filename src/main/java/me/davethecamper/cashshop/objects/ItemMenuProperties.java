@@ -1,13 +1,12 @@
 package me.davethecamper.cashshop.objects;
 
-import java.util.ArrayList;
-
+import me.davethecamper.cashshop.ItemGenerator;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import me.davethecamper.cashshop.ItemGenerator;
+import java.util.ArrayList;
 
 public class ItemMenuProperties implements Cloneable {
 
@@ -110,7 +109,7 @@ public class ItemMenuProperties implements Cloneable {
 		
 		
 		if (isGlow()) {
-			im.addEnchant(Enchantment.ARROW_DAMAGE, 1, true);
+			im.addEnchant(Enchantment.POWER, 1, true);
 			im.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 		}
 		

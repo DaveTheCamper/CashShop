@@ -419,7 +419,7 @@ public class CashPlayer {
 			return;
 		}
 		
-		this.removeCash(value, true);
+		this.removeCash(value, menu.isAllowBonus());
 	}
 	
 	private boolean verifyCurrency(SellProductMenu menu, long value) {
@@ -427,7 +427,7 @@ public class CashPlayer {
 			return CashShop.getInstance().getEconomy().getBalance(Bukkit.getOfflinePlayer(this.getUniqueId())) >= value;
 		}
 		
-		return this.getCash(true) >= value;
+		return this.getCash(menu.isAllowBonus()) >= value;
 	}
 	
 	public boolean canBuyThisItem(SellProductMenu product) {

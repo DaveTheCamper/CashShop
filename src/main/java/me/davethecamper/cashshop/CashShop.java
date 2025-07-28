@@ -13,6 +13,7 @@ import me.davethecamper.cashshop.inventory.edition.EditionComponent;
 import me.davethecamper.cashshop.inventory.edition.EditionComponentType;
 import me.davethecamper.cashshop.listener.ConfirmBuyCustomizerListener;
 import me.davethecamper.cashshop.listener.ProductUpdateListener;
+import me.davethecamper.cashshop.listener.RemoveUnecessaryCheckoutButtonsListener;
 import me.davethecamper.cashshop.objects.CashShopClassLoader;
 import me.davethecamper.cashshop.objects.ItemMenuProperties;
 import me.davethecamper.cashshop.objects.ProductConfig;
@@ -135,7 +136,6 @@ public class CashShop extends JavaPlugin {
 		autoSave();
 		this.transactions = new TransactionsManager(this);
 
-
 		setupEconomy();
 	}
 	
@@ -171,19 +171,23 @@ public class CashShop extends JavaPlugin {
 	
 	private void load() {
 		loadConfigs();
-		loadAllApis();
 		
 		Bukkit.getPluginManager().registerEvents(new EventsCatcher(this), cs);
 		Bukkit.getPluginManager().registerEvents(new ProductUpdateListener(), this);
 		Bukkit.getPluginManager().registerEvents(new ConfirmBuyCustomizerListener(), this);
+		Bukkit.getPluginManager().registerEvents(new RemoveUnecessaryCheckoutButtonsListener(), this);
 		
 		loadCommands();
-		
-		verifyExitentStaticItems();
-		loadObjects();
+
+		Thread.startVirtualThread(() -> {
+			loadAllApis();
+
+			verifyExitentStaticItems();
+			loadObjects();
+		});
 	}
 	
-	private <Z extends ConfigItemMenu> void loadObjects() {
+	private void loadObjects() {
 		File f = new File(this.getDataFolder().getAbsolutePath() + "/objects/");
 		
 		if (f.exists()) {

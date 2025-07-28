@@ -134,11 +134,21 @@ public class EventsCatcher implements Listener {
 									
 								case CashShop.GATEWAYS_MENU:
 									double value = ((double) cp.getProductAmount()) - (((double) cp.getProductAmount())*(CashShop.getInstance().getCupomManager().getDiscount(cp.getCupom())/100));
-									if (value >= main.configuration.getInt("currency.minimum_spent")) {
-										cp.openGatewayMenu();
-									} else {
-										e.getWhoClicked().sendMessage(main.messages.getString("payment.error.min_value").replaceAll("@value", main.configuration.getInt("currency.minimum_spent") + " " + main.configuration.getString("currency.code")));
+									int minimumSpent = main.configuration.getInt("currency.minimum_spent");
+									int maximumSpent = main.configuration.getInt("currency.maximum_spent");
+
+									if (value < minimumSpent) {
+										e.getWhoClicked().sendMessage(main.messages.getString("payment.error.min_value").replaceAll("@value", minimumSpent + " " + main.configuration.getString("currency.code")));
+										return;
 									}
+
+									if (value > maximumSpent) {
+										e.getWhoClicked().sendMessage(main.messages.getString("payment.error.max_value").replaceAll("@value", maximumSpent + " " + main.configuration.getString("currency.code")));
+										return;
+									}
+
+									cp.openGatewayMenu();
+
 									break;
 									
 								case CashShop.TRANSACTION_MENU:
