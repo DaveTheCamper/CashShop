@@ -118,7 +118,7 @@ public class ConfigManager {
 		
 		if (args.length % 2 == 0) {
 			for (int arg = 0; arg < args.length; arg += 2) {
-				result = result.replaceAll(args[arg], args[arg+1]);
+				result = result.replace(args[arg], args[arg+1]);
 			}
 		}
 		
@@ -148,7 +148,7 @@ public class ConfigManager {
 			for (int i = 0; i < new_list.size(); i++) {
 				String newStr = new_list.get(i);
 				for (int arg = 0; arg < args.length; arg += 2) {
-					newStr = newStr.replaceAll(args[arg], args[arg+1]);
+					newStr = newStr.replace(args[arg], args[arg+1]);
 				}
 				
 				if (newStr.contains("\n")) {
@@ -183,7 +183,7 @@ public class ConfigManager {
 
         for (Object object : list) {
             if ((object instanceof String) || (isPrimitiveWrapper(object))) {
-                lore = lore + String.valueOf(object).replaceAll("&", "§") + ";=;";
+                lore = lore + String.valueOf(object).replace("&", "§") + ";=;";
             }
         }
         
