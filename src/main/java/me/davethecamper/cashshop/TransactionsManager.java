@@ -1,7 +1,6 @@
 package me.davethecamper.cashshop;
 
 import com.cryptomorin.xseries.XSound;
-import lombok.extern.slf4j.Slf4j;
 import me.davethecamper.cashshop.api.CashShopGateway;
 import me.davethecamper.cashshop.api.info.PlayerInfo;
 import me.davethecamper.cashshop.api.info.ProductInfo;
@@ -29,7 +28,7 @@ public class TransactionsManager {
 	
 
 	private void threadVerifier() {
-		this.thread = new Thread(() -> {
+        thread = Thread.startVirtualThread(() -> {
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
@@ -75,7 +74,6 @@ public class TransactionsManager {
                 }
             }, 0, main.configuration.getInt("delay_verify")*1000L);;
         });
-		thread.start();
 	}
 	
 	public void stop() {
