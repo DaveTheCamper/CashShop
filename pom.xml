@@ -39,6 +39,13 @@
 		</dependency>
 
 		<dependency>
+			<groupId>me.davethecamper.utils</groupId>
+			<artifactId>ats-utils</artifactId>
+			<version>1.6.167</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 			<version>20240205</version>

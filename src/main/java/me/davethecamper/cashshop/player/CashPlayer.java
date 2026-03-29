@@ -14,6 +14,7 @@ import me.davethecamper.cashshop.inventory.configs.SellProductMenu;
 import me.davethecamper.cashshop.inventory.edition.EditionComponent;
 import me.davethecamper.cashshop.inventory.edition.EditionComponentType;
 import me.davethecamper.cashshop.objects.ProductConfig;
+import me.davethecamper.utils.utils.ItemUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -388,7 +389,7 @@ public class CashPlayer {
 				
 				for (int i = 0; i < amount; i++) {
 					for (ItemStack item : pc.getItems()) {
-						givePlayerItem(item.clone());
+						ItemUtils.givePlayerItem(uniqueId, item.clone());
 					}
 					
 					for (String s : pc.getCommands()) {
