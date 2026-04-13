@@ -51,21 +51,23 @@ public class EventsCatcher implements Listener {
 		} else if (main.getNormalPlayerInventory(uuid).haveAnyCurrentInventory() && isUsingMenus(uuid)) {
 			e.setCancelled(true);
 			
-			CashPlayer cp = main.getNormalPlayerInventory(uuid);
+			CashPlayer cashPlayer = main.getNormalPlayerInventory(uuid);
+			ConfigInteractiveMenu currentInteractiveMenu = cashPlayer.getCurrentMenu();
+
 			if (e.getClickedInventory().equals(e.getView().getTopInventory())) {
 				if (lastAccessTime.getOrDefault(uuid, 0L) > System.currentTimeMillis()) return;
 
 				lastAccessTime.put(uuid, System.currentTimeMillis() + 100);
 
-				CashMenuInventoryClickEvent event = new CashMenuInventoryClickEvent(uuid, cp.getCurrentInteractiveMenu(), e);
+				CashMenuInventoryClickEvent event = new CashMenuInventoryClickEvent(uuid, currentInteractiveMenu, e);
 
-				if (cp.getCurrentInteractiveMenu().getComponentBySlot(e.getSlot()) != null) {
-					if (cp.getCurrentInteractiveMenu().getComponentBySlot(e.getSlot()).getConsumer() != null) {
-						ConfigInteractiveMenu curr = cp.getCurrentInteractiveMenu();
-						
-						cp.getCurrentInteractiveMenu().getComponentBySlot(e.getSlot()).getConsumer().accept(event);	
-						
-						if (curr != cp.getCurrentInteractiveMenu()) return;
+				if (currentInteractiveMenu.getComponentBySlot(e.getSlot()) != null) {
+					if (currentInteractiveMenu.getComponentBySlot(e.getSlot()).getConsumer() != null) {
+						ConfigInteractiveMenu current = cashPlayer.getCurrentMenu();
+
+						currentInteractiveMenu.getComponentBySlot(e.getSlot()).getConsumer().accept(event);
+
+						if (current != cashPlayer.getCurrentMenu()) return;
 					}
 				}
 				
@@ -77,63 +79,61 @@ public class EventsCatcher implements Listener {
 				
 				e.setCancelled(event.isCancelClick());				
 			} else {
-				CashPlayerInventoryClickEvent event = new CashPlayerInventoryClickEvent(uuid, cp.getCurrentInteractiveMenu(), e);
-				ConfigInteractiveMenu curr = cp.getCurrentInteractiveMenu();
-				
+				CashPlayerInventoryClickEvent event = new CashPlayerInventoryClickEvent(uuid, currentInteractiveMenu, e);
+
 				Bukkit.getPluginManager().callEvent(event);
 				
 				e.setCancelled(event.isCancelClick());
-				
-				if (curr != cp.getCurrentInteractiveMenu()) return;
 			}
-			
+
+			if (currentInteractiveMenu != cashPlayer.getCurrentMenu()) return;
 
 			if (e.getClickedInventory().equals(e.getView().getTopInventory())) {
-				EditionComponent cc = cp.getCurrentComponent(e.getSlot());
+				EditionComponent cc = currentInteractiveMenu.getVisualizableItems().get(e.getSlot());
 				
 				if (cc != null) {
 					switch (cc.getType()) {
 						case BUY_PRODUCT:
 							SellProductMenu current_product = CashShop.getInstance().getProduct(cc.getName());
-							if (current_product != null && cp.canBuyThisItem(current_product)) {
-								cp.updateCurrentProduct(current_product);
+							if (current_product != null && cashPlayer.canBuyThisItem(current_product)) {
+								cashPlayer.updateCurrentProduct(current_product);
 							}
 							break;
 							
 						case CATEGORY:
 							ConfigInteractiveMenu cim = CashShop.getInstance().getCategoriesManager().getCategorie(cc.getName());
-							cp.updateCurrentInventory(cim);
+							cashPlayer.updateCurrentInventory(cim);
 							break;
 
                         case STATIC:
 							switch (cc.getName()) {
 								case CashShop.BACK_BUTTON:
-									if (!cp.getPreviusMenus().isEmpty() && cp.getCurrentMenu().getId().equalsIgnoreCase(CashShop.CHECKOUT_MENU)) {
-										cp.setCashTransaction(false);
+									if (!cashPlayer.getPreviusMenus().isEmpty() && cashPlayer.getCurrentMenu().getId().equalsIgnoreCase(CashShop.CHECKOUT_MENU)) {
+										cashPlayer.setCashTransaction(false);
 									}
 
-									cp.backInventory();
+									cashPlayer.backInventory();
 
 									break;
 									
 								case CashShop.ADD_AMOUNT_1_BUTTON:
 								case CashShop.ADD_AMOUNT_5_BUTTON:
 								case CashShop.ADD_AMOUNT_10_BUTTON:
-									cp.addProductAmount((int) ((ValuebleItemMenu) CashShop.getInstance().getStaticItem(cc.getName())).getValueInCash());
+									cashPlayer.addProductAmount((int) ((ValuebleItemMenu) CashShop.getInstance().getStaticItem(cc.getName())).getValueInCash());
 									break;
 
 								case CashShop.REMOVE_AMOUNT_1_BUTTON:
 								case CashShop.REMOVE_AMOUNT_5_BUTTON:
 								case CashShop.REMOVE_AMOUNT_10_BUTTON:
-									cp.removeProductAmount((int) ((ValuebleItemMenu) CashShop.getInstance().getStaticItem(cc.getName())).getValueInCash());
+									cashPlayer.removeProductAmount((int) ((ValuebleItemMenu) CashShop.getInstance().getStaticItem(cc.getName())).getValueInCash());
 									break;
 									
 								case CashShop.CHECKOUT_MENU:
-									cp.openBuyCashMenu();
+									cashPlayer.openBuyCashMenu();
 									break;
 									
 								case CashShop.GATEWAYS_MENU:
-									double value = ((double) cp.getProductAmount()) - (((double) cp.getProductAmount())*(CashShop.getInstance().getCupomManager().getDiscount(cp.getCupom())/100));
+									double value = ((double) cashPlayer.getProductAmount()) - (((double) cashPlayer.getProductAmount())*(CashShop.getInstance().getCupomManager().getDiscount(cashPlayer.getCupom())/100));
 									int minimumSpent = main.configuration.getInt("currency.minimum_spent");
 									int maximumSpent = main.configuration.getInt("currency.maximum_spent");
 
@@ -147,24 +147,24 @@ public class EventsCatcher implements Listener {
 										return;
 									}
 
-									cp.openGatewayMenu();
+									cashPlayer.openGatewayMenu();
 
 									break;
 									
 								case CashShop.TRANSACTION_MENU:
-									cp.openTransactions();
+									cashPlayer.openTransactions();
 									break;
 									
 								case CashShop.DISCOUNT_BUTTON:
-									cp.updateDiscount();
+									cashPlayer.updateDiscount();
 									break;
 									
 								case CashShop.GIFT_NAME_BUTTON:
-									cp.updateGift();
+									cashPlayer.updateGift();
 									break;
 									
 								case CashShop.CONFIRM_BUY_BUTTON:
-									cp.buyCurrentProduct();
+									cashPlayer.buyCurrentProduct();
 									break;
 							}
 							break;
@@ -172,9 +172,9 @@ public class EventsCatcher implements Listener {
 						case DISPLAY_ITEM:
 							switch (cc.getName()) {
 								case CashShop.REPLACE_ITEM_SELLING_BUTTON:
-									if (cp.getCurrentProduct().getDelayToBuy() > 0) return;
+									if (cashPlayer.getCurrentProduct().getDelayToBuy() > 0) return;
 									
-									cp.updateProductAmount();
+									cashPlayer.updateProductAmount();
 									break;
 							}
 							break;
@@ -184,11 +184,11 @@ public class EventsCatcher implements Listener {
 					}
 				}
 				
-				if (cp.getCurrentInteractiveMenu() != null) {
-					switch (cp.getCurrentInteractiveMenu().getId()) {
+				if (currentInteractiveMenu != null) {
+					switch (currentInteractiveMenu.getId()) {
 						case CashShop.GATEWAYS_MENU:
 							if (e.getCurrentItem() != null) {
-								cp.selectGateway(e.getSlot());
+								cashPlayer.selectGateway(e.getSlot());
 							}
 							break;
 					}

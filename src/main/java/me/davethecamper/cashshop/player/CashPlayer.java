@@ -83,7 +83,9 @@ public class CashPlayer {
 	private Inventory currentInventory;
 
 	
-	public EditionComponent getCurrentComponent(int slot) {return this.currentMenu.getVisualizableItems().get(slot);}
+	public EditionComponent getCurrentComponent(int slot) {
+		return this.currentMenu.getVisualizableItems().get(slot);
+	}
 	
 	public ConfigInteractiveMenu getCurrentInteractiveMenu() {return this.currentMenu;}
 	
@@ -336,7 +338,7 @@ public class CashPlayer {
 		if (this.currentProduct != null) {
 			updateCurrentProduct(this.currentProduct, this.productAmount, false);
 		} else {
-			ConfigInteractiveMenu menu = this.getCurrentInteractiveMenu();
+			ConfigInteractiveMenu menu = this.getCurrentMenu();
 			if (!this.previusMenus.isEmpty()) this.previusMenus.remove(this.previusMenus.size()-1);
 			
 			this.updateCurrentInventory(CashShop.getInstance().getCategoriesManager().getCategorie(menu.getId()));
